@@ -391,11 +391,10 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
         <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </div>
-        <div className="text-sm font-medium text-foreground truncate group-hover:underline underline-offset-4 group-hover:w-full">
+        <div className="text-sm font-medium text-foreground truncate group-hover:underline underline-offset-4">
           {value}
         </div>
       </div>
-      <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-primary transition-all duration-300 group-hover:w-full"></span>
 
       <div className="flex items-center pt-4">
         {isCopied ? (
