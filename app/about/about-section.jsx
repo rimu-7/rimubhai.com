@@ -1,8 +1,7 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Pencil, Trash2, Plus } from "lucide-react";
+import { Loader2, Pencil, Trash2, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,13 +25,10 @@ import RichTextEditor from "@/components/about/RichTextEditor";
 export default function AboutSection({ user }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Edit State
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // 1. Fetch the single item
   useEffect(() => {
     fetchData();
   }, []);
@@ -41,7 +37,6 @@ export default function AboutSection({ user }) {
     try {
       const res = await fetch("/api/about");
       const json = await res.json();
-      // Assuming API returns an array, we take the first one since you only have 1
       if (res.ok && json.data && json.data.length > 0) {
         setData(json.data[0]);
       } else {
@@ -54,7 +49,6 @@ export default function AboutSection({ user }) {
     }
   };
 
-  // 2. Delete Handler
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this section?")) return;
     if (!data) return;
@@ -62,13 +56,12 @@ export default function AboutSection({ user }) {
     try {
       const res = await fetch(`/api/about/${data._id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      setData(null); // Clear UI
+      setData(null);
     } catch (error) {
       alert("Error deleting item");
     }
   };
 
-  // 3. Update Handler
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!editingItem) return;
@@ -87,7 +80,7 @@ export default function AboutSection({ user }) {
 
       if (!res.ok) throw new Error("Failed to update");
 
-      setData(editingItem); // Update local view
+      setData(editingItem);
       setIsEditOpen(false);
     } catch (error) {
       console.error(error);
@@ -98,6 +91,7 @@ export default function AboutSection({ user }) {
   };
 
   const handleCreate = async () => {
+    // Implement create logic here
     alert("Implement your Create POST logic here!");
   };
 
@@ -111,28 +105,28 @@ export default function AboutSection({ user }) {
 
   if (!data && user) {
     return (
-      <div className="text-center space-y-4">
-        <p className="text-muted-foreground">No &apos;About&apos; section found.</p>
+      <div className="text-center space-y-4 py-8">
+        <p className="text-muted-foreground">No 'About' section found.</p>
         <Button onClick={handleCreate}>
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4 mr-2" /> Create About Section
         </Button>
       </div>
     );
   }
 
-  // --- EMPTY STATE (Public) ---
   if (!data && !user) return null;
 
   return (
     <>
+      {/* Main Content Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-4xl"
+        className="w-full max-w-4xl justify-start"
       >
-        <Card className="relative outline-none bg-background shadow-none overflow-hidden border-none  ">
-          <CardHeader className="flex flex-row items-start justify-between pb-2">
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardHeader className="flex flex-row items-start justify-between pt-0 px-0">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <CardTitle className="text-3xl font-bold tracking-tight">
@@ -152,8 +146,9 @@ export default function AboutSection({ user }) {
               </CardDescription> */}
             </div>
 
+            {/* Admin Actions */}
             {user && (
-              <div className="flex gap-2 z-10">
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -177,16 +172,18 @@ export default function AboutSection({ user }) {
             )}
           </CardHeader>
 
-          <CardContent className="mt-4">
+          <CardContent className=" px-0">
+            {" "}
+            {/* Removed horizontal padding */}
             <div
-              className="prose prose-neutral dark:prose-invert max-w-none space-y-3"
+              className="prose prose-neutral dark:prose-invert max-w-none leading-relaxed"
               dangerouslySetInnerHTML={{ __html: data.content }}
             />
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* --- EDIT DIALOG --- */}
+      {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>

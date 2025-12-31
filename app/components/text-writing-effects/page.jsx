@@ -5,9 +5,11 @@ import {
   Check,
   Copy,
   RefreshCw,
-  ChevronDown,
-  ChevronUp,
+  Terminal,
+  FileCode,
   Sparkles,
+  Info,
+  Type,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -36,10 +38,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { TextWritingEffect } from "@/components/ui/text-writing-effect";
-import Link from "next/link";
-import { MoveLeft } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { BiLogoJavascript, BiLogoTypescript } from "react-icons/bi";
 
 // --- Font Configuration ---
 const greatVibes = Great_Vibes({ weight: "400", subsets: ["latin"] });
@@ -60,304 +61,346 @@ const fontOptions = [
   { name: "Parisienne", value: "parisienne", class: parisienne.className },
 ];
 
-const presets = [
-  "Mutasim Fuad Rimu",
-  "Creative Developer",
-  "Next.js + Framer",
-  "Elegant Typography",
-  "Minimalist Design",
-];
-
-// --- Code Snippets ---
-const installCode = `npm install framer-motion`;
-
-const usageCode = `import { TextWritingEffect } from "@/components/ui/text-writing-effect";
-import { Great_Vibes } from "next/font/google";
-
-const font = Great_Vibes({ weight: "400", subsets: ["latin"] });
-
-export default function Hero() {
-  return (
-    <TextWritingEffect 
-      text="Mutasim Fuad Rimu" 
-      fontClassName={font.className} 
-    />
-  );
-}`;
-
-export default function TextEffectPage() {
+export default function TextWritingEffectDemo() {
+  // State for Live Preview
   const [text, setText] = useState("Mutasim Fuad Rimu");
   const [selectedFont, setSelectedFont] = useState("great-vibes");
   const [key, setKey] = useState(0);
-  const [isCodeExpanded, setIsCodeExpanded] = useState(false);
+
+  // State for Tabs & Copying
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [copyKey, setCopyKey] = useState(null);
 
   const currentFont =
     fontOptions.find((f) => f.value === selectedFont) || fontOptions[0];
-
-  const handleCopy = (code) => {
-    navigator.clipboard.writeText(code);
-    toast.success("Copied to clipboard");
-  };
 
   const handleReplay = () => {
     setKey((prev) => prev + 1);
   };
 
+  // --- Installation Commands ---
+  const commands = {
+    npm: "npm install framer-motion clsx tailwind-merge",
+    pnpm: "pnpm add framer-motion clsx tailwind-merge",
+    yarn: "yarn add framer-motion clsx tailwind-merge",
+    bun: "bun add framer-motion clsx tailwind-merge",
+  };
+
+  const handleCopyCommand = (command, key) => {
+    navigator.clipboard.writeText(command);
+    setCopyKey(key);
+    toast.success(`Copied ${key} command!`);
+    setTimeout(() => setCopyKey(null), 2000);
+  };
+
+  const handleCopyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    toast.success("Code copied to clipboard!");
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
   return (
-    <div className="container mx-auto max-w-3xl py-2 space-y-6 px-2">
-      {/* Header Section */}
-      <div className="space-y-2 text-center md:text-left">
-        <div className="flex flex-col gap-2 ">
-          <Link
-            href="/components"
-            className="flex gap-2 w-fit px-3 py-2 rounded-md text-muted-foreground hover:text-foreground border-muted-foreground hover:border-foreground items-center border border-dashed hover:text-border-dashed"
-          >
-            <MoveLeft /> back
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Writing Text Effect
-          </h1>
-        </div>
-        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto md:mx-0">
-          An elegant SVG path animation that mimics handwriting. Perfect for
-          signatures, logos, or impactful hero sections. Fully customizable with
-          any Google Font.
-        </p>
-      </div>
-
-      {/* Preview & Controls */}
-      <div className="grid gap-4">
-        <Tabs defaultValue="preview" className="w-full">
-          <div className="flex items-center justify-between">
-            <TabsList>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-              <TabsTrigger value="code">Code</TabsTrigger>
-            </TabsList>
+    <div className="min-h-screen w-full bg-background p-6 md:p-12 flex justify-center">
+      <div className="w-full max-w-3xl space-y-8">
+        {/* Page Header */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Writing Text Effect
+            </h1>
+            <Badge variant="outline">v1.0</Badge>
           </div>
+          <p className="text-muted-foreground text-lg">
+            An elegant SVG path animation that mimics handwriting using Framer
+            Motion.
+          </p>
+        </div>
 
-          <TabsContent value="preview" className="">
-            <Card className="border-border/50 shadow-sm overflow-hidden">
-              <CardHeader className="grid gap-4">
-                <div className="space-y-2">
-                  <CardTitle>Playground</CardTitle>
-                  <CardDescription>
-                    Test different fonts and see the animation in real-time.
-                  </CardDescription>
-                </div>
-
-                {/* Controls - Responsive Stack */}
-                <div className="flex flex-col sm:flex-row gap-3 w-full">
-                  <Input
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Type anything..."
-                    className="flex-1 min-w-[200px]"
-                  />
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    <Select
-                      value={selectedFont}
-                      onValueChange={setSelectedFont}
-                    >
-                      <SelectTrigger className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Select font" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {fontOptions.map((font) => (
-                          <SelectItem key={font.value} value={font.value}>
-                            {font.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleReplay}
-                      title="Replay"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-
-              {/* Presets */}
-              <div className="px-6 pb-4 flex flex-wrap gap-2 items-center">
-                <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" /> Quick Try:
-                </span>
-                {presets.map((preset) => (
-                  <Badge
-                    key={preset}
-                    variant="secondary"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                    onClick={() => {
-                      setText(preset);
-                      setKey((prev) => prev + 1);
-                    }}
-                  >
-                    {preset}
-                  </Badge>
-                ))}
+        {/* Live Preview Card */}
+        <Card className="border shadow-sm">
+          <CardHeader className=" pb-4 border-b">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+              <div className="space-y-1">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  Live Preview
+                </CardTitle>
+                <CardDescription>
+                  Customize text and font to see the animation.
+                </CardDescription>
               </div>
 
-              <Separator />
+              {/* Controls */}
+              <div className="flex flex-col md:flex w-full md:w-auto items-center gap-2">
+                <Input
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Type text..."
+                  className="bg-background h-9 min-w-[150px]"
+                />
+                <div className="flex justify-between w-full gap-2">
+                  <Select value={selectedFont} onValueChange={setSelectedFont}>
+                    <SelectTrigger className="w-full h-9 bg-background">
+                      <SelectValue placeholder="Font" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fontOptions.map((font) => (
+                        <SelectItem key={font.value} value={font.value}>
+                          {font.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 bg-background"
+                    onClick={handleReplay}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
 
-              <CardContent className="w-full h-40 md:aspect-3/1 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden p-0">
-                <div className="w-full h-full max-w-4xl px-4 flex items-center justify-center">
-                  <TextWritingEffect
-                    key={key}
-                    text={text || "Start typing..."}
-                    fontClassName={currentFont.class}
-                    speed={3}
-                    className="w-full h-auto text-zinc-900 dark:text-zinc-100"
-                  />
+          <CardContent className="pt-0 min-h-[250px] flex items-center justify-center bg-zinc-50/50 dark:bg-zinc-950/50 overflow-hidden relative">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            <TextWritingEffect
+              key={key}
+              text={text || "Type something..."}
+              fontClassName={currentFont.class}
+              speed={3}
+              className="w-full max-w-2xl text-zinc-900 dark:text-zinc-100 z-10"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Documentation Tabs */}
+        <Tabs defaultValue="install" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="install">Installation</TabsTrigger>
+            <TabsTrigger value="code">Source Code</TabsTrigger>
+            <TabsTrigger value="info">Props & Usage</TabsTrigger>
+          </TabsList>
+
+          {/* TAB 1: Installation */}
+          <TabsContent value="install" className="space-y-6 pt-6">
+            {/* Step 1: Dependencies */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Terminal className="h-5 w-5" /> Install Dependencies
+              </h3>
+
+              <Tabs defaultValue="npm" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  {Object.keys(commands).map((pkgManager) => (
+                    <TabsTrigger
+                      key={pkgManager}
+                      value={pkgManager}
+                      className=""
+                    >
+                      {pkgManager}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                {Object.entries(commands).map(([key, command]) => (
+                  <TabsContent key={key} value={key} className="mt-0">
+                    <Card className="rounded-tl-none rounded-tr-none border-t-0 bg-muted/50">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <code className="font-mono text-sm text-foreground/80 truncate pr-4">
+                          {command}
+                        </code>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="shrink-0 hover:bg-background"
+                          onClick={() => handleCopyCommand(command, key)}
+                        >
+                          {copyKey === key ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Copy className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          <span className="sr-only">Copy {key} command</span>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </div>
+
+            {/* Step 2: Create Component */}
+            <div className="space-y-4">
+              <div className="relative">
+                <Card className="bg-zinc-950 text-zinc-50 border-none shadow-inner overflow-hidden">
+                  <CardHeader className="py-2 px-4 border-b border-zinc-800 rounded-t-lg flex flex-row items-center justify-between">
+                    <span className="text-xs text-zinc-400 font-mono">
+                      components/ui/text-writing-effect.tsx
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                      onClick={() => handleCopyCommand(componentSource, "file")}
+                    >
+                      {copyKey === "file" ? (
+                        <Check className="h-3 w-3 text-green-500" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="p-4 overflow-x-auto max-h-[300px] text-xs font-mono leading-relaxed scrollbar-thin scrollbar-thumb-zinc-700">
+                      <pre>{componentSource}</pre>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* TAB 2: Source Code */}
+          <TabsContent value="code" className="relative">
+            <div className="py-10">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <FileCode className="h-5 w-5" /> Create Component
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Copy the code below into{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">
+                  components/ui/text-writing-effect.tsx
+                </code>
+              </p>
+            </div>
+            <div className=" flex justify-between py-2">
+              <div className="justify-between items-center text-black flex gap-2">
+                <BiLogoJavascript className="fill-yellow-300 bg-black w-5 h-5" />
+                <Switch />
+                <BiLogoTypescript className="fill-blue-500 w-5 h-5 bg-black" />
+              </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8 gap-2 shadow-sm border bg-background/80 backdrop-blur"
+                onClick={() => handleCopyCode(componentSource)}
+              >
+                {copiedCode ? (
+                  <Check className="h-3 w-3 text-green-500" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+                {copiedCode ? "Copied" : "Copy Code"}
+              </Button>
+            </div>
+
+            <Card className="bg-[#0d1117] text-gray-300 border-none shadow-lg overflow-hidden">
+              <CardContent className="p-0">
+                <div className="p-4 overflow-x-auto max-h-[600px] text-xs sm:text-sm font-mono leading-relaxed scrollbar-thin scrollbar-thumb-gray-800">
+                  <pre>{componentSource}</pre>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="code">
+          {/* TAB 3: Info & Props */}
+          <TabsContent value="info" className="pt-6 space-y-4">
             <Card>
-              <CardContent className="p-6">
-                <CodeBlock code={usageCode} />
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-yellow-500" /> How it Works
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-2">
+                <p>
+                  This component uses{" "}
+                  <strong className="text-foreground">Framer Motion</strong> to
+                  animate the SVG{" "}
+                  <code className="text-foreground">stroke-dashoffset</code>{" "}
+                  property.
+                </p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    First, it renders the text outline (stroke) and animates it
+                    from 0 to 100%.
+                  </li>
+                  <li>
+                    Then, it fades in the fill color to make the text solid.
+                  </li>
+                  <li>
+                    It uses <code className="text-foreground">next/font</code>{" "}
+                    to support any Google Font.
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Type className="h-5 w-5" /> Props
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <PropCard
+                    name="text"
+                    type="string"
+                    desc="The text to display."
+                    required
+                  />
+                  <PropCard
+                    name="fontClassName"
+                    type="string"
+                    desc="Class from next/font."
+                  />
+                  <PropCard
+                    name="speed"
+                    type="number"
+                    desc="Duration in seconds. Default: 2"
+                  />
+                  <PropCard
+                    name="color"
+                    type="string"
+                    desc="Stroke/Fill color. Default: currentColor"
+                  />
+                  <PropCard
+                    name="strokeWidth"
+                    type="number"
+                    desc="Thickness of the line. Default: 1.5"
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Installation Guide */}
-      <div className="space-y-8">
-        <h2 className="text-2xl font-semibold tracking-tight">Installation</h2>
-        <Separator />
-
-        <div className="space-y-6">
-          <Step title="1. Install dependencies">
-            <p className="text-sm text-muted-foreground mt-2 mb-4">
-              We use{" "}
-              <code className="bg-muted px-1 rounded text-foreground">
-                framer-motion
-              </code>{" "}
-              for the path animations.
-            </p>
-            <CodeBlock code={installCode} singleLine />
-          </Step>
-
-          <Step title="2. Create the component">
-            <p className="text-sm text-muted-foreground mt-2 mb-4">
-              Copy the code below into{" "}
-              <code className="bg-muted px-1 rounded text-foreground">
-                components/ui/text-writing-effect.tsx
-              </code>
-              .
-            </p>
-
-            {/* Collapsible Code Block */}
-            <div className="relative rounded-lg border bg-zinc-950 dark:bg-zinc-900 overflow-hidden group">
-              <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  isCodeExpanded ? "max-h-[1500px]" : "max-h-[300px]"
-                }`}
-              >
-                <div className="p-4 overflow-x-auto">
-                  <pre className="text-sm font-mono text-zinc-50 leading-relaxed">
-                    {componentSource}
-                  </pre>
-                </div>
-              </div>
-
-              {/* Fade Overlay & Button */}
-              <div
-                className={`absolute bottom-0 left-0 right-0 flex flex-col items-center justify-end pt-12 pb-6 bg-gradient-to-t from-zinc-950 to-transparent ${
-                  isCodeExpanded ? "from-transparent pointer-events-none" : ""
-                }`}
-              >
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setIsCodeExpanded(!isCodeExpanded)}
-                  className={`gap-2 shadow-lg transition-all ${
-                    isCodeExpanded ? "pointer-events-auto" : ""
-                  }`}
-                >
-                  {isCodeExpanded ? (
-                    <>
-                      Collapse Code <ChevronUp className="h-4 w-4" />
-                    </>
-                  ) : (
-                    <>
-                      Expand Full Code <ChevronDown className="h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              <div className="absolute right-4 top-4">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-zinc-400 hover:text-white hover:bg-zinc-800"
-                  onClick={() => handleCopy(componentSource)}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </Step>
-        </div>
-      </div>
     </div>
   );
 }
 
-// --- Helper Components ---
-
-function Step({ title, children }) {
+// Helper for Info Tab
+function PropCard({ name, type, desc, required }) {
   return (
-    <div className="space-y-3">
-      <h3 className="font-medium leading-none flex items-center gap-3 text-lg">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20 shrink-0">
-          {title.split(".")[0]}
-        </div>
-        {title.split(".")[1]}
-      </h3>
-      <div className="pl-3 md:pl-10 md:border-l md:ml-3.5 pb-6 last:border-0 last:pb-0 border-border">
-        {children}
+    <div className="p-3 rounded-lg border bg-muted/20 space-y-1">
+      <div className="flex items-center justify-between">
+        <code className="text-sm font-bold">{name}</code>
+        {required && (
+          <Badge variant="destructive" className="text-[10px] h-4 px-1">
+            Required
+          </Badge>
+        )}
       </div>
+      <div className="text-xs font-mono text-blue-500">{type}</div>
+      <div className="text-xs text-muted-foreground">{desc}</div>
     </div>
   );
 }
 
-function CodeBlock({ code, singleLine = false }) {
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    toast.success("Copied!");
-  };
-
-  return (
-    <div className="relative rounded-md bg-zinc-950 p-4 font-mono text-sm text-zinc-50 dark:bg-zinc-900 overflow-x-auto border border-zinc-800 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-      <div className="absolute right-2 top-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
-          onClick={handleCopy}
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
-      </div>
-      <pre
-        className={
-          singleLine ? "whitespace-nowrap pr-10" : "whitespace-pre-wrap pr-10"
-        }
-      >
-        {code}
-      </pre>
-    </div>
-  );
-}
-
+// --- The Component Source Code ---
 const componentSource = `"use client";
 
 import React from "react";

@@ -160,10 +160,10 @@ export default function GithubContributions() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-0 pb-0 mx-auto">
+        <CardContent className="px-0 pb-0">
           {isLoading ? (
             <div className="space-y-2">
-              <Skeleton className="h-36 min-w-3xl rounded-md opacity-50" />
+              <Skeleton className="h-36 min-w-2xl rounded-md opacity-50" />
               <div className="flex gap-2">
                 <Skeleton className="h-4 w-24 opacity-50" />
                 <Skeleton className="h-4 w-8 opacity-50" />

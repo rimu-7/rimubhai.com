@@ -5,7 +5,8 @@ export default async function AboutPage() {
   const user = await getCurrentUser();
 
   return (
-    <div className="w-full flex justify-centerpy-4 ">
+    <div className="">
+      <p>okbhai</p>
       <AboutSection user={user} />
     </div>
   );

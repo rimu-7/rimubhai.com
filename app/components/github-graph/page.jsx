@@ -38,6 +38,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { ChartLine } from "lucide-react";
 
 function GithubContributionsLive({ username }) {
   const { theme, systemTheme } = useTheme();
@@ -142,7 +143,7 @@ function GithubContributionsLive({ username }) {
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-2xl">
             <Skeleton className="h-32 w-full" />
             <div className="flex gap-2">
               <Skeleton className="h-4 w-20" />
@@ -151,7 +152,7 @@ function GithubContributionsLive({ username }) {
           </div>
         ) : (
           <div className="w-full overflow-x-auto pb-4">
-            <div className="min-w-[600px]">
+            <div className="min-w-150">
               <ActivityCalendar
                 data={data}
                 theme={colorTheme}
@@ -562,12 +563,12 @@ export default function GithubGraphDemoPage() {
                   className="bg-background h-9"
                 />
                 <Button type="submit" size="sm" className="h-9">
-                  <Search className="h-4 w-4 mr-2" /> Show
+                  <ChartLine className="h-4 w-4 mr-2" /> Show
                 </Button>
               </form>
             </div>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 mx-auto">
             <GithubContributionsLive username={demoUser} />
           </CardContent>
         </Card>
