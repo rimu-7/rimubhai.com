@@ -63,7 +63,7 @@ export default function GithubContributions() {
       }
 
       setData(json.contributions);
-      
+
       const totalCount = json.contributions.reduce(
         (sum, day) => sum + day.count,
         0
@@ -120,11 +120,12 @@ export default function GithubContributions() {
   if (error) {
     return (
       <Card className="border-none shadow-none bg-transparent">
-        <Alert variant="destructive" className="bg-transparent border-none px-0">
+        <Alert
+          variant="destructive"
+          className="bg-transparent border-none px-0"
+        >
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Could not load GitHub data.
-          </AlertDescription>
+          <AlertDescription>Could not load GitHub data.</AlertDescription>
         </Alert>
       </Card>
     );
@@ -159,10 +160,10 @@ export default function GithubContributions() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-0 pb-0">
+        <CardContent className="px-0 pb-0 mx-auto">
           {isLoading ? (
             <div className="space-y-2">
-              <Skeleton className="h-36 w-full rounded-md opacity-50" />
+              <Skeleton className="h-36 min-w-3xl rounded-md opacity-50" />
               <div className="flex gap-2">
                 <Skeleton className="h-4 w-24 opacity-50" />
                 <Skeleton className="h-4 w-8 opacity-50" />

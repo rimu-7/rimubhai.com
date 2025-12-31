@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowRight, Code2, Component, Sparkles } from "lucide-react";
+import { ArrowRight, Code2, Sparkles } from "lucide-react";
+import { Github } from "lucide-react";
 
 // Enhanced data structure for better card visuals
 const componentsData = [
@@ -23,10 +24,10 @@ const componentsData = [
   // Added a few placeholder items to demonstrate the 2x2 grid
   {
     id: 2,
-    name: "Animated Buttons",
-    description: "Collection of buttons with micro-interactions.",
-    href: "#",
-    icon: Component,
+    name: "Github Graph",
+    description: "Display your github contribution in your portfolio",
+    href: "components/github-graph",
+    icon: Github,
   },
   {
     id: 3,
@@ -60,28 +61,27 @@ const containerVariants = {
 // 2. Item variant for sliding in from bottom
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
-  show: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { 
-      type: "spring", 
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
       stiffness: 100,
-      damping: 15
-    } 
+      damping: 15,
+    },
   },
 };
 
 // 3. Hover variant for the cards
 const hoverVariants = {
   initial: { scale: 1, y: 0 },
-  hover: { 
-    scale: 1.02, 
+  hover: {
+    scale: 1.02,
     y: -5,
-    transition: { duration: 0.2, ease: "easeInOut" }
+    transition: { duration: 0.2, ease: "easeInOut" },
   },
-  tap: { scale: 0.98 }
+  tap: { scale: 0.98 },
 };
-
 
 export default function Components() {
   return (
@@ -137,7 +137,7 @@ export default function Components() {
                             {component.description}
                           </CardDescription>
                         </div>
-                        
+
                         {/* Arrow icon that moves on hover */}
                         <motion.div
                           className="text-muted-foreground group-hover:text-primary"
