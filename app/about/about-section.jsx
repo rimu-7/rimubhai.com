@@ -1,15 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Pencil, Trash2, Plus, Sparkles } from "lucide-react";
+import { Loader2, Pencil, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,8 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import RichTextEditor from "@/components/about/RichTextEditor";
+import Container from "../components/Container";
 
 export default function AboutSection({ user }) {
   const [data, setData] = useState(null);
@@ -117,13 +111,13 @@ export default function AboutSection({ user }) {
   if (!data && !user) return null;
 
   return (
-    <>
+    <Container>
       {/* Main Content Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-4xl justify-start"
+        className="w-full justify-start"
       >
         <Card className="border-0 bg-transparent shadow-none">
           <CardHeader className="flex flex-row items-start justify-between pt-0 px-0">
@@ -172,11 +166,15 @@ export default function AboutSection({ user }) {
             )}
           </CardHeader>
 
-          <CardContent className=" px-0">
-            {" "}
-            {/* Removed horizontal padding */}
+          <CardContent className="px-0">
             <div
-              className="prose prose-neutral dark:prose-invert max-w-none leading-relaxed"
+              className="
+                prose prose-neutral dark:prose-invert max-w-none leading-relaxed
+                prose-headings:font-bold prose-headings:text-foreground
+                prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl
+                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                prose-img:rounded-xl prose-img:shadow-lg
+              "
               dangerouslySetInnerHTML={{ __html: data.content }}
             />
           </CardContent>
@@ -256,6 +254,6 @@ export default function AboutSection({ user }) {
           )}
         </DialogContent>
       </Dialog>
-    </>
+    </Container>
   );
 }

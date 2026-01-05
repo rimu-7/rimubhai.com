@@ -6,8 +6,10 @@ export default async function AboutPage() {
 
   return (
     <div className="">
-      <p>okbhai</p>
+
       <AboutSection user={user} />
     </div>
   );
 }
+
+

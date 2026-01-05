@@ -3,6 +3,7 @@ import Dashboard from "@/components/Dashboard";
 import { getCurrentUser } from "@/lib/auth";
 import AboutForm from "../about/admin-about";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BlogManager from "../blogs/BlogManager";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,6 @@ export default async function Home() {
     return (
       <main className="min-h-screen p-8 max-w-4xl mx-auto">
         <Dashboard user={user} />
-        <AboutForm />
 
         <Tabs defaultValue="first" className="w-full">
           <TabsList
@@ -34,11 +34,11 @@ export default async function Home() {
         "
             aria-label="Main tabs"
           >
-            <TabsTrigger value="first" className="whitespace-nowrap">
-              First
+            <TabsTrigger value="about" className="whitespace-nowrap">
+              About
             </TabsTrigger>
-            <TabsTrigger value="second" className="whitespace-nowrap">
-              Second
+            <TabsTrigger value="blog" className="whitespace-nowrap">
+              Blog
             </TabsTrigger>
             <TabsTrigger value="third" className="whitespace-nowrap">
               Third
@@ -46,22 +46,12 @@ export default async function Home() {
           </TabsList>
 
           <div className="mt-4 w-full">
-            <TabsContent value="first" className="p-4">
-              <div className="text-sm sm:text-base">
-                Content for the first tab.
-              </div>
+            <TabsContent value="about" className="p-4">
+              <AboutForm />
             </TabsContent>
 
-            <TabsContent value="second" className="p-4">
-              <div className="text-sm sm:text-base">
-                Content for the second tab.
-              </div>
-            </TabsContent>
-
-            <TabsContent value="third" className="p-4">
-              <div className="text-sm sm:text-base">
-                Content for the third tab.
-              </div>
+            <TabsContent value="blog" className="p-4">
+              <BlogManager />
             </TabsContent>
           </div>
         </Tabs>

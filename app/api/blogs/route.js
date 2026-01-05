@@ -1,15 +1,14 @@
 import { getCurrentUser } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
-import { About } from "@/lib/schema";
+import { Blog } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
     await connectDB();
 
-
     const body = await req.json();
-    const { name, content, onGoing } = body;
+    const { name, content, featured } = body;
 
     // 2. Validate Input
     if (!name || !content) {
@@ -37,11 +36,11 @@ export async function POST(req) {
     }
 
     // 4. Create Item
-    const newItem = await About.create({
+    const newItem = await Blog.create({
       userId,
       name,
       content,
-      onGoing: onGoing || false,
+      featured: featured || false,
     });
 
     return NextResponse.json({ data: newItem }, { status: 201 });
@@ -58,8 +57,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    // Fetch items and sort by 'createdAt' in descending order (newest first)
-    const items = await About.find({}).sort({ createdAt: -1 });
+    const items = await Blog.find({}).sort({ createdAt: -1 });
 
     return NextResponse.json({ data: items }, { status: 200 });
   } catch (error) {

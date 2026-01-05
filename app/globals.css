@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@source "../node_modules/@shadcn/ui/dist/**/*.js"; /* (If using Shadcn) */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -184,3 +187,25 @@
 }
 
 
+@keyframes border {
+  0% {
+    clip-path: polygon(0% 0%, 0% 0%, 0% 0%, 0% 0%);
+  }
+  25% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%);
+  }
+  50% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  75% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  100% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+}
+
+.animate-border {
+  border-color: hsl(var(--primary));
+  animation: border 1.2s ease-in-out forwards;
+}
