@@ -4,6 +4,7 @@ import connectDB from "@/lib/mongodb";
 import User from "@/lib/schema";
 import { signToken } from "@/lib/jwt";
 
+
 function jsonError(message, status = 400) {
   return NextResponse.json({ message }, { status });
 }
