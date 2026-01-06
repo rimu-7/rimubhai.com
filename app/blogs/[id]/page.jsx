@@ -1,10 +1,11 @@
 import connectDB from "@/lib/mongodb";
-import { Blog, User } from "@/lib/schema"; // Import User to populate author if needed
+import { Blog } from "@/lib/schema";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, User as UserIcon } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import Link from "next/link";
 
+// 1. Helper function to fetch data (reused by Metadata and Page)
 async function getBlogPost(id) {
   try {
     await connectDB();
@@ -16,6 +17,30 @@ async function getBlogPost(id) {
   }
 }
 
+// 2. DYNAMIC METADATA GENERATION
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const post = await getBlogPost(id);
+
+  if (!post) {
+    return {
+      title: "Blog Not Found | rimubhai",
+    };
+  }
+
+  return {
+    title: `${post.name} | rimubhai`,
+    description: post.content.replace(/<[^>]*>?/gm, "").substring(0, 160) + "...", // Strip HTML and limit length
+    openGraph: {
+      title: post.name,
+      description: post.content.replace(/<[^>]*>?/gm, "").substring(0, 160),
+      type: "article",
+      publishedTime: post.createdAt,
+    },
+  };
+}
+
+// 3. Main Page Component
 export default async function BlogPostPage({ params }) {
   const { id } = await params;
   const post = await getBlogPost(id);
@@ -46,11 +71,6 @@ export default async function BlogPostPage({ params }) {
               day: "numeric",
             })}
           </span>
-          {/* If you populated user */}
-          {/* <span className="flex items-center">
-            <UserIcon className="w-4 h-4 mr-1" />
-            {post.userId?.name || "Admin"}
-          </span> */}
         </div>
 
         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl leading-tight">
@@ -59,9 +79,6 @@ export default async function BlogPostPage({ params }) {
       </header>
 
       {/* Content Body */}
-      {/* IMPORTANT: 'prose' comes from @tailwindcss/typography plugin.
-         It makes the raw HTML look beautiful automatically.
-      */}
       <div
         className="
           prose prose-neutral dark:prose-invert max-w-none 
@@ -69,6 +86,7 @@ export default async function BlogPostPage({ params }) {
           prose-headings:font-bold prose-headings:text-foreground
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline
           prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto
+          prose-pre:bg-muted prose-pre:text-foreground
         "
         dangerouslySetInnerHTML={{ __html: post.content }}
       />

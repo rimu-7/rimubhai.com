@@ -8,8 +8,8 @@ export default function Home() {
     <main className="relative space-y-3 max-w-4xl mx-auto flex flex-col px-4 sm:px-6">
       <Hero />
       <AboutPage />
-      <FeaturedBlogs/>
       <GithubHeatmap />
+      <FeaturedBlogs/>
     </main>
   );
 }

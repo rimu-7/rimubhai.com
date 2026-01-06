@@ -53,10 +53,10 @@ export default function Navbar() {
   return (
     <nav
       className={`sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur transition-all duration-300 ${
-        isScrolled ? "py-2 shadow-sm" : "py-4"
+        isScrolled ? "py-2 shadow-sm" : "py-2"
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* LEFT SIDE: LOGO */}
         <Link href="/" className="p-2 ">
           <div className="relative h-full w-full overflow-hidden">
