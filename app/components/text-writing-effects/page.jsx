@@ -84,10 +84,10 @@ export default function TextWritingEffectDemo() {
 
   // --- Installation Commands ---
   const commands = {
-    npm: "npm install framer-motion clsx tailwind-merge",
-    pnpm: "pnpm add framer-motion clsx tailwind-merge",
-    yarn: "yarn add framer-motion clsx tailwind-merge",
-    bun: "bun add framer-motion clsx tailwind-merge",
+    npm: "npx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/text-writing-effect.json",
+    pnpm: "pnpm dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/text-writing-effect.json",
+    yarn: "yarn dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/text-writing-effect.json",
+    bun: "bunx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/text-writing-effect.json",
   };
 
   const handleCopyCommand = (command, key) => {

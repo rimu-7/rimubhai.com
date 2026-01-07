@@ -47,11 +47,13 @@ export default function FeaturedBlogs() {
             Curated articles just for you.
           </p>
         </div>
-        <Button variant="ghost" asChild>
-          <Link href="/blogs">
-            View All <ArrowRight className="ml-2 w-4 h-4" />
+        <div className="relative flex gap-2 group">
+          <Link href="/blogs" className="relative flex gap-2 items-center">
+            View All <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
           </Link>
-        </Button>
+        </div>
+        
       </div>
 
       {/* 2x2 Grid Layout */}

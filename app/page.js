@@ -2,14 +2,18 @@ import Hero from "@/components/hero/Hero";
 import AboutPage from "./about/about-page";
 import GithubHeatmap from "@/components/GithubHeatmap";
 import FeaturedBlogs from "./blogs/FeaturedBlogs";
+import ProjectsPage from "@/components/admin/projects/projects-page";
 
 export default function Home() {
   return (
     <main className="relative space-y-3 max-w-4xl mx-auto flex flex-col px-4 sm:px-6">
       <Hero />
       <AboutPage />
-      <GithubHeatmap />
+      <ProjectsPage/>
+      <GithubHeatmap username="rimu-7"/>
       <FeaturedBlogs/>
     </main>
   );
 }
+
+

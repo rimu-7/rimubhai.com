@@ -16,15 +16,12 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Image from "next/image";
+import { SearchDialog } from "./SearchDialog";
 
 const pressFont = Press_Start_2P({
   subsets: ["latin"],
@@ -90,7 +87,7 @@ export default function Navbar() {
 
           {/* Action Group */}
           <div className="flex items-center gap-1 sm:gap-2 border-l pl-2 sm:pl-4">
-            <Dialog>
+            {/* <Dialog>
               <DialogTrigger asChild>
                 <Button
                   variant="ghost"
@@ -117,11 +114,12 @@ export default function Navbar() {
                   />
                 </div>
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
+            {/* <SearchDialog/> */}
 
             <ModeToggle />
 
-            {/* MOBILE MENU DIALOG */}
+            
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -129,7 +127,7 @@ export default function Navbar() {
                   size="icon"
                   className="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-5 w-5" suppressHydrationWarning/>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-86 gap-0 p-0 overflow-hidden rounded-xl">

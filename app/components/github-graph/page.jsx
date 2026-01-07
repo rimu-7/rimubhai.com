@@ -39,6 +39,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import Container from "@/components/Container";
 
 // --- LIVE COMPONENT FOR DEMO ---
 function GithubContributionsLive({ username }) {
@@ -183,12 +184,13 @@ export default function GithubGraphDemoPage() {
   const [isTs, setIsTs] = useState(false);
   const [copyKey, setCopyKey] = useState(null);
 
-  const commands = {
-    npm: "npm install react-activity-calendar next-themes date-fns lucide-react ",
-    pnpm: "pnpm add react-activity-calendar next-themes date-fns lucide-react",
-    yarn: "yarn add react-activity-calendar next-themes date-fns lucide-react",
-    bun: "bun add react-activity-calendar next-themes date-fns lucide-react",
-  };
+const commands = {
+  npm: "npx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+  pnpm: "pnpm dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+  yarn: "yarn dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+  bun: "bunx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+};
+
 
   const handleCopyCode = (text) => {
     navigator.clipboard.writeText(text);
@@ -211,8 +213,8 @@ export default function GithubGraphDemoPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background p-6 md:p-12 flex justify-center">
-      <div className="w-full max-w-3xl space-y-8">
+    <Container>
+      <div className="w-full max-w-3xl space-y-8 py-10">
         {/* Page Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -506,7 +508,7 @@ export default function GithubGraphDemoPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </Container>
   );
 }
 

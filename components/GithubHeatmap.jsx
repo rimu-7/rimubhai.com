@@ -24,8 +24,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Container from "./Container";
 
-export default function GithubContributions() {
+export default function GithubContributions({username}) {
   const { theme, systemTheme } = useTheme();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +34,6 @@ export default function GithubContributions() {
   const [total, setTotal] = useState(0);
 
   // CHANGED: Use NEXT_PUBLIC_ prefix to access env vars on the client
-  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME || "rimu-7";
 
   const fetchData = useCallback(async () => {
     // If no username is set, stop early
@@ -119,7 +119,7 @@ export default function GithubContributions() {
 
   if (error) {
     return (
-      <Card className="border-none shadow-none bg-transparent">
+      <Container >
         <Alert
           variant="destructive"
           className="bg-transparent border-none px-0"
@@ -127,7 +127,7 @@ export default function GithubContributions() {
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>Could not load GitHub data.</AlertDescription>
         </Alert>
-      </Card>
+      </Container>
     );
   }
 

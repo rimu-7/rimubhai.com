@@ -1,7 +1,7 @@
 import connectDB from "@/lib/mongodb";
 import { Blog } from "@/lib/schema";
 import { BlogCard } from "./BlogCard";
-import Container from "../components/Container";
+import Container from "../../components/Container";
 
 // Server Component Fetching (Better for SEO)
 async function getBlogs() {

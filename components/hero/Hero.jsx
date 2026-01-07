@@ -198,7 +198,7 @@ export default function Hero() {
                 {/* Ring 1 (Outer) */}
                 <motion.div
                   aria-hidden
-                  className="absolute inset-0 -m-6 rounded-full border border-dashed border-foreground/20 z-0"
+                  className="absolute inset-0 -m-8 rounded-full border-2 border-dashed border-foreground/20 z-0"
                   animate={prefersReducedMotion ? {} : { rotate: 360 }}
                   transition={{
                     repeat: Infinity,
@@ -210,7 +210,7 @@ export default function Hero() {
                 {/* Ring 2 (Inner) */}
                 <motion.div
                   aria-hidden
-                  className="absolute inset-0 -m-3 rounded-full border border-dashed border-destructive/50 z-0"
+                  className="absolute inset-0 -m-6 rounded-full border-2 border-dashed border-destructive/50 z-0"
                   animate={prefersReducedMotion ? {} : { rotate: -360 }}
                   transition={{
                     repeat: Infinity,
@@ -230,16 +230,18 @@ export default function Hero() {
                     prefersReducedMotion ? undefined : { scale: 1, opacity: 1 }
                   }
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="relative h-48 w-48 sm:h-56 sm:w-56 rounded-full overflow-hidden border-4 border-background shadow-xl z-10"
+                  className="relative h-48 w-48 sm:h-60 sm:w-56 flex justify-center items-center rounded-full overflow-hidden z-10"
                 >
-                  <Image
-                    src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
-                    alt="Profile"
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 192px, 224px"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+                  <div className="relative h-56 w-56 rounded-full overflow-hidden">
+                    <Image
+                      src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
+                      alt="Profile picture"
+                      fill
+                      priority
+                      sizes="(max-width: 640px) 192px, 224px"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
                 </motion.div>
               </div>
 
@@ -319,6 +321,7 @@ export default function Hero() {
                   onClick={() => handleCopy(CONTACT.email, "Email")}
                   isCopied={copiedText === "Email"}
                 />
+
                 <ContactRow
                   icon={Phone}
                   label="Phone"
@@ -391,8 +394,9 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
         <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </div>
-        <div className="text-sm font-medium text-foreground truncate group-hover:underline underline-offset-4">
+        <div className=" relative text-sm font-medium w-fit text-foreground truncate underline-offset-4">
           {value}
+          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
         </div>
       </div>
 
@@ -403,7 +407,7 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
             Copied
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground opacity-70 group-hover:opacity-100 transition-opacity">
+          <span className="inline-flex items-center gap-1 text-xs opacity-70 group-hover:opacity-100  transition-opacity">
             <Copy className="h-4 w-4" />
             Copy
           </span>
@@ -419,14 +423,15 @@ function SocialLink({ icon: Icon, href, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center gap-3 text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+      className="relative w-fit group inline-flex items-center gap-3 text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
       aria-label={label}
       title={label}
     >
       <span className="inline-flex items-center justify-center">
         <Icon className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
       </span>
-      <span className="group-hover:underline underline-offset-4">{label}</span>
+      <span className="">{label}</span>
+      <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
     </a>
   );
 }

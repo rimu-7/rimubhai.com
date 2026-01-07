@@ -1,10 +1,6 @@
 "use client";
 import Link from "next/link";
-import {
-  Card,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -47,8 +43,10 @@ export function BlogCard({ post }) {
         </CardHeader>
 
         <CardFooter className="pt-0 pb-6">
-          <div className="text-sm font-medium text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-            Read Article <ArrowRight className="w-4 h-4" />
+          <div className="text-sm font-medium text-primary relative flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
+            Read Article
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
           </div>
         </CardFooter>
       </Card>

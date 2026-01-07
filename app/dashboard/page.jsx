@@ -1,9 +1,11 @@
 import AuthForm from "@/components/auth/AuthForm";
-import Dashboard from "@/components/Dashboard";
+import Dashboard from "@/components/admin/Dashboard";
 import { getCurrentUser } from "@/lib/auth";
 import AboutForm from "../about/admin-about";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BlogManager from "../blogs/BlogManager";
+import AdminProjectsPage from "../admin/projects/page";
+import AboutPage from "../about/about-page";
 
 export const dynamic = "force-dynamic";
 
@@ -40,18 +42,22 @@ export default async function Home() {
             <TabsTrigger value="blog" className="whitespace-nowrap">
               Blog
             </TabsTrigger>
-            <TabsTrigger value="third" className="whitespace-nowrap">
-              Third
+            <TabsTrigger value="project" className="whitespace-nowrap">
+              Project
             </TabsTrigger>
           </TabsList>
 
           <div className="mt-4 w-full">
             <TabsContent value="about" className="p-4">
-              <AboutForm />
+              {/* <AboutForm /> */}
+              <AboutPage/>
             </TabsContent>
 
             <TabsContent value="blog" className="p-4">
               <BlogManager />
+            </TabsContent>
+            <TabsContent value="project" className="p-4">
+              <AdminProjectsPage />
             </TabsContent>
           </div>
         </Tabs>

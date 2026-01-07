@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Container from "../Container";
 
 export default function Dashboard({ user }) {
   const router = useRouter();
@@ -15,8 +16,8 @@ export default function Dashboard({ user }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center justify-between border-b pb-4">
+    <Container >
+      <div className="flex items-center justify-between border-b space-y-20">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
@@ -37,6 +38,6 @@ export default function Dashboard({ user }) {
       <div className="grid gap-4 md:grid-cols-2">
         component will be show here
       </div>
-    </div>
+    </Container>
   );
 }
