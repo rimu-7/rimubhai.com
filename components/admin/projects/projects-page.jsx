@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import ProjectList from "./project-lists";
+import ProjectList from "../../projects/project-lists";
 import Container from "@/components/Container";
 
 export const metadata = {

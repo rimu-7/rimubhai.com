@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BlogManager from "../blogs/BlogManager";
 import AdminProjectsPage from "../admin/projects/page";
 import AboutPage from "../about/about-page";
+import ExperienceManager from "@/components/admin/ExperienceManager";
+import LifeEventManager from "@/components/admin/LifeeventsManager";
 
 export const dynamic = "force-dynamic";
 
@@ -45,12 +47,18 @@ export default async function Home() {
             <TabsTrigger value="project" className="whitespace-nowrap">
               Project
             </TabsTrigger>
+            <TabsTrigger value="experience" className="whitespace-nowrap">
+              experience
+            </TabsTrigger>
+            <TabsTrigger value="life-events" className="whitespace-nowrap">
+              life-events
+            </TabsTrigger>
           </TabsList>
 
           <div className="mt-4 w-full">
             <TabsContent value="about" className="p-4">
               {/* <AboutForm /> */}
-              <AboutPage/>
+              <AboutPage />
             </TabsContent>
 
             <TabsContent value="blog" className="p-4">
@@ -58,6 +66,12 @@ export default async function Home() {
             </TabsContent>
             <TabsContent value="project" className="p-4">
               <AdminProjectsPage />
+            </TabsContent>
+            <TabsContent value="experience" className="p-4">
+              <ExperienceManager />
+            </TabsContent>
+            <TabsContent value="life-events" className="p-4">
+              <LifeEventManager />
             </TabsContent>
           </div>
         </Tabs>

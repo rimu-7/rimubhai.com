@@ -163,21 +163,7 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
-                  <div className="h-px bg-border my-2 mx-2" />
-                  <Link
-                    href="/profile"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                  >
-                    <User className="h-4 w-4" />
-                    Profile
-                  </Link>
-                  <Link
-                    href="/settings"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </Link>
+                  
                 </div>
               </DialogContent>
             </Dialog>

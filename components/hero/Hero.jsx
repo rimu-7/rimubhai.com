@@ -171,6 +171,10 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [words.length]);
 
+  const linkedin = process.env.LINKEDIN;
+  const twitter = process.env.X;
+  const GITHUB = process.env.GITHUB;
+
   return (
     <section className="relative py-10">
       <div className="mx-auto w-full max-w-6xl">
@@ -351,21 +355,9 @@ export default function Hero() {
               </h4>
 
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <SocialLink
-                  icon={Twitter}
-                  label="X / Twitter"
-                  href="https://x.com/"
-                />
-                <SocialLink
-                  icon={Github}
-                  label="GitHub"
-                  href="https://github.com/"
-                />
-                <SocialLink
-                  icon={Linkedin}
-                  label="LinkedIn"
-                  href="https://linkedin.com/"
-                />
+                <SocialLink icon={Twitter} label="X / Twitter" href={twitter} />
+                <SocialLink icon={Github} label="GitHub" href={GITHUB} />
+                <SocialLink icon={Linkedin} label="LinkedIn" href={linkedin} />
               </div>
 
               <p className="mt-5 text-xs text-muted-foreground leading-relaxed">
@@ -423,7 +415,7 @@ function SocialLink({ icon: Icon, href, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative w-fit group inline-flex items-center gap-3 text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+      className="relative cursor-pointer w-fit group inline-flex items-center gap-3 text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
       aria-label={label}
       title={label}
     >

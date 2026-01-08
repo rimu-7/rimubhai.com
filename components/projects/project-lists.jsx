@@ -7,7 +7,6 @@ import {
   Trash2,
   Pencil,
   Calendar,
-  Star,
   Layers,
   ChevronDown,
   ChevronsUpDown,
@@ -25,7 +24,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {
@@ -129,7 +127,7 @@ export default function ProjectList({ user }) {
         </motion.section>
       )}
 
-      {/* --- SECTION 2: OTHER PROJECTS (TOGGLE) --- */}
+      {/* --- SECTION 2: OTHER PROJECTS  --- */}
       {otherProjects.length > 0 && (
         <section className="space-y-6">
           {/* Divider with Centered Button */}
@@ -143,7 +141,7 @@ export default function ProjectList({ user }) {
               >
                 {showAll ? (
                   <>
-                    Hide Archive <ChevronsDownUp className="ml-2 h-3 w-3" />
+                    Archive projects <ChevronsDownUp className="ml-2 h-3 w-3" />
                   </>
                 ) : (
                   <>
@@ -161,7 +159,7 @@ export default function ProjectList({ user }) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }} // Smooth spring-like ease
+                transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                 className="overflow-hidden"
               >
                 <div className="pt-2 pb-8">
@@ -181,36 +179,39 @@ export default function ProjectList({ user }) {
   );
 }
 
-// --- SUB-COMPONENT: The Accordion Group ---
+// --- The Accordion Group ---
 function ProjectGroup({ items, user, handleEdit, handleDelete }) {
   return (
     <Accordion
       type="single"
       collapsible
-      className="w-full border hover:border-foreground rounded-md duration-200 space-y-3"
+      className="w-full  rounded-md duration-200 space-y-3"
     >
       {items.map((project) => (
         <motion.div key={project._id} variants={itemVariants}>
           <AccordionItem
             value={project._id}
-            className="group transition-all duration-300 overflow-hidden"
+            className="group px-2 md:px-0 transition-all duration-300 overflow-hidden"
           >
             {/* Header / Trigger */}
-            <AccordionTrigger className="px-4 py-3 hover:no-underline [&>svg]:hidden">
+            <AccordionTrigger className="py-3 hover:no-underline [&>svg]:hidden">
               <div className="flex items-center justify-between w-full gap-4">
                 {/* --- LEFT: Title & Date --- */}
                 <div className="flex flex-col justify-start gap-3">
                   <h3 className="relative font-semibold w-fit text-base md:text-lg leading-none tracking-tight truncate group-hover:text-primary transition-colors">
-                    {project.title}
+                    {project.title.length > 30
+                      ? project.title.slice(0, 30) + "..."
+                      : project.title}
                     <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
                   </h3>
-                  <div className="hidden sm:flex gap-2 items-center text-xs text-muted-foreground font-medium shrink-0 py-0.5 rounded-md group-hover:border-border/50 transition-colors">
+
+                  {/* <div className="hidden sm:flex gap-2 items-center text-xs text-muted-foreground font-medium shrink-0 py-0.5 rounded-md group-hover:border-border/50 transition-colors">
                     <Calendar className="w-3 h-3 opacity-70" />
                     {new Date(project.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "short",
                     })}
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* --- RIGHT: Actions & Chevron --- */}
@@ -317,8 +318,8 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                 </div>
 
                 {/* Main Grid: Image + Content */}
-                <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 animate-in slide-in-from-top-2 duration-300 items-start">
-                  {/* --- PROJECT IMAGE (Fixed) --- */}
+                <div className="grid grid-cols-1 px-2 md:grid-cols-[240px_1fr] gap-6 animate-in slide-in-from-top-2 duration-300 items-start">
+                  {/* --- PROJECT IMAGE --- */}
                   <div className="w-full rounded-md overflow-hidden border bg-muted shadow-sm group-hover:shadow transition-all self-start">
                     {project.imageUrl ? (
                       <Image
@@ -340,6 +341,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                   {/* Details */}
                   <div className="flex flex-col justify-between space-y-4">
                     <div>
+                      <h3 className="pb-2 text-lg">{project.title}</h3>
                       <h4 className="text-[10px] uppercase font-bold text-muted-foreground mb-2 tracking-wider">
                         About Project
                       </h4>

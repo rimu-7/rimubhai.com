@@ -73,15 +73,6 @@ const itemVariants = {
 };
 
 // 3. Hover variant for the cards
-const hoverVariants = {
-  initial: { scale: 1, y: 0 },
-  hover: {
-    scale: 1.02,
-    y: -5,
-    transition: { duration: 0.2, ease: "easeInOut" },
-  },
-  tap: { scale: 0.98 },
-};
 
 export default function Components() {
   return (
@@ -113,13 +104,7 @@ export default function Components() {
             <motion.div key={component.id} variants={itemVariants}>
               <Link href={component.href} passHref>
                 {/* Wrapping Card in motion div for hover effects */}
-                <motion.div
-                  variants={hoverVariants}
-                  initial="initial"
-                  whileHover="hover"
-                  whileTap="tap"
-                  className="h-full"
-                >
+                <motion.div initial="initial" whileTap="tap" className="h-full">
                   <Card className="h-full relative overflow-hidden group border-muted-foreground/10 hover:border-primary/30 transition-colors bg-card/50 backdrop-blur-lg cursor-pointer shadow-sm hover:shadow-md">
                     {/* Subtle background gradient blob on hover */}
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out" />
