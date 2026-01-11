@@ -1,15 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Loader2, Pencil, Trash2, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Pencil, Trash2, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -19,8 +20,11 @@ import Container from "../../components/Container";
 export default function AboutSection({ user }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  
+  // Dialog State
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", content: "", onGoing: false });
+  const [isCreating, setIsCreating] = useState(false); // Distinguish between Create and Edit
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -43,6 +47,21 @@ export default function AboutSection({ user }) {
     }
   };
 
+  // Open Dialog for Create
+  const openCreateDialog = () => {
+    setFormData({ name: "", content: "", onGoing: false });
+    setIsCreating(true);
+    setIsDialogOpen(true);
+  };
+
+  // Open Dialog for Edit
+  const openEditDialog = () => {
+    if (!data) return;
+    setFormData({ name: data.name, content: data.content, onGoing: data.onGoing });
+    setIsCreating(false);
+    setIsDialogOpen(true);
+  };
+
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this section?")) return;
     if (!data) return;
@@ -56,204 +75,226 @@ export default function AboutSection({ user }) {
     }
   };
 
-  const handleUpdate = async (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    if (!editingItem) return;
     setSaving(true);
 
     try {
-      const res = await fetch(`/api/about/${editingItem._id}`, {
-        method: "PUT",
+      const url = isCreating ? "/api/about" : `/api/about/${data._id}`;
+      const method = isCreating ? "POST" : "PUT";
+
+      const res = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: editingItem.name,
-          content: editingItem.content,
-          onGoing: editingItem.onGoing,
-        }),
+        body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to update");
+      if (!res.ok) throw new Error("Failed to save");
 
-      setData(editingItem);
-      setIsEditOpen(false);
+      const savedItem = await res.json();
+      
+      // If your API returns the object directly or wrapped in { data: ... }
+      // adjust accordingly. Assuming standard response here:
+      setData(savedItem.data || savedItem); 
+      
+      setIsDialogOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Update failed");
+      alert("Save failed");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleCreate = async () => {
-    // Implement create logic here
-    alert("Implement your Create POST logic here!");
-  };
+// Add this import at the top
+
+// ... existing code ...
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 w-full">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
+      <Container>
+        <div className="w-full mx-auto py-8">
+          {/* Header Skeleton */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-border/40">
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-48 md:w-64 rounded-lg" />
+            </div>
+            {/* Optional: Mimic the admin buttons if you want, but usually not needed for public loading */}
+          </div>
+
+          {/* Body Content Skeleton - Mimicking natural text flow */}
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-[92%]" />
+            <Skeleton className="h-4 w-[98%]" />
+            <Skeleton className="h-4 w-[85%]" />
+            
+            <div className="h-4" /> {/* Spacer */}
+            
+            <Skeleton className="h-4 w-[95%]" />
+            <Skeleton className="h-4 w-[90%]" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        </div>
+      </Container>
     );
   }
 
-  if (!data && user) {
+// ... rest of the code ...
+
+  // --- Empty State ---
+  if (!data) {
+    if (!user) return null; 
     return (
-      <div className="text-center space-y-4 py-8">
-        <p className="text-muted-foreground">No 'About' section found.</p>
-        <Button onClick={handleCreate}>
-          <Plus className="w-4 h-4 mr-2" /> Create About Section
-        </Button>
-      </div>
+      <Container>
+        <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-muted rounded-xl bg-muted/5">
+          <Sparkles className="w-10 h-10 text-muted-foreground mb-4 opacity-50" />
+          <h3 className="text-lg font-semibold text-muted-foreground">About Section is Empty</h3>
+          <p className="text-sm text-muted-foreground/60 mb-6">Start by introducing yourself.</p>
+          <Button onClick={openCreateDialog}>
+            <Plus className="w-4 h-4 mr-2" /> Create Introduction
+          </Button>
+        </div>
+        {renderDialog()}
+      </Container>
     );
   }
 
-  if (!data && !user) return null;
-
+  // --- Main Display ---
   return (
     <Container>
-      {/* Main Content Card */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full justify-start"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="relative group w-full mx-auto py-8"
       >
-        <Card className="border-0 bg-transparent shadow-none">
-          <CardHeader className="flex flex-row items-start justify-between pt-0 px-0">
-            <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <CardTitle className="text-3xl font-bold tracking-tight">
-                  {data.name}
-                </CardTitle>
-                {/* {data.onGoing && (
-                  <Badge
-                    variant="outline"
-                    className="text-green-600 border-green-500/30 bg-green-500/10 px-3 py-1"
-                  >
-                    <Sparkles className="w-3 h-3 mr-1" /> Ongoing
-                  </Badge>
-                )} */}
-              </div>
-              {/* <CardDescription className="text-sm text-muted-foreground">
-                Last updated: {new Date(data.updatedAt).toLocaleDateString()}
-              </CardDescription> */}
+        {/* Header Area */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
+          <div className="space-y-1">
+            <motion.h2 
+              className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground"
+            >
+              {data.name}
+            </motion.h2>
+            {/* Optional status indicator if needed */}
+            {/* {data.onGoing && (
+              <span className="text-xs font-medium text-emerald-500 uppercase tracking-widest">
+                Currently Active
+              </span>
+            )} */}
+          </div>
+
+          {/* Admin Controls - Visible on hover/focus if user exists */}
+          {user && (
+            <div className="flex items-center gap-2 md:mt-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openEditDialog}
+                className="h-8 text-xs font-medium hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDelete}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
             </div>
+          )}
+        </div>
 
-            {/* Admin Actions */}
-            {user && (
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setEditingItem(data);
-                    setIsEditOpen(true);
-                  }}
-                  className="hover:bg-primary/10 hover:text-primary transition-colors"
-                >
-                  <Pencil className="w-4 h-4 mr-2" /> Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDelete}
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
-          </CardHeader>
-
-          <CardContent className="px-0">
-            <div
-              className="
-                prose prose-neutral dark:prose-invert max-w-none leading-relaxed
-                prose-headings:font-bold prose-headings:text-foreground
-                prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl
-                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                prose-img:rounded-xl prose-img:shadow-lg
-              "
-              dangerouslySetInnerHTML={{ __html: data.content }}
-            />
-          </CardContent>
-        </Card>
+        {/* Content Area */}
+        <div className="relative">
+          <div
+            className="
+              prose prose-lg prose-neutral dark:prose-invert max-w-none
+              prose-headings:font-bold prose-headings:text-foreground/90
+              prose-p:leading-8 prose-p:text-muted-foreground prose-p:font-light
+              prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+              prose-img:rounded-xl prose-img:shadow-md prose-img:border prose-img:border-border/50
+              prose-li:text-muted-foreground
+            "
+            dangerouslySetInnerHTML={{ __html: data.content }}
+          />
+        </div>
       </motion.div>
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit About Section</DialogTitle>
-          </DialogHeader>
-
-          {editingItem && (
-            <form onSubmit={handleUpdate} className="space-y-6 pt-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Project Name</Label>
-                  <Input
-                    value={editingItem.name}
-                    onChange={(e) =>
-                      setEditingItem({ ...editingItem, name: e.target.value })
-                    }
-                    placeholder="e.g. My Biography"
-                  />
-                </div>
-
-                <div className="flex flex-col justify-end pb-2">
-                  <div className="flex items-center justify-between border p-3 rounded-lg bg-secondary/20">
-                    <Label className="cursor-pointer" htmlFor="ongoing-switch">
-                      Status: {editingItem.onGoing ? "Ongoing" : "Completed"}
-                    </Label>
-                    <Switch
-                      id="ongoing-switch"
-                      checked={editingItem.onGoing}
-                      onCheckedChange={(checked) =>
-                        setEditingItem({ ...editingItem, onGoing: checked })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Content</Label>
-                <div className="border rounded-md overflow-hidden">
-                  <RichTextEditor
-                    content={editingItem.content}
-                    onChange={(html) =>
-                      setEditingItem({ ...editingItem, content: html })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setIsEditOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  className="min-w-[120px]"
-                >
-                  {saving ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
-              </div>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
+      {renderDialog()}
     </Container>
   );
+
+  // --- Helper to render the Dialog (avoiding code duplication) ---
+  function renderDialog() {
+    return (
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {isCreating ? "Create Introduction" : "Edit Introduction"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSave} className="space-y-6 pt-4">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Section Title</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. About Me"
+                  className="bg-muted/30"
+                />
+              </div>
+
+              <div className="flex flex-col justify-end pb-1">
+                <div className="flex items-center justify-between border p-3 rounded-lg bg-muted/30">
+                  <Label htmlFor="ongoing-switch" className="cursor-pointer text-sm font-medium">
+                    Status: <span className="text-muted-foreground font-normal">{formData.onGoing ? "Active" : "Standard"}</span>
+                  </Label>
+                  <Switch
+                    id="ongoing-switch"
+                    checked={formData.onGoing}
+                    onCheckedChange={(checked) => setFormData({ ...formData, onGoing: checked })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Biography Content</Label>
+              <div className="border rounded-md overflow-hidden bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                <RichTextEditor
+                  content={formData.content}
+                  onChange={(html) => setFormData({ ...formData, content: html })}
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-4 border-t">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={saving} className="min-w-[120px]">
+                {saving ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  isCreating ? "Create" : "Save Changes"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 }

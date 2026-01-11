@@ -1,24 +1,22 @@
 import Container from "@/components/Container";
-import LifeEventList from "./life-event-list";
+import AwardList from "./awards-list";
 
 export const metadata = {
   title: "Life Events | Portfolio",
 };
 
-export default async function LifeEvents() {
+export default async function Awards() {
   return (
     <div className="py-10">
-      <div className="flex  flex-col gap-10">
+      <div className="flex  flex-col">
         <div className="">
           <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-            life-events
+            honors and awards
           </h1>
-          <p className="text-muted-foreground">
-            events of my life are stored here.
-          </p>
+          <p className="text-muted-foreground"></p>
         </div>
-        <LifeEventList />
       </div>
+      <AwardList />
     </div>
   );
 }

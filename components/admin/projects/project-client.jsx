@@ -122,7 +122,7 @@ export default function ProjectManagerClient() {
     );
 
   return (
-    <Container className="py-8">
+    <Container >
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Project Manager</h1>
         <Button onClick={openCreate}>

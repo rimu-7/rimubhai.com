@@ -16,12 +16,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { SearchDialog } from "./SearchDialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const pressFont = Press_Start_2P({
   subsets: ["latin"],
@@ -37,7 +32,7 @@ const menuItems = [
 ];
 
 export default function Navbar() {
-  const pathname = usePathname(); // Get current route
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -119,7 +114,6 @@ export default function Navbar() {
 
             <ModeToggle />
 
-            
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -127,7 +121,7 @@ export default function Navbar() {
                   size="icon"
                   className="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground"
                 >
-                  <Menu className="h-5 w-5" suppressHydrationWarning/>
+                  <Menu className="h-5 w-5" suppressHydrationWarning />
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-86 gap-0 p-0 overflow-hidden rounded-xl">
@@ -163,7 +157,6 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
-                  
                 </div>
               </DialogContent>
             </Dialog>

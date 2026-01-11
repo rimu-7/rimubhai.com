@@ -1,13 +1,13 @@
 import AuthForm from "@/components/auth/AuthForm";
 import Dashboard from "@/components/admin/Dashboard";
 import { getCurrentUser } from "@/lib/auth";
-import AboutForm from "../about/admin-about";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BlogManager from "../blogs/BlogManager";
 import AdminProjectsPage from "../admin/projects/page";
 import AboutPage from "../about/about-page";
 import ExperienceManager from "@/components/admin/ExperienceManager";
 import LifeEventManager from "@/components/admin/LifeeventsManager";
+import AwardManager from "@/components/admin/AwardManager";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +53,9 @@ export default async function Home() {
             <TabsTrigger value="life-events" className="whitespace-nowrap">
               life-events
             </TabsTrigger>
+            <TabsTrigger value="awards" className="whitespace-nowrap">
+              awards
+            </TabsTrigger>
           </TabsList>
 
           <div className="mt-4 w-full">
@@ -72,6 +75,9 @@ export default async function Home() {
             </TabsContent>
             <TabsContent value="life-events" className="p-4">
               <LifeEventManager />
+            </TabsContent>
+            <TabsContent value="awards" className="p-4">
+              <AwardManager />
             </TabsContent>
           </div>
         </Tabs>

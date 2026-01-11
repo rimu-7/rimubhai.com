@@ -7,17 +7,15 @@ export const metadata = {
 
 export default async function Experiences() {
   return (
-    <Container>
+    <div className="py-10">
       <div className="">
-        <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-          experiences
-        </h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">experiences</h1>
         <p className="text-muted-foreground">
           A timeline of my professional growth and technical milestones.
         </p>
       </div>
 
       <ExperienceList />
-    </Container>
+    </div>
   );
 }

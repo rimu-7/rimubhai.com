@@ -307,7 +307,7 @@ export default function Hero() {
             className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-2"
           >
             {/* Contact */}
-            <div className="md:col-span-7">
+            <div className="md:col-span-7 px-2">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold uppercase tracking-widest text-primary">
                   Contact

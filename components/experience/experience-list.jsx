@@ -6,9 +6,7 @@ import {
   Calendar,
   Pencil,
   Trash2,
-  ChevronDown,
-  ChevronsUpDown,
-  ChevronsDownUp,
+  ChevronDown, // Used for the "Show More" button icon
   Building2,
   Layers,
 } from "lucide-react";
@@ -30,17 +28,42 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.05 },
   },
 };
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { y: 10, opacity: 0 },
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: "spring", stiffness: 100 },
+    transition: { type: "spring", stiffness: 50, damping: 15 },
   },
+};
+
+// --- CUSTOM CHEVRON (Matches Project List) ---
+const CustomChevron = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+
+// --- DATE FORMATTER ---
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
 };
 
 export default function ExperienceList({ user }) {
@@ -67,14 +90,17 @@ export default function ExperienceList({ user }) {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    if (!confirm("Delete this experience?")) return;
+    if (!confirm("Are you sure you want to delete this experience?")) return;
+
+    const previous = [...experiences];
+    setExperiences((prev) => prev.filter((item) => item._id !== id));
+
     try {
       const res = await fetch(`/api/experience/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setExperiences((prev) => prev.filter((item) => item._id !== id));
-        toast.success("Experience deleted");
-      }
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Experience deleted");
     } catch (error) {
+      setExperiences(previous);
       toast.error("Delete failed");
     }
   };
@@ -86,9 +112,12 @@ export default function ExperienceList({ user }) {
 
   if (loading) {
     return (
-      <div className="space-y-4 w-full">
+      <div className="space-y-6 w-full">
         {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-20 w-full rounded-md" />
+          <div key={i} className="flex flex-col gap-2">
+            <Skeleton className="h-16 w-full rounded-none" />
+            <Skeleton className="h-px w-full" />
+          </div>
         ))}
       </div>
     );
@@ -96,159 +125,161 @@ export default function ExperienceList({ user }) {
 
   if (experiences.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground bg-muted/30 rounded-xl border border-dashed text-sm animate-in fade-in zoom-in-95">
-        <Layers className="w-8 h-8 mb-3 opacity-20" />
-        <p>No experience added yet.</p>
+      <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border-y border-dashed">
+        <Briefcase className="w-12 h-12 mb-4 opacity-10" />
+        <p className="font-medium">No experience added.</p>
       </div>
     );
   }
 
-  // --- LOGIC: Split Top 5 vs Rest ---
+  // Logic: Split Top 5 vs Rest
   const visibleItems = experiences.slice(0, 5);
   const hiddenItems = experiences.slice(5);
-  const hasHiddenItems = hiddenItems.length > 0;
 
   return (
-    <div className="w-full space-y-6 py-10">
-      {/* 1. Initial 5 Items */}
+    <div className="w-full space-y-16">
+      {/* --- MAIN LIST --- */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="space-y-3"
+        className="space-y-4"
       >
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+          <div className="h-px bg-border flex-1" />
+          <span>Work History</span>
+          <div className="h-px bg-border flex-1" />
+        </div>
+
         <ExperienceGroup
           items={visibleItems}
           user={user}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          defaultOpen={visibleItems[0]?._id}
         />
       </motion.div>
 
-      {/* 2. Hidden Items (Toggle) */}
-      {hasHiddenItems && (
-        <div className="space-y-4">
-          {/* Divider Button */}
-          <div className="relative py-2">
-            <div className="relative flex justify-center text-xs uppercase">
+      {/* --- HIDDEN ITEMS (Show More) --- */}
+      {hiddenItems.length > 0 && (
+        <div className="space-y-8">
+          {!showAll ? (
+            <div className="flex justify-center">
               <Button
                 variant="outline"
-                size="sm"
-                onClick={() => setShowAll(!showAll)}
-                className="bg-background px-6 text-muted-foreground hover:text-foreground hover:border-foreground/50 transition-all rounded-full border-dashed shadow-sm"
+                onClick={() => setShowAll(true)}
+                className="group rounded-full px-8 border-dashed border-border hover:border-foreground/30 transition-all"
               >
-                {showAll ? (
-                  <>
-                    Show Less <ChevronsDownUp className="ml-2 h-3 w-3" />
-                  </>
-                ) : (
-                  <>
-                    View {hiddenItems.length} More{" "}
-                    <ChevronsUpDown className="ml-2 h-3 w-3" />
-                  </>
-                )}
+                View Older Roles ({hiddenItems.length})
+                <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
               </Button>
             </div>
-          </div>
+          ) : (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-6">
+                <div className="h-px bg-border flex-1" />
+                <span>Previous Roles</span>
+                <div className="h-px bg-border flex-1" />
+              </div>
 
-          <AnimatePresence>
-            {showAll && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
-                className="overflow-hidden"
-              >
-                <ExperienceGroup
-                  items={hiddenItems}
-                  user={user}
-                  handleEdit={handleEdit}
-                  handleDelete={handleDelete}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+              <ExperienceGroup
+                items={hiddenItems}
+                user={user}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+              />
+
+              <div className="flex justify-center mt-8">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAll(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Show Less
+                </Button>
+              </div>
+            </motion.div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-// --- SUB-COMPONENT: The Accordion Logic ---
-function ExperienceGroup({ items, user, handleEdit, handleDelete }) {
+// --- REUSABLE EXPERIENCE GROUP ---
+function ExperienceGroup({
+  items,
+  user,
+  handleEdit,
+  handleDelete,
+  defaultOpen,
+}) {
   return (
     <Accordion
       type="single"
       collapsible
-      className="w-full duration-200 space-y-3"
+      className="w-full"
     >
-      {items.map((exp) => (
-        <motion.div key={exp._id} variants={itemVariants}>
+      {items.map((exp, index) => (
+        <motion.div key={exp._id} variants={itemVariants} layout>
           <AccordionItem
             value={exp._id}
-            className="group transition-all duration-300 overflow-hidden"
+            className="group border-b border-border/40 last:border-0 data-[state=open]:border-transparent transition-colors px-0"
           >
-            {/* Header / Trigger */}
-            <AccordionTrigger className="py-3 hover:no-underline [&>svg]:hidden">
-              <div className="flex items-center justify-between w-full gap-4">
-                {/* --- LEFT: Role & Company --- */}
-                <div className="flex flex-col justify-start gap-3">
-                  <h3 className="relative font-semibold w-fit text-base md:text-lg leading-none tracking-tight truncate group-hover:text-primary transition-colors flex items-center gap-2">
-                    {exp.role}
-                    {/* Animated Underline Effect */}
-                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
-                  </h3>
+            {/* --- TRIGGER --- */}
+            <AccordionTrigger className="hover:no-underline py-5 px-0 [&[data-state=open]_.custom-chevron]:rotate-180">
+              <div className="flex items-center justify-between w-full gap-4 md:gap-6 pr-2">
+                {/* Left: Index & Role Info */}
+                <div className="flex items-start md:items-center gap-4 text-left min-w-0 flex-1">
+                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 overflow-hidden">
+                    {/* Role Title */}
+                    <h3 className="relative text-lg md:text-xl font-medium tracking-tight truncate pr-1">
+                      {exp.role}
+                      <span className="absolute left-0 bottom-0 h-[1.5px] w-full bg-foreground scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
+                    </h3>
 
-                  <div className="flex flex-wrap items-center gap-3">
                     {/* Company Name */}
-                    <div className="flex items-center text-xs text-muted-foreground font-medium">
-                      <Building2 className="w-3 h-3 mr-1.5 opacity-70" />
-                      {exp.company}
-                    </div>
-
-                    {/* Date / Current Status */}
-                    <div
-                      className={cn(
-                        "hidden sm:flex gap-2 items-center text-xs font-medium shrink-0 py-0.5 px-2 rounded-md transition-colors",
-                        exp.current
-                          ? ""
-                          : "bg-muted/50 text-muted-foreground border-transparent group-hover:border-border/50"
-                      )}
-                    >
-                      {exp.current ? (
-                        <span className="relative flex h-2 w-2">
-                          {/* <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span> */}
-                          <span className="relative inline-flex group-hover:animate-ping rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                      ) : (
-                        <Calendar className="w-3 h-3 opacity-70" />
-                      )}
-
-                      <span>
-                        {exp.current
-                          ? ""
-                          : new Date(exp.endDate).toLocaleDateString("en-US", {
-                              month: "short",
-                              year: "numeric",
-                            })}
-                      </span>
-                    </div>
+                    <span className="text-muted-foreground text-sm md:text-base truncate">
+                      @ {exp.company}
+                    </span>
                   </div>
                 </div>
 
-                {/* --- RIGHT: Actions & Chevron --- */}
-                <div className="flex items-center gap-3 shrink-0">
-                  {/* Admin Controls */}
+                {/* Right: Meta, Actions, Chevron */}
+                <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                  {/* Date & Current Status */}
+                  <div className="hidden md:flex flex-col items-end text-xs md:text-sm text-muted-foreground font-mono">
+                    <span
+                      className={cn(
+                        "flex items-center gap-2",
+                        exp.current && "text-foreground font-medium"
+                      )}
+                    >
+                      {exp.current && (
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                      )}
+                      {exp.current ? "Present" : formatDate(exp.endDate)}
+                    </span>
+                  </div>
+
+                  {/* Admin Actions */}
                   {user && (
                     <div
-                      className="flex items-center gap-1 pl-1 md:pl-2 md:border-l md:border-border/50"
+                      className="flex items-center gap-1 pl-2 border-l border-border/50 ml-1"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
+                        className="h-8 w-8 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10"
                         onClick={(e) => handleEdit(exp._id, e)}
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -256,93 +287,72 @@ function ExperienceGroup({ items, user, handleEdit, handleDelete }) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-destructive/80 hover:text-destructive hover:bg-destructive/10"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         onClick={(e) => handleDelete(exp._id, e)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   )}
-
-                  {/* Custom Animated Chevron */}
-                  <div className="pl-1 text-muted-foreground/50 group-hover:text-foreground transition-colors">
-                    <ChevronDown className="h-5 w-5 transition-transform duration-300 ease-in-out group-data-[state=open]:rotate-180" />
-                  </div>
                 </div>
               </div>
             </AccordionTrigger>
 
-            {/* Content Body */}
-            <AccordionContent className="">
-              <div className="border-t border-dashed border-border"></div>
-              <div className="pt-4 mt-1">
-                {/* Mobile Meta (Visible only on small screens) */}
-                <div className="flex sm:hidden items-center gap-3 pb-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {new Date(exp.startDate).toLocaleDateString("en-US", {
-                      month: "short",
-                      year: "numeric",
-                    })}
-                    {" - "}
-                    {exp.current
-                      ? "Present"
-                      : new Date(exp.endDate).toLocaleDateString("en-US", {
-                          month: "short",
-                          year: "numeric",
-                        })}
+            {/* --- CONTENT --- */}
+            <AccordionContent className="pb-8 px-0">
+              <div className="grid grid-cols-1 gap-4 pt-2 animate-in  duration-300">
+                {/* Left Column (Empty on desktop, holds Date on mobile) */}
+                <div className="flex md:hidden flex-col gap-1 mb-4 border-l-2 border-border ">
+                  <span className="text-xs uppercase font-bold text-muted-foreground">
+                    Duration
                   </span>
-                  {exp.current && (
-                    <span className="text-green-600 font-medium flex items-center gap-1.5 ml-auto">
-                      <span className="relative flex h-1.5 w-1.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
-                      </span>
-                      Current
-                    </span>
-                  )}
+                  <span className="text-sm font-mono flex items-center gap-2">
+                    {formatDate(exp.startDate)} —{" "}
+                    {exp.current ? "Present" : formatDate(exp.endDate)}
+                  </span>
                 </div>
-
-                {/* Main Content (No Grid needed for single column text) */}
-                <div className="flex flex-col space-y-6 animate-in slide-in-from-top-2 duration-300">
+                <div className="hidden md:block"></div>{" "}
+                {/* Spacer for desktop grid */}
+                {/* Right Column: Content */}
+                <div className="space-y-6">
                   {/* Description */}
-                  <div>
-                    <h4 className="text-[10px] uppercase font-bold text-muted-foreground mb-2 tracking-wider">
-                      Responsibilities
-                    </h4>
-                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
+                  <div className="space-y-2">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm md:text-base">
                       {exp.description}
                     </p>
                   </div>
 
-                  {/* Skills & Type */}
-                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                  {/* Meta Footer: Tech Stack + Type */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                    {/* Tech Stack */}
                     {exp.skills && exp.skills.length > 0 && (
-                      <div className="space-y-2 flex-1">
-                        <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                          Tech Stack
-                        </h4>
-                        <div className="flex flex-wrap gap-1.5">
-                          {exp.skills.map((skill, idx) => (
-                            <Badge
-                              key={idx}
-                              variant="outline"
-                              className="text-[10px] px-2.5 py-0.5 h-6 rounded-md bg-background border-border/50 text-muted-foreground font-medium"
-                            >
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
+                      <div className="flex flex-wrap gap-2">
+                        {exp.skills.map((skill, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="outline"
+                            className="px-2.5 py-0.5 text-xs font-normal text-muted-foreground border-border/60 bg-transparent"
+                          >
+                            {skill}
+                          </Badge>
+                        ))}
                       </div>
                     )}
 
-                    {/* Employment Type Badge */}
-                    <Badge
-                      variant="ghost"
-                      className="self-start  rounded sm:self-end text-[10px] h-6 px-3 bg-accent shrink-0"
-                    >
-                      {exp.type}
-                    </Badge>
+                    {/* Employment Type & Full Date (Desktop tooltip/info) */}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      {/* Desktop Start Date hint */}
+                      <span className="hidden md:inline-block font-mono opacity-50">
+                        Started {formatDate(exp.startDate)}
+                      </span>
+
+                      <Badge
+                        variant="secondary"
+                        className="rounded-md font-normal bg-secondary/50 text-foreground/80"
+                      >
+                        {exp.type}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -6,19 +6,19 @@ import ProjectsPage from "@/components/admin/projects/projects-page";
 import Experiences from "@/components/experience/Experiences";
 import Container from "@/components/Container";
 import LifeEvents from "@/components/life-events/LifeEvents";
+import Awards from "@/components/awards/Awards";
 
 export default function Home() {
   return (
-    <Container >
+    <Container>
       <Hero />
       <AboutPage />
-      <ProjectsPage/>
-      <GithubHeatmap username="rimu-7"/>
-      <FeaturedBlogs/>
-      <Experiences/>
-      <LifeEvents/>
+      <ProjectsPage />
+      <GithubHeatmap username="rimu-7" />
+      <FeaturedBlogs />
+      <Experiences />
+      <LifeEvents />
+      <Awards />
     </Container>
   );
 }
-
-

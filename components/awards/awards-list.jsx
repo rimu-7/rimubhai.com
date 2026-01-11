@@ -2,18 +2,19 @@
 
 import { useState, useEffect } from "react";
 import {
-  Heart,
+  Trophy,
+  Award,
+  FileText,
+  GraduationCap,
+  Medal,
+  ExternalLink,
   Calendar,
   Pencil,
   Trash2,
-  ChevronDown, // Used for "Show More" button
-  Plane,
-  GraduationCap,
-  Home,
-  Flag,
-  MapPin,
+  ChevronDown,
   Layers,
   Sparkles,
+  Link as LinkIcon,
 } from "lucide-react";
 import {
   Accordion,
@@ -32,18 +33,41 @@ import { cn } from "@/lib/utils";
 const getTypeConfig = (type) => {
   const t = type?.toLowerCase();
   switch (t) {
-    case "travel":
-      return { icon: Plane, color: "text-sky-500", bg: "bg-sky-500/10", border: "border-sky-500/20" };
+    case "publication":
+      return {
+        icon: FileText,
+        color: "text-blue-500",
+        bg: "bg-blue-500/10",
+        border: "border-blue-500/20",
+      };
+    case "sports":
+      return {
+        icon: Medal,
+        color: "text-emerald-500",
+        bg: "bg-emerald-500/10",
+        border: "border-emerald-500/20",
+      };
     case "education":
-      return { icon: GraduationCap, color: "text-indigo-500", bg: "bg-indigo-500/10", border: "border-indigo-500/20" };
-    case "career":
-      return { icon: MapPin, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20" };
-    case "personal":
-      return { icon: Home, color: "text-rose-500", bg: "bg-rose-500/10", border: "border-rose-500/20" };
-    case "milestone":
-      return { icon: Flag, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" };
-    default:
-      return { icon: Sparkles, color: "text-violet-500", bg: "bg-violet-500/10", border: "border-violet-500/20" };
+      return {
+        icon: GraduationCap,
+        color: "text-violet-500",
+        bg: "bg-violet-500/10",
+        border: "border-violet-500/20",
+      };
+    case "certification":
+      return {
+        icon: Award,
+        color: "text-orange-500",
+        bg: "bg-orange-500/10",
+        border: "border-orange-500/20",
+      };
+    default: // Generic Award / Trophy
+      return {
+        icon: Trophy,
+        color: "text-amber-500",
+        bg: "bg-amber-500/10",
+        border: "border-amber-500/20",
+      };
   }
 };
 
@@ -81,32 +105,23 @@ const itemVariants = {
   },
 };
 
-// --- DATE FORMATTER ---
-const formatDate = (dateString) => {
-  if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    year: "numeric",
-  });
-};
-
-export default function LifeEventList({ user }) {
-  const [events, setEvents] = useState([]);
+export default function AwardList({ user }) {
+  const [awards, setAwards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
-    fetchEvents();
+    fetchAwards();
   }, []);
 
-  const fetchEvents = async () => {
+  const fetchAwards = async () => {
     try {
-      const res = await fetch("/api/life-events");
+      const res = await fetch("/api/awards");
       const json = await res.json();
-      setEvents(json.data || []);
+      setAwards(json.data || []);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load events");
+      toast.error("Failed to load awards");
     } finally {
       setLoading(false);
     }
@@ -114,24 +129,24 @@ export default function LifeEventList({ user }) {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this event?")) return;
-    
-    const previous = [...events];
-    setEvents((prev) => prev.filter((item) => item._id !== id));
+    if (!confirm("Are you sure you want to delete this award?")) return;
+
+    const previous = [...awards];
+    setAwards((prev) => prev.filter((item) => item._id !== id));
 
     try {
-      const res = await fetch(`/api/life-events/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
-      toast.success("Event deleted");
+      const res = await fetch(`/api/awards/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Award deleted");
     } catch (error) {
-      setEvents(previous);
+      setAwards(previous);
       toast.error("Delete failed");
     }
   };
 
   const handleEdit = (id, e) => {
     e.stopPropagation();
-    window.location.href = `/admin/life-events?edit=${id}`;
+    window.location.href = `/admin/awards?edit=${id}`;
   };
 
   if (loading) {
@@ -147,22 +162,21 @@ export default function LifeEventList({ user }) {
     );
   }
 
-  if (events.length === 0) {
+  if (awards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border-y border-dashed">
-        <Layers className="w-12 h-12 mb-4 opacity-10" />
-        <p className="font-medium">No life events added.</p>
+        <Trophy className="w-12 h-12 mb-4 opacity-10" />
+        <p className="font-medium">No awards added.</p>
       </div>
     );
   }
 
-  // --- LOGIC: Split Top 5 vs Rest ---
-  const visibleItems = events.slice(0, 5);
-  const hiddenItems = events.slice(5);
+  // Logic: Split Top 5 vs Rest
+  const visibleItems = awards.slice(0, 5);
+  const hiddenItems = awards.slice(5);
 
   return (
     <div className="w-full space-y-16">
-      
       {/* --- MAIN LIST --- */}
       <motion.div
         initial="hidden"
@@ -171,12 +185,12 @@ export default function LifeEventList({ user }) {
         className="space-y-4"
       >
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
-            <div className="h-px bg-border flex-1" />
-            <span>Timeline</span>
-            <div className="h-px bg-border flex-1" />
+          <div className="h-px bg-border flex-1" />
+          <span>Accomplishments</span>
+          <div className="h-px bg-border flex-1" />
         </div>
 
-        <EventGroup
+        <AwardGroup
           items={visibleItems}
           user={user}
           handleEdit={handleEdit}
@@ -189,13 +203,13 @@ export default function LifeEventList({ user }) {
       {hiddenItems.length > 0 && (
         <div className="space-y-8">
           {!showAll ? (
-             <div className="flex justify-center">
+            <div className="flex justify-center">
               <Button
                 variant="outline"
                 onClick={() => setShowAll(true)}
                 className="group rounded-full px-8 border-dashed border-border hover:border-foreground/30 transition-all"
               >
-                View Older Events ({hiddenItems.length})
+                View Archive ({hiddenItems.length})
                 <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
               </Button>
             </div>
@@ -205,21 +219,21 @@ export default function LifeEventList({ user }) {
               animate="visible"
               variants={containerVariants}
             >
-               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-6">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-6">
                 <div className="h-px bg-border flex-1" />
-                <span>Past Events</span>
+                <span>Archive</span>
                 <div className="h-px bg-border flex-1" />
               </div>
 
-              <EventGroup
+              <AwardGroup
                 items={hiddenItems}
                 user={user}
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}
               />
-              
+
               <div className="flex justify-center mt-8">
-                 <Button
+                <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAll(false)}
@@ -237,55 +251,54 @@ export default function LifeEventList({ user }) {
 }
 
 // --- SUB-COMPONENT: Accordion Group ---
-function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
+function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
   return (
-    <Accordion type="single" collapsible defaultValue={defaultOpen} className="w-full">
-      {items.map((ev) => {
-        const typeConfig = getTypeConfig(ev.type);
-        const Icon = typeConfig.icon;
-
+    <Accordion type="single" collapsible className="w-full">
+      {items.map((item) => {
+        const config = getTypeConfig(item.type);
+        const Icon = config.icon;
         return (
-          <motion.div key={ev._id} variants={itemVariants} layout>
+          <motion.div key={item._id} variants={itemVariants} layout>
             <AccordionItem
-              value={ev._id}
+              value={item._id}
               className="group border-b border-border/40 last:border-0 data-[state=open]:border-transparent transition-colors px-0"
             >
               {/* --- TRIGGER --- */}
-              <AccordionTrigger className="hover:no-underline py-5 px-0 [&[data-state=open]_.custom-chevron]:rotate-180">
+              <AccordionTrigger className="hover:no-underline py-5 px-0 ">
                 <div className="flex items-center justify-between w-full gap-4 md:gap-6 pr-2">
-                  
-                  {/* Left: Icon & Title */}
+                  {/* Left: Icon & Content */}
                   <div className="flex items-center gap-4 text-left min-w-0 flex-1">
-                    
-                    {/* Type Icon (Replaces Index Number) */}
-                    <div className={cn(
+                    {/* Type Icon */}
+                    <div
+                      className={cn(
                         "flex items-center justify-center w-8 h-8 rounded-full shrink-0 transition-colors duration-300",
-                        "bg-secondary/50 group-hover:bg-secondary", 
-                        typeConfig.color.replace('text-', 'text-opacity-80 ') // Subtle coloring
-                    )}>
-                        <Icon className="w-4 h-4" />
+                        "bg-secondary/50 group-hover:bg-secondary",
+                        config.color.replace("text-", "text-opacity-80 ") // Subtle coloring
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
                     </div>
-                    
-                    {/* Title & Type Badge */}
+
+                    {/* Title & Issuer */}
                     <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 overflow-hidden">
                       <h3 className="relative text-lg md:text-xl font-medium tracking-tight truncate pr-1">
-                        {ev.title}
+                        {item.title}
                         <span className="absolute left-0 bottom-0 h-[1.5px] w-full bg-foreground scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
                       </h3>
-                      
-                      {/* Mobile Type Badge (Optional, mostly implied by icon) */}
-                      <span className="md:hidden text-xs text-muted-foreground capitalize">
-                          {ev.type}
-                      </span>
+
+                      {item.issuer && (
+                        <span className="text-muted-foreground text-sm truncate">
+                          @ {item.issuer}
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   {/* Right: Date, Actions, Chevron */}
                   <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-                    
-                    {/* Date (Desktop) */}
+                    {/* Year (Desktop) */}
                     <div className="hidden md:block text-sm text-muted-foreground font-mono">
-                         {formatDate(ev.date)}
+                      {new Date(item.date).getFullYear()}
                     </div>
 
                     {/* Admin Actions */}
@@ -298,7 +311,7 @@ function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10"
-                          onClick={(e) => handleEdit(ev._id, e)}
+                          onClick={(e) => handleEdit(item._id, e)}
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
@@ -306,7 +319,7 @@ function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                          onClick={(e) => handleDelete(ev._id, e)}
+                          onClick={(e) => handleDelete(item._id, e)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -318,43 +331,70 @@ function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
 
               {/* --- CONTENT --- */}
               <AccordionContent className="pb-8 px-0">
-                 {/* Grid layout similar to ExperienceList */}
-                 <div className="grid grid-cols-1 px-4 gap-4 pt-2 animate-in slide-in-from-top-2 duration-300">
-                    
-                    {/* Left Column Spacer (Aligns with Icon) */}
-                    <div className="hidden md:block"></div> 
+                {/* Grid layout */}
+                <div className="grid grid-cols-1 gap-4 pt-2 animate-in slide-in-from-top-2 duration-300">
+                  {/* Spacer */}
+                  <div className="hidden md:block"></div>
 
-                    {/* Content Column */}
-                    <div className="space-y-6">
-                        
-                        {/* Mobile Date Display */}
-                        <div className="flex md:hidden items-center gap-2 text-xs font-mono text-muted-foreground border-l-2 border-border pl-3">
-                           <Calendar className="w-3 h-3" />
-                           {formatDate(ev.date)}
-                        </div>
-
-                        {/* Description */}
-                        <div className="space-y-2">
-                            {ev.description ? (
-                                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm md:text-base">
-                                    {ev.description}
-                                </p>
-                            ) : (
-                                <p className="text-muted-foreground/50 italic text-sm">No details provided.</p>
-                            )}
-                        </div>
-
-                        {/* Footer: Styled Type Badge */}
-                        <div className="flex items-center pt-2">
-                             <Badge 
-                                variant="outline" 
-                                className={cn("px-2.5 py-0.5 text-xs font-medium border capitalize", typeConfig.color, typeConfig.bg, typeConfig.border)}
-                            >
-                                {ev.type}
-                            </Badge>
-                        </div>
+                  {/* Content */}
+                  <div className="space-y-6">
+                    {/* Mobile Date */}
+                    <div className="flex md:hidden items-center gap-2 text-xs font-mono text-muted-foreground border-l-2 border-border pl-3">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(item.date).toLocaleDateString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </div>
-                 </div>
+
+                    {/* Description */}
+                    <div className="space-y-2">
+                      {item.description ? (
+                        <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm md:text-base">
+                          {item.description}
+                        </p>
+                      ) : (
+                        <p className="text-muted-foreground/50 italic text-sm">
+                          No additional details.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Footer: Tags & Link */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                      {/* Tag */}
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "px-2.5 py-0.5 text-xs font-medium border capitalize",
+                          config.color,
+                          config.bg,
+                          config.border
+                        )}
+                      >
+                        {item.type}
+                      </Badge>
+
+                      {/* External Link */}
+                      {item.link && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          asChild
+                          className="text-xs h-8 gap-2 rounded-full border-dashed"
+                        >
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View Credential <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </motion.div>
