@@ -20,10 +20,9 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
-  DialogTitle, // Added for accessibility
+  DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"; // Optional: For accessible hidden titles if needed
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -84,7 +83,7 @@ export default function Navbar() {
         {/* --- RIGHT: NAV & ACTIONS --- */}
         <div className="flex items-center gap-2">
           
-          {/* 1. Desktop Navigation (Framer Motion Magic) */}
+          {/* 1. Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1 mr-2 relative" onMouseLeave={() => setHoveredPath(pathname)}>
             {menuItems.map((item) => {
               const isActive = item.href === pathname;
@@ -99,7 +98,6 @@ export default function Navbar() {
                   )}
                   onMouseEnter={() => setHoveredPath(item.href)}
                 >
-                  {/* The Background Hover Pill */}
                   {item.href === hoveredPath && (
                     <motion.div
                       layoutId="navbar-hover"
@@ -117,7 +115,7 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* 2. Actions Divider */}
+          {/* 2. Divider */}
           <div className="h-6 w-px bg-border/50 mx-1 hidden sm:block" />
 
           {/* 3. Theme Toggle & Mobile Menu */}
@@ -137,10 +135,9 @@ export default function Navbar() {
               </DialogTrigger>
               
               <DialogContent className="w-[90%] max-w-[400px] p-0 gap-0 overflow-hidden rounded-2xl border-border/60 bg-background/95 backdrop-blur-xl">
-                 {/* Accessible Title (Hidden visually but required for screen readers) */}
-                <VisuallyHidden asChild>
-                    <DialogTitle>Mobile Navigation Menu</DialogTitle>
-                </VisuallyHidden>
+                 
+                 {/* ACCESSIBLE TITLE FIX: Using 'sr-only' class instead of VisuallyHidden component */}
+                 <DialogTitle className="sr-only">Mobile Navigation Menu</DialogTitle>
 
                 {/* Header */}
                 <div className="p-4 border-b bg-muted/20 flex items-center justify-between">
@@ -154,15 +151,15 @@ export default function Navbar() {
 
                 {/* Menu Items */}
                 <div className="p-2 flex flex-col gap-1">
-                  {menuItems.map((item, idx) => {
+                  {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                       <Link
                         key={item.label}
                         href={item.href}
-                        onClick={() => setMobileMenuOpen(false)} // CLOSE ON CLICK
+                        onClick={() => setMobileMenuOpen(false)} 
                         className={cn(
-                          "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200",
+                          "group flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200",
                           isActive
                             ? "bg-primary/10 text-primary font-semibold"
                             : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -186,7 +183,7 @@ export default function Navbar() {
                   })}
                 </div>
                 
-                {/* Footer / Extra */}
+                {/* Footer */}
                 <div className="p-4 bg-muted/30 border-t text-xs text-center text-muted-foreground">
                     <p className="flex items-center justify-center gap-1 opacity-70">
                          <Sparkles className="h-3 w-3" /> 
