@@ -86,7 +86,7 @@ export const metadata = {
 
   // 9. Search Engine Verification (CRITICAL)
   verification: {
-    google: "zRjKUl7AelX-3eGrv-UUFVBRGxoO_CWU9QJNTsi1yl4",
+    google: "35vsrUzsz5wrVGMyMsIM-wH1scYhbQ90nL0DtkZtSo",
     yandex: "YOUR_YANDEX_VERIFICATION_CODE",
     other: {
       "msvalidate.01": "YOUR_BING_VERIFICATION_CODE",
