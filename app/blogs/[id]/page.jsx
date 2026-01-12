@@ -1,121 +1,142 @@
-import { getBlogPost } from "@/lib/data";
-import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Clock, Share2 } from "lucide-react";
 import Link from "next/link";
-import DOMPurify from "isomorphic-dompurify";
-import Container from "@/components/Container";
+import { notFound } from "next/navigation";
+import { format } from "date-fns";
+import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
-// --- GENERATE METADATA (Robust Version) ---
-export async function generateMetadata({ params }) {
+// DB & Schema
+import connectDB from "@/lib/mongodb";
+import { Blog } from "@/lib/schema";
+
+// Parsing utilities
+import * as cheerio from "cheerio";
+import slugify from "slugify";
+
+// Custom Components
+import BlogTOC from "./BlogTOC";
+import BlogContent from "./BlogContent";
+
+// --- Helper: Fetch Blog Data ---
+async function getBlog(id) {
   try {
-    const { id } = await params;
-    const post = await getBlogPost(id);
-
-    if (!post) {
-      return { title: "Post Not Found" };
-    }
-
-    // Create a clean summary for SEO
-    // Handle empty content safely with || ""
-    const plainText = post.content?.replace(/<[^>]*>?/gm, "") || "";
-    const summary = plainText.substring(0, 160).trim();
-
-    return {
-      title: post.name,
-      description: summary,
-      openGraph: {
-        title: post.name,
-        description: summary,
-        type: "article",
-        publishedTime: post.createdAt,
-        authors: ["Rimu Bhai"],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: post.name,
-        description: summary,
-      },
-    };
+    await connectDB();
+    const blog = await Blog.findById(id).lean();
+    if (!blog) return null;
+    return JSON.parse(JSON.stringify(blog));
   } catch (error) {
-    // Fallback if DB fails during metadata generation to prevent 500 Error
-    return { title: "Blog Post | Rimu Bhai" };
+    return null;
   }
 }
 
-// --- MAIN PAGE COMPONENT ---
-export default async function BlogPostPage({ params }) {
+// --- Helper: Process HTML (Inject IDs for TOC) ---
+function processContent(htmlContent) {
+  if (!htmlContent) return { html: "", toc: [] };
+
+  const $ = cheerio.load(htmlContent);
+  const toc = [];
+
+  // Find all h2 and h3 headers
+  $("h2, h3").each((index, element) => {
+    const text = $(element).text();
+    // Create a URL-safe ID (e.g., "My Header" -> "my-header")
+    const id =
+      slugify(text, { lower: true, strict: true }) || `heading-${index}`;
+
+    // Inject the ID into the HTML tag so the browser can scroll to it
+    $(element).attr("id", id);
+
+    toc.push({
+      id,
+      text,
+      level: element.tagName.toLowerCase(), // 'h2' or 'h3'
+    });
+  });
+
+  return {
+    html: $("body").html(), // Returns the HTML with the new IDs
+    toc,
+  };
+}
+
+// --- Main Page Component ---
+export default async function BlogDetailsPage({ params }) {
+  // Await params for Next.js 15+ compatibility
   const { id } = await params;
+  const blog = await getBlog(id);
 
-  // Fetch data safely
-  const post = await getBlogPost(id);
+  if (!blog) {
+    notFound();
+  }
 
-  if (!post) notFound();
+  // 1. Process HTML to add IDs and get TOC data
+  const { html: processedContent, toc } = processContent(blog.content);
 
-  // 1. Sanitize Content (Security Best Practice)
-  // Added "|| ''" to prevent crash if content is undefined/null
-  const sanitizedContent = DOMPurify.sanitize(post.content || "");
-
-  // 2. Calculate Reading Time
-  const wordCount =
-    (post.content || "")?.replace(/<[^>]*>?/gm, "").split(/\s+/).length || 0;
-  const readTime = Math.ceil(wordCount / 200);
+  // 2. Calculate Reading Time (strip HTML tags first)
+  const plainText = blog.content.replace(/<[^>]*>?/gm, "");
+  const words = plainText.split(/\s+/).length;
+  const readTime = Math.ceil(words / 200);
 
   return (
-    <Container>
-      <article className="py-16 max-w-3xl mx-auto">
-        {/* Navigation */}
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      {/* Navigation Back Button */}
+      <div className="mb-8">
         <Button
           variant="ghost"
           asChild
-          className="mb-8 -ml-4 text-muted-foreground hover:text-foreground"
+          className="-ml-4 text-muted-foreground hover:text-foreground transition-colors"
         >
           <Link href="/blogs">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to all posts
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to all posts
           </Link>
         </Button>
+      </div>
 
-        {/* Article Header */}
-        <header className="space-y-6 mb-12 border-b border-border/40 pb-12">
-          <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-muted-foreground">
-            <span className="flex items-center bg-muted/50 px-3 py-1 rounded-full">
-              <Calendar className="w-3.5 h-3.5 mr-2 opacity-70" />
-              {post.formattedDate}
-            </span>
-            <span className="flex items-center bg-muted/50 px-3 py-1 rounded-full">
-              <Clock className="w-3.5 h-3.5 mr-2 opacity-70" />
-              {readTime} min read
-            </span>
+      {/* Main Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+        {/* --- LEFT COLUMN: Content (Span 8) --- */}
+        <div className="lg:col-span-8 min-w-0">
+          {/* Article Header */}
+          <header className="mb-8 space-y-4">
+            <div className="flex items-center gap-3 flex-wrap">
+              {blog.featured && (
+                <Badge className="bg-primary/10 rounded text-primary hover:bg-primary/20 border-0 transition-colors">
+                  Featured Post
+                </Badge>
+              )}
+              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                <Clock className="w-3 h-3" /> {readTime} min read
+              </span>
+            </div>
+
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
+              {blog.name}
+            </h1>
+          </header>
+
+          <Separator className="my-8" />
+
+          {/* Mobile TOC (Visible only on small screens) */}
+          <div className="block lg:hidden mb-8">
+            <BlogTOC toc={toc} />
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
-            {post.name}
-          </h1>
-        </header>
-
-        {/* Article Body */}
-        <div
-          className="
-            prose prose-lg dark:prose-invert max-w-none 
-            prose-headings:font-bold prose-headings:tracking-tight
-            prose-p:leading-relaxed prose-p:text-muted-foreground/90
-            prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-            prose-blockquote:border-l-primary prose-blockquote:bg-muted/30 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
-            prose-code:bg-muted prose-code:text-primary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
-            prose-img:rounded-xl prose-img:border prose-img:shadow-md
-            prose-hr:border-border
-          "
-          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-        />
-
-        {/* Footer / Share (Optional) */}
-        <div className="mt-16 pt-8 border-t flex justify-between items-center">
-          <p className="text-sm text-muted-foreground">Thanks for reading!</p>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Share2 className="h-4 w-4" /> Share this post
-          </Button>
+          {/* Article Content Rendered with Copy Buttons */}
+          <article>
+            <BlogContent content={processedContent} />
+          </article>
         </div>
-      </article>
-    </Container>
+
+        {/* --- RIGHT COLUMN: Sidebar TOC (Span 4) --- */}
+        <div className="hidden lg:block lg:col-span-4 relative">
+          {/* The component handles the sticky positioning internally or we add it here */}
+          <div className="sticky top-24">
+            <BlogTOC toc={toc} />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

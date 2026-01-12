@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import Footer from "@/components/footer";
+import ScrollToTop from "@/components/ScrollTop";
 
 const domine = Domine({
   subsets: ["latin"],
@@ -157,6 +158,7 @@ export default function RootLayout({ children }) {
             <Footer />
           </div>
           <Toaster richColors closeButton position="top-center" />
+          <ScrollToTop/>
         </ThemeProvider>
       </body>
     </html>

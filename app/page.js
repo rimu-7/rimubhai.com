@@ -1,7 +1,7 @@
 import Hero from "@/components/hero/Hero";
 import AboutPage from "./about/about-page";
 import GithubHeatmap from "@/components/GithubHeatmap";
-import FeaturedBlogs from "./blogs/FeaturedBlogs";
+// import FeaturedBlogs from "./blogs/FeaturedBlogs";
 import ProjectsPage from "@/components/admin/projects/projects-page";
 import Experiences from "@/components/experience/Experiences";
 import Container from "@/components/Container";
@@ -15,7 +15,7 @@ export default function Home() {
       <AboutPage />
       <ProjectsPage />
       <GithubHeatmap username="rimu-7" />
-      <FeaturedBlogs />
+      {/* <FeaturedBlogs /> */}
       <Experiences />
       <LifeEvents />
       <Awards />

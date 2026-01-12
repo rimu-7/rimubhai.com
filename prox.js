@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-
 // 1. Initialize Redis (Wrapped in try-catch logic later)
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
@@ -12,14 +11,14 @@ const redis = new Redis({
 // 2. Define Limits
 const globalLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(30, "10 s"),
+  limiter: Ratelimit.slidingWindow(100, "10 s"),
   analytics: true,
   prefix: "@upstash/ratelimit",
 });
 
 const apiLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(20, "10 s"),
+  limiter: Ratelimit.slidingWindow(50, "10 s"),
   analytics: true,
   prefix: "@upstash/api-limit",
 });
@@ -37,13 +36,15 @@ const BLOCKED_USER_AGENTS = [
 ];
 
 export default async function middleware(request) {
-  const ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
+  const ip =
+    request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   const userAgent = request.headers.get("user-agent")?.toLowerCase() || "";
   const path = request.nextUrl.pathname;
 
   // --- STEP 1: BLOCK BOTS ---
   const isBot = BLOCKED_USER_AGENTS.some((ua) => userAgent.includes(ua));
-  const isGoodBot = userAgent.includes("googlebot") || userAgent.includes("bingbot");
+  const isGoodBot =
+    userAgent.includes("googlebot") || userAgent.includes("bingbot");
 
   if (isBot && !isGoodBot) {
     return new NextResponse("Forbidden: Access Denied", { status: 403 });
