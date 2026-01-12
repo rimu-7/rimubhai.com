@@ -8,7 +8,7 @@ import Container from "@/components/Container";
 
 // --- GENERATE METADATA ---
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const post = await getBlogPost(id);
 
   if (!post) {
