@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download } from "lucide-react";
+import Container from "@/components/Container";
 
 const cvConfig = {
   en: {
@@ -21,7 +22,7 @@ export default function CvViewer() {
   const [activeLang, setActiveLang] = useState("en");
 
   return (
-    <div className="relative h-screen w-full flex flex-col items-center ">
+    <Container className="relative h-screen w-full flex flex-col items-center px-4 py-">
       <Tabs
         defaultValue="en"
         className="w-full h-full flex flex-col items-center"
@@ -63,6 +64,6 @@ export default function CvViewer() {
           </TabsContent>
         </div>
       </Tabs>
-    </div>
+    </Container>
   );
 }

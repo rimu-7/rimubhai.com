@@ -239,7 +239,7 @@ export default function LifeEventList({ user }) {
 // --- SUB-COMPONENT: Accordion Group ---
 function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
   return (
-    <Accordion type="single" collapsible defaultValue={defaultOpen} className="w-full">
+    <Accordion type="single" collapsible className="w-full">
       {items.map((ev) => {
         const typeConfig = getTypeConfig(ev.type);
         const Icon = typeConfig.icon;
@@ -268,7 +268,7 @@ function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                     
                     {/* Title & Type Badge */}
                     <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 overflow-hidden">
-                      <h3 className="relative text-lg md:text-xl font-medium tracking-tight truncate pr-1">
+                      <h3 className="relative text-lg md:text-xl lowercase font-medium tracking-tight truncate pr-1">
                         {ev.title}
                         <span className="absolute left-0 bottom-0 h-[1.5px] w-full bg-foreground scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
                       </h3>

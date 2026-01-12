@@ -254,7 +254,7 @@ export default function AwardList({ user }) {
 // --- SUB-COMPONENT: Accordion Group ---
 function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
   return (
-    <Accordion type="single" collapsible defaultValue={defaultOpen} className="">
+    <Accordion type="single" collapsible className="">
       {items.map((item) => {
         const config = getTypeConfig(item.type);
         const Icon = config.icon;
@@ -328,11 +328,6 @@ function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                         </Button>
                       </div>
                     )}
-
-                    {/* Custom Chevron */}
-                    <div className="pl-2">
-                        <CustomChevron className="custom-chevron h-5 w-5 text-muted-foreground/30 transition-transform duration-300 ease-in-out shrink-0" />
-                    </div>
                   </div>
                 </div>
               </AccordionTrigger>

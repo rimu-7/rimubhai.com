@@ -23,6 +23,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 /** ---------- utils ---------- */
 function safeCopy(text) {
@@ -171,9 +172,9 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [words.length]);
 
-  const linkedin = process.env.LINKEDIN;
-  const twitter = process.env.X;
-  const GITHUB = process.env.GITHUB;
+  const linkedin = process.env.NEXT_PUBLIC_LINKEDIN || ""
+  const twitter = process.env.NEXT_PUBLIC_X || ""
+  const GITHUB = process.env.GITHUB || ""
 
   return (
     <section className="relative py-10">
@@ -409,9 +410,9 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
   );
 }
 
-function SocialLink({ icon: Icon, href, label }) {
+function SocialLink({ icon: Icon, href: href, label }) {
   return (
-    <a
+    <Link
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -424,6 +425,6 @@ function SocialLink({ icon: Icon, href, label }) {
       </span>
       <span className="">{label}</span>
       <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
-    </a>
+    </Link>
   );
 }

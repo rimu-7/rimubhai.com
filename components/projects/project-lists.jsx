@@ -201,7 +201,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
       <Accordion
         type="single"
         collapsible
-        className="w-full"
+        className="w-full lowercase"
       >
         {items.map((project, index) => (
           <motion.div key={project._id} variants={itemVariants} layout>
@@ -214,7 +214,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                 <div className="flex items-center justify-between w-full gap-4 md:gap-6 pr-2">
                   {/* Left: Index & Title */}
                   <div className="flex items-baseline gap-4 text-left min-w-0 flex-1">
-                    <h3 className="relative text-lg md:text-xl font-medium tracking-tight text-wrap truncate pr-4">
+                    <h3 className="relative text-lg md:text-xl font-medium lowercase tracking-tight text-wrap truncate pr-4">
                       {project.title}
                       {/* Hover Underline Animation */}
                       <span className="absolute left-0 bottom-0 h-[1.5px] w-full bg-foreground scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />

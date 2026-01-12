@@ -12,7 +12,7 @@ export default async function Awards() {
   return (
     <div className="py-10 max-w-4xl mx-auto">
       <div className="flex flex-col gap-2 mb-12">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight capitalize">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
           Honors & Awards
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl">

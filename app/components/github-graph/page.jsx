@@ -40,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Container from "@/components/Container";
+import { Settings } from "lucide-react";
 
 // --- LIVE COMPONENT FOR DEMO ---
 function GithubContributionsLive({ username }) {
@@ -352,50 +353,14 @@ const commands = {
           </Tabs>
         </div>
 
-        <div className="space-y-4">
+       
+
+        <div className="">
           <h3 className="text-lg font-semibold flex items-center gap-2">
-            <FileCode className="h-5 w-5" /> Environment Setup
+            <Settings className="h-5 w-5" /> Manually setup
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Add this to your{" "}
-            <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">
-              .env.local
-            </code>{" "}
-            file to configure the username.
-          </p>
-
-          <Card className="bg-zinc-950 text-zinc-50 border-none relative group overflow-hidden">
-            <CardContent className="p-4 flex items-center justify-between font-mono text-sm">
-              <div className="flex gap-2 truncate">
-                <span className="text-blue-400">
-                  NEXT_PUBLIC_GITHUB_USERNAME
-                </span>
-                <span className="text-zinc-500">=</span>
-                <span className="text-green-400">your_github_username</span>
-              </div>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
-                onClick={() =>
-                  handleCopyCommand(
-                    'NEXT_PUBLIC_GITHUB_USERNAME="your_github_username"',
-                    "env"
-                  )
-                }
-              >
-                {copyKey === "env" ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-                <span className="sr-only">Copy environment variable</span>
-              </Button>
-            </CardContent>
-          </Card>
         </div>
-        <div className="py-6">
+        <div className="py-">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <FileCode className="h-5 w-5" /> Create Component
           </h3>
