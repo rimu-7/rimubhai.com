@@ -185,13 +185,12 @@ export default function GithubGraphDemoPage() {
   const [isTs, setIsTs] = useState(false);
   const [copyKey, setCopyKey] = useState(null);
 
-const commands = {
-  npm: "npx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
-  pnpm: "pnpm dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
-  yarn: "yarn dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
-  bun: "bunx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
-};
-
+  const commands = {
+    npm: "npx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+    pnpm: "pnpm dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+    yarn: "yarn dlx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+    bun: "bunx shadcn@latest add https://raw.githubusercontent.com/rimu-7/shadcn-components/main/public/registry/github-heatmap.json",
+  };
 
   const handleCopyCode = (text) => {
     navigator.clipboard.writeText(text);
@@ -230,12 +229,16 @@ const commands = {
         </div>
 
         {/* Live Demo & Usage Card */}
-        <Card className="border shadow-sm">
+        <Card className="border rounded shadow-none">
           <CardHeader className="pb-4 border-b">
             <Tabs defaultValue="preview">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="preview">Preview</TabsTrigger>
-                <TabsTrigger value="code">Usage Code</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-4 rounded">
+                <TabsTrigger value="preview" className="rounded">
+                  Preview
+                </TabsTrigger>
+                <TabsTrigger value="code" className="rounded">
+                  Usage Code
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="preview">
@@ -255,12 +258,12 @@ const commands = {
                       placeholder="Username..."
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      className="bg-background h-9 min-w-[200px]"
+                      className="bg-background rounded h-9 min-w-[200px]"
                     />
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-9 w-9 bg-background shrink-0"
+                      className="h-9 w-9 rounded bg-background shrink-0"
                       onClick={handleUpdateUser}
                     >
                       <RefreshCw className="h-4 w-4" />
@@ -269,13 +272,13 @@ const commands = {
                 </div>
               </TabsContent>
 
-              <TabsContent value="code">
-                <div className="relative rounded-md bg-zinc-950 border border-zinc-800">
+              <TabsContent value="code" className="rounded">
+                <div className="relative  bg-zinc-950 border border-zinc-800">
                   <div className="absolute right-4 top-4 z-10">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                      className="h-8 rounded text-zinc-400 hover:text-white hover:bg-zinc-800"
                       onClick={() => handleCopyCode(USAGE_CODE)}
                     >
                       {copiedCode ? (
@@ -295,15 +298,6 @@ const commands = {
 
           <CardContent className="pt-6">
             <Tabs defaultValue="preview">
-              {/* This Tabs is just to allow the 'preview' value from parent tabs to show content here. 
-                   We only render content if parent tab is 'preview'. 
-                   However, standard Shadcn Tabs don't nest state easily this way without context.
-                   To keep it simple like TextWritingEffect, we just show the graph always in the body 
-                   OR we hide it if 'code' is selected. 
-                   For this specific request, I will render the graph in the body regardless, 
-                   or check the Tabs state if using controlled component. 
-                   Let's stick to the TextWritingEffect layout where the body content is the visualization.
-               */}
               <GithubContributionsLive username={demoUser} />
             </Tabs>
           </CardContent>
@@ -317,18 +311,22 @@ const commands = {
             <Terminal className="h-5 w-5" /> Install Dependencies
           </h3>
 
-          <Tabs defaultValue="npm" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+          <Tabs defaultValue="npm" className="w-full rounded">
+            <TabsList className="grid w-full grid-cols-4 rounded">
               {Object.keys(commands).map((pkgManager) => (
-                <TabsTrigger key={pkgManager} value={pkgManager}>
+                <TabsTrigger
+                  key={pkgManager}
+                  value={pkgManager}
+                  className="rounded"
+                >
                   {pkgManager}
                 </TabsTrigger>
               ))}
             </TabsList>
 
             {Object.entries(commands).map(([key, command]) => (
-              <TabsContent key={key} value={key} className="mt-0">
-                <Card className="rounded-tl-none rounded-tr-none border-t-0 bg-muted/50">
+              <TabsContent key={key} value={key} className="mt-0 rounded">
+                <Card className="rounded-tl-none rounded-tr-none rounded shadow-none border-t-0 bg-muted/50">
                   <CardContent className="p-4 flex items-center justify-between">
                     <code className="font-mono text-sm text-foreground/80 truncate pr-4">
                       {command}
@@ -352,8 +350,6 @@ const commands = {
             ))}
           </Tabs>
         </div>
-
-       
 
         <div className="">
           <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -412,7 +408,7 @@ const commands = {
           <Button
             size="sm"
             variant="secondary"
-            className="h-8 gap-2 shadow-sm border bg-background/80 backdrop-blur"
+            className="h-8 gap-2 shadow-sm rounded border bg-background/80 shadow-none backdrop-blur"
             onClick={() =>
               handleCopyCode(
                 isTs ? COMPONENT_SOURCE_CODE_TS : COMPONENT_SOURCE_CODE_JS
@@ -428,7 +424,7 @@ const commands = {
           </Button>
         </div>
 
-        <Card className="bg-[#0d1117] text-gray-300 border-none shadow-lg overflow-hidden">
+        <Card className="bg-[#0d1117] rounded  text-gray-300 border-none shadow-none overflow-hidden">
           <CardContent className="p-0">
             <div className="p-4 overflow-x-auto max-h-[600px] text-xs sm:text-sm font-mono leading-relaxed scrollbar-thin scrollbar-thumb-gray-800">
               <pre>
@@ -437,7 +433,7 @@ const commands = {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-yellow-500" /> How it Works
@@ -456,14 +452,14 @@ const commands = {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Type className="h-5 w-5" /> Props
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="rounded">
+            <div className="grid grid-cols-1 rounded  md:grid-cols-2 gap-4">
               <PropCard
                 name="username"
                 type="string"
@@ -481,7 +477,7 @@ const commands = {
 
 function PropCard({ name, type, desc }) {
   return (
-    <div className="p-3 rounded-lg border bg-muted/20 space-y-1">
+    <div className="p-3 rounded border bg-muted/20 space-y-1">
       <div className="flex items-center justify-between">
         <code className="text-sm font-bold">{name}</code>
       </div>

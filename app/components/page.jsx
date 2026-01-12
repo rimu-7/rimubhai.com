@@ -105,7 +105,7 @@ export default function Components() {
               <Link href={component.href} passHref>
                 {/* Wrapping Card in motion div for hover effects */}
                 <motion.div initial="initial" whileTap="tap" className="h-full">
-                  <Card className="h-full relative overflow-hidden group transition-colors border-none hover:outline-2 backdrop-blur-lg cursor-pointer shadow-none">
+                  <Card className="h-full relative rounded shadow-none overflow-hidden group transition-colors border-none hover:outline-2 backdrop-blur-lg cursor-pointer">
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="space-y-1 relative z-10">

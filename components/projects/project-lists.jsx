@@ -100,7 +100,7 @@ export default function ProjectList({ user }) {
       <div className="space-y-6 w-full">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col gap-2">
-            <Skeleton className="h-16 w-full rounded-none" />
+            <Skeleton className="h-16 w-full rounded" />
             <Skeleton className="h-px w-full" />
           </div>
         ))}
@@ -151,7 +151,7 @@ export default function ProjectList({ user }) {
               <Button
                 variant="outline"
                 onClick={() => setShowAll(true)}
-                className="group rounded-full px-8 border-dashed border-border hover:border-foreground/30 transition-all"
+                className="group rounded px-8 border-dashed border-border hover:border-foreground/30 transition-all"
               >
                 View Archive ({otherProjects.length})
                 <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
@@ -181,7 +181,7 @@ export default function ProjectList({ user }) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAll(false)}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground rounded hover:text-foreground"
                 >
                   Hide Archive
                 </Button>
@@ -198,11 +198,7 @@ export default function ProjectList({ user }) {
 function ProjectGroup({ items, user, handleEdit, handleDelete }) {
   return (
     <TooltipProvider delayDuration={0}>
-      <Accordion
-        type="single"
-        collapsible
-        className="w-full lowercase"
-      >
+      <Accordion type="single" collapsible className="w-full lowercase">
         {items.map((project, index) => (
           <motion.div key={project._id} variants={itemVariants} layout>
             <AccordionItem
@@ -235,7 +231,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+                              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded"
                               asChild
                             >
                               <a
@@ -258,7 +254,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded"
                               asChild
                             >
                               <a
@@ -293,7 +289,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10"
+                          className="h-8 w-8 text-muted-foreground rounded hover:text-amber-500 hover:bg-amber-500/10"
                           onClick={(e) => handleEdit(project._id, e)}
                         >
                           <Pencil className="h-3.5 w-3.5" />
@@ -301,7 +297,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          className="h-8 w-8 text-muted-foreground rounded hover:text-destructive hover:bg-destructive/10"
                           onClick={(e) => handleDelete(project._id, e)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -317,7 +313,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                 <div className="grid grid-cols-1 md:grid-cols-[40%_1fr] gap-8 pt-2 animate-in slide-in-from-top-2 duration-300">
                   {/* 1. Visual/Media */}
                   <div className="space-y-4">
-                    <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted/30">
+                    <div className="relative aspect-video w-full overflow-hidden rounded border bg-muted/30">
                       {project.imageUrl ? (
                         <Image
                           src={project.imageUrl}
@@ -352,7 +348,7 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                             <Badge
                               key={tag}
                               variant="secondary"
-                              className="px-2.5 py-0.5 text-xs font-normal text-muted-foreground bg-secondary/50 hover:bg-secondary transition-colors border border-transparent hover:border-border/50"
+                              className="px-2.5 py-0.5 rounded text-xs font-normal text-muted-foreground bg-secondary/50 hover:bg-secondary transition-colors border border-transparent hover:border-border/50"
                             >
                               {tag}
                             </Badge>
@@ -360,20 +356,34 @@ function ProjectGroup({ items, user, handleEdit, handleDelete }) {
                         </div>
                       </div>
                     )}
-                    
+
                     {/* Detailed Buttons inside expanded view (Optional redundancy) */}
                     <div className="flex gap-3 md:hidden">
-                         {/* Only show these big buttons on mobile where hover tooltips might be harder to use */}
-                         {project.liveUrl && (
-                             <Button variant="outline" size="sm" asChild className="w-full">
-                                 <a href={project.liveUrl} target="_blank">Live Site</a>
-                             </Button>
-                         )}
-                         {project.repoUrl && (
-                             <Button variant="outline" size="sm" asChild className="w-full">
-                                 <a href={project.repoUrl} target="_blank">Code</a>
-                             </Button>
-                         )}
+                      {/* Only show these big buttons on mobile where hover tooltips might be harder to use */}
+                      {project.liveUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          asChild
+                          className="w-full"
+                        >
+                          <a href={project.liveUrl} target="_blank">
+                            Live Site
+                          </a>
+                        </Button>
+                      )}
+                      {project.repoUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          asChild
+                          className="w-full"
+                        >
+                          <a href={project.repoUrl} target="_blank">
+                            Code
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

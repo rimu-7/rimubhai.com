@@ -115,7 +115,7 @@ export default function ExperienceList({ user }) {
       <div className="space-y-6 w-full">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col gap-2">
-            <Skeleton className="h-16 w-full rounded-none" />
+            <Skeleton className="h-16 w-full rounded" />
             <Skeleton className="h-px w-full" />
           </div>
         ))}
@@ -168,7 +168,7 @@ export default function ExperienceList({ user }) {
               <Button
                 variant="outline"
                 onClick={() => setShowAll(true)}
-                className="group rounded-full px-8 border-dashed border-border hover:border-foreground/30 transition-all"
+                className="group rounded px-8 border-dashed border-border hover:border-foreground/30 transition-all"
               >
                 View Older Roles ({hiddenItems.length})
                 <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
@@ -238,7 +238,7 @@ function ExperienceGroup({
                 <div className="flex items-start md:items-center gap-4 text-left min-w-0 flex-1">
                   <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 overflow-hidden">
                     {/* Role Title */}
-                    <h3 className="relative text-lg md:text-xl font-medium tracking-tight truncate pr-1">
+                    <h3 className="relative text-lg md:text-xl font-medium tracking-tight truncate pr-1 lowercase">
                       {exp.role}
                       <span className="absolute left-0 bottom-0 h-[1.5px] w-full bg-foreground scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
                     </h3>
@@ -331,7 +331,7 @@ function ExperienceGroup({
                           <Badge
                             key={idx}
                             variant="outline"
-                            className="px-2.5 py-0.5 text-xs font-normal text-muted-foreground border-border/60 bg-transparent"
+                            className="px-2.5 rounded py-0.5 text-xs font-normal text-muted-foreground border-border/60 bg-transparent hover:bg-foreground/10"
                           >
                             {skill}
                           </Badge>
@@ -348,7 +348,7 @@ function ExperienceGroup({
 
                       <Badge
                         variant="secondary"
-                        className="rounded-md font-normal bg-secondary/50 text-foreground/80"
+                        className="rounded font-normal bg-secondary/50 text-foreground/80 hover:bg-foreground/10"
                       >
                         {exp.type}
                       </Badge>

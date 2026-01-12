@@ -17,7 +17,7 @@ export function BlogCard({ post }) {
       href={`/blogs/${post._id}`}
       className="block h-full outline-none group"
     >
-      <Card className="flex flex-col h-full shadow-none border-none hover:outline-2 bg-card text-card-foreground transition-all duration-300 hover:border-primary/50 overflow-hidden">
+      <Card className="flex flex-col h-full rounded shadow-none border-none hover:outline-2 bg-card text-card-foreground transition-all duration-300 hover:border-primary/50 overflow-hidden">
         {/* Optional: Add an Image here if your schema supports it */}
         {/* <div className="aspect-video w-full bg-muted" /> */}
 
@@ -27,7 +27,7 @@ export function BlogCard({ post }) {
               {post.featured && (
                 <Badge
                   variant="secondary"
-                  className="bg-primary/10 text-primary border-primary/20 gap-1"
+                  className="bg-primary/10 rounded text-primary border-primary/20 gap-1"
                 >
                   <Star className="w-3 h-3 fill-primary" />
                   Featured

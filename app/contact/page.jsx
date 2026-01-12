@@ -127,7 +127,7 @@ export default function ContactPage() {
                 </span>
                 <Badge
                   variant="outline"
-                  className="bg-background/50 border-green-500/30 text-green-700 dark:text-green-400"
+                  className="bg-background/50 rounded border-green-500/30 text-green-700 dark:text-green-400"
                 >
                   Open for Work
                 </Badge>

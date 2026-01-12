@@ -42,6 +42,7 @@ import { TextWritingEffect } from "@/components/ui/text-writing-effect";
 import { Switch } from "@/components/ui/switch";
 import { BiLogoJavascript, BiLogoTypescript } from "react-icons/bi";
 import { Label } from "@/components/ui/label";
+import Container from "@/components/Container";
 
 // --- Font Configuration ---
 const greatVibes = Great_Vibes({ weight: "400", subsets: ["latin"] });
@@ -105,8 +106,8 @@ export default function TextWritingEffectDemo() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background p-6 md:p-12 flex justify-center">
-      <div className="w-full max-w-3xl space-y-8">
+    <div className="min-h-screen w-full bg-background flex justify-center">
+      <Container>
         {/* Page Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -122,12 +123,16 @@ export default function TextWritingEffectDemo() {
         </div>
 
         {/* Live Preview Card */}
-        <Card className="border shadow-sm">
+        <Card className="border shadow-none rounded">
           <CardHeader className="pb-4 border-b">
             <Tabs defaultValue="preview">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="preview">Preview</TabsTrigger>
-                <TabsTrigger value="code">Code</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-4 rounded">
+                <TabsTrigger value="preview" className="rounded">
+                  Preview
+                </TabsTrigger>
+                <TabsTrigger value="code" className="rounded">
+                  Code
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="preview" className="space-y-6">
@@ -147,19 +152,23 @@ export default function TextWritingEffectDemo() {
                       value={text}
                       onChange={(e) => setText(e.target.value)}
                       placeholder="Type text..."
-                      className="bg-background h-9 min-w-[150px]"
+                      className="bg-background rounded h-9 min-w-[150px]"
                     />
                     <div className="flex justify-between w-full gap-2">
                       <Select
                         value={selectedFont}
                         onValueChange={setSelectedFont}
                       >
-                        <SelectTrigger className="w-full md:w-[140px] h-9 bg-background">
+                        <SelectTrigger className="w-full md:w-[140px] rounded h-9 bg-background">
                           <SelectValue placeholder="Font" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded">
                           {fontOptions.map((font) => (
-                            <SelectItem key={font.value} value={font.value}>
+                            <SelectItem
+                              key={font.value}
+                              value={font.value}
+                              className="rounded"
+                            >
                               {font.name}
                             </SelectItem>
                           ))}
@@ -168,7 +177,7 @@ export default function TextWritingEffectDemo() {
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-9 w-9 bg-background shrink-0"
+                        className="h-9 w-9 bg-background rounded shrink-0"
                         onClick={handleReplay}
                       >
                         <RefreshCw className="h-4 w-4" />
@@ -221,17 +230,21 @@ export default function TextWritingEffectDemo() {
             </h3>
 
             <Tabs defaultValue="npm" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-4 rounded">
                 {Object.keys(commands).map((pkgManager) => (
-                  <TabsTrigger key={pkgManager} value={pkgManager}>
+                  <TabsTrigger
+                    key={pkgManager}
+                    value={pkgManager}
+                    className="rounded"
+                  >
                     {pkgManager}
                   </TabsTrigger>
                 ))}
               </TabsList>
 
               {Object.entries(commands).map(([key, command]) => (
-                <TabsContent key={key} value={key} className="">
-                  <Card className="">
+                <TabsContent key={key} value={key}>
+                  <Card className="rounded shadow-none">
                     <CardContent className="p-4 flex items-center justify-between">
                       <code className="font-mono text-sm text-foreground/80 truncate pr-4">
                         {command}
@@ -308,7 +321,7 @@ export default function TextWritingEffectDemo() {
             <Button
               size="sm"
               variant="secondary"
-              className="h-8 gap-2 shadow-sm border bg-background/80 backdrop-blur"
+              className="h-8 gap-2 shadow-none rounded border bg-background/80 backdrop-blur"
               onClick={() =>
                 handleCopyCode(isTs ? componentSourceTS : componentSourceJS)
               }
@@ -322,15 +335,15 @@ export default function TextWritingEffectDemo() {
             </Button>
           </div>
 
-          <Card className="bg-[#0d1117] text-gray-300 border-none shadow-lg overflow-hidden">
+          <Card className="bg-[#0d1117] rounded text-gray-300 border-none shadow-none overflow-hidden">
             <CardContent className="p-0">
               <div className="p-4 overflow-x-auto max-h-[600px] text-xs sm:text-sm font-mono leading-relaxed scrollbar-thin scrollbar-thumb-gray-800">
                 <pre>{isTs ? componentSourceTS : componentSourceJS}</pre>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
+          <Card className="rounded shadow-none">
+            <CardHeader className="rounded shadow-none">
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-yellow-500" /> How it Works
               </CardTitle>
@@ -359,7 +372,7 @@ export default function TextWritingEffectDemo() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Type className="h-5 w-5" /> Props
@@ -397,7 +410,7 @@ export default function TextWritingEffectDemo() {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }
@@ -405,11 +418,11 @@ export default function TextWritingEffectDemo() {
 // Helper for Info Tab
 function PropCard({ name, type, desc, required }) {
   return (
-    <div className="p-3 rounded-lg border bg-muted/20 space-y-1">
+    <div className="p-3 rounded shadow-none border bg-muted/20 space-y-1">
       <div className="flex items-center justify-between">
         <code className="text-sm font-bold">{name}</code>
         {required && (
-          <Badge variant="destructive" className="text-[10px] h-4 px-1">
+          <Badge variant="destructive" className="text-[10px] h-4 px-1 rounded">
             Required
           </Badge>
         )}

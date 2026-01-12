@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import {
-  HoverCard,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
 
 import {
   motion,
@@ -29,9 +26,9 @@ export function NameToolTip() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); 
+      setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -55,7 +52,13 @@ export function NameToolTip() {
   }, [isOpen, isMobile, mouseX, mouseY]);
 
   return (
-    <HoverCard openDelay={100} closeDelay={200} open={isOpen} onOpenChange={setIsOpen} className="border-3 border-foreground">
+    <HoverCard
+      openDelay={100}
+      closeDelay={200}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="border-3 border-foreground"
+    >
       <HoverCardTrigger asChild>
         <span
           tabIndex={0}
@@ -63,16 +66,31 @@ export function NameToolTip() {
           className="cursor-pointer font-bold decoration-dashed underline-offset-4 hover:underline focus:outline-none focus:text-primary touch-manipulation"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <TextWriting/>
+          <TextWriting />
         </span>
       </HoverCardTrigger>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, x: isMobile ? "-50%" : 0, y: isMobile ? "-50%" : 0 }}
-            animate={{ opacity: 1, scale: 1, x: isMobile ? "-50%" : 0, y: isMobile ? "-50%" : 0 }}
-            exit={{ opacity: 0, scale: 0.9, x: isMobile ? "-50%" : 0, y: isMobile ? "-50%" : 0 }}
+            initial={{
+              opacity: 0,
+              scale: 0.9,
+              x: isMobile ? "-50%" : 0,
+              y: isMobile ? "-50%" : 0,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: isMobile ? "-50%" : 0,
+              y: isMobile ? "-50%" : 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.9,
+              x: isMobile ? "-50%" : 0,
+              y: isMobile ? "-50%" : 0,
+            }}
             transition={{ duration: 0.2 }}
             style={{
               position: "fixed",
@@ -80,16 +98,15 @@ export function NameToolTip() {
               pointerEvents: "none",
               ...(isMobile
                 ? { top: "50%", left: "50%" }
-                : { top: 0, left: 0, x: springX, y: springY }
-              ),
+                : { top: 0, left: 0, x: springX, y: springY }),
             }}
             className={cn(
-              "rounded-md border-2 border-dashed border-foreground bg-white p-4 shadow-xl outline-none  dark:bg-black",
-              "w-80 max-w-[90vw]" 
+              "rounded border-2 border-dashed border-foreground bg-white p-4 shadow-xl outline-none  dark:bg-black",
+              "w-80 max-w-[120vw]"
             )}
           >
             <div className="flex flex-col gap-4">
-              <div className="relative h-60 w-full overflow-hidden rounded-md bg-neutral-100">
+              <div className="relative h-60 w-full overflow-hidden rounded bg-neutral-100">
                 <Image
                   src="https://res.cloudinary.com/di1josexb/image/upload/v1766003422/rimu_u8mr0q.jpg"
                   alt="Profile"
@@ -103,8 +120,8 @@ export function NameToolTip() {
                   mutasim fuad rimu
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  A passionate full-stack developer with expertise in Next.js, now,
-                  i&apos;m doing my{" "}
+                  A passionate full-stack developer with expertise in Next.js,
+                  now, i&apos;m doing my{" "}
                   <span className="font-bold text-foreground">
                     masters in computer science & application technology at
                     Changchun University of Science and Technology, China.

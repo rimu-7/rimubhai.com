@@ -125,7 +125,7 @@ function SocialButton({ href, icon, label }) {
       variant="outline"
       size="icon"
       asChild
-      className="h-9 w-9 rounded-full bg-background border-border/50 text-muted-foreground transition-all duration-300 hover:text-primary hover:border-primary/50 hover:scale-105"
+      className="h-9 w-9 rounded bg-background border-border/50 text-muted-foreground transition-all duration-300 hover:text-primary hover:border-primary/50 hover:scale-105"
     >
       <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
         {icon}

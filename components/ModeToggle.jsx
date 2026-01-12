@@ -35,7 +35,7 @@ export function ModeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="group relative h-9 w-9 rounded-full bg-background/50 hover:bg-accent hover:text-accent-foreground"
+      className="group relative h-9 w-9 rounded bg-background/50 hover:bg-accent hover:text-accent-foreground"
       aria-label="Toggle theme"
     >
       {/* Sun Icon: Visible in Light Mode, Rotates out in Dark */}

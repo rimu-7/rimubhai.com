@@ -139,7 +139,7 @@ export default function LifeEventList({ user }) {
       <div className="space-y-6 w-full">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col gap-2">
-            <Skeleton className="h-16 w-full rounded-none" />
+            <Skeleton className="h-16 w-full rounded" />
             <Skeleton className="h-px w-full" />
           </div>
         ))}
@@ -193,7 +193,7 @@ export default function LifeEventList({ user }) {
               <Button
                 variant="outline"
                 onClick={() => setShowAll(true)}
-                className="group rounded-full px-8 border-dashed border-border hover:border-foreground/30 transition-all"
+                className="group rounded px-8 border-dashed border-border hover:border-foreground/30 transition-all"
               >
                 View Older Events ({hiddenItems.length})
                 <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
@@ -259,7 +259,7 @@ function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                     
                     {/* Type Icon (Replaces Index Number) */}
                     <div className={cn(
-                        "flex items-center justify-center w-8 h-8 rounded-full shrink-0 transition-colors duration-300",
+                        "flex items-center justify-center w-8 h-8 rounded shrink-0 transition-colors duration-300",
                         "bg-secondary/50 group-hover:bg-secondary", 
                         typeConfig.color.replace('text-', 'text-opacity-80 ') // Subtle coloring
                     )}>
@@ -348,7 +348,7 @@ function EventGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                         <div className="flex items-center pt-2">
                              <Badge 
                                 variant="outline" 
-                                className={cn("px-2.5 py-0.5 text-xs font-medium border capitalize", typeConfig.color, typeConfig.bg, typeConfig.border)}
+                                className={cn("px-2.5 py-0.5 rounded text-xs font-medium border capitalize", typeConfig.color, typeConfig.bg, typeConfig.border)}
                             >
                                 {ev.type}
                             </Badge>

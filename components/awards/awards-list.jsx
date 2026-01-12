@@ -154,7 +154,7 @@ export default function AwardList({ user }) {
       <div className="space-y-6 w-full">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col gap-2">
-            <Skeleton className="h-16 w-full rounded-none" />
+            <Skeleton className="h-16 w-full rounded" />
             <Skeleton className="h-px w-full" />
           </div>
         ))}
@@ -207,7 +207,7 @@ export default function AwardList({ user }) {
               <Button
                 variant="outline"
                 onClick={() => setShowAll(true)}
-                className="group rounded-full px-8 border-dashed border-border hover:border-foreground/30 transition-all"
+                className="group rounded px-8 border-dashed border-border hover:border-foreground/30 transition-all"
               >
                 View Archive ({hiddenItems.length})
                 <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
@@ -272,7 +272,7 @@ function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                     {/* Type Icon */}
                     <div
                       className={cn(
-                        "flex items-center justify-center w-8 h-8 rounded-full shrink-0 transition-colors duration-300",
+                        "flex items-center justify-center w-8 h-8 rounded shrink-0 transition-colors duration-300",
                         "bg-secondary/50 group-hover:bg-secondary",
                         config.color.replace("text-", "text-opacity-80 ")
                       )}
@@ -346,7 +346,7 @@ function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                     {/* Description */}
                     <div
                       className={cn(
-                        "px-2.5 py-0.5 rounded-xl w-fit text-xs font-medium border capitalize",
+                        "px-2.5 py-0.5 rounded w-fit text-xs font-medium border capitalize",
                         config.color,
                         config.bg,
                         config.border
@@ -376,7 +376,7 @@ function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                       <Badge
                         variant="outline"
                         className={cn(
-                          "px-2.5 py-0.5 text-xs font-medium border capitalize",
+                          "px-2.5 py-0.5 text-xs rounded font-medium border capitalize",
                           config.color,
                           config.bg,
                           config.border
@@ -391,7 +391,7 @@ function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                           variant="outline"
                           size="sm"
                           asChild
-                          className="text-xs h-8 gap-2 rounded-full border-dashed"
+                          className="text-xs h-8 gap-2 rounded border-dashed"
                         >
                           <a
                             href={item.link}

@@ -3,59 +3,66 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, Clock, Share2 } from "lucide-react";
 import Link from "next/link";
-import DOMPurify from "isomorphic-dompurify"; // Import sanitizer
+import DOMPurify from "isomorphic-dompurify";
 import Container from "@/components/Container";
 
-// --- GENERATE METADATA ---
+// --- GENERATE METADATA
 export async function generateMetadata({ params }) {
-  const { id } = await params;
-  const post = await getBlogPost(id);
+  try {
+    const { id } = await params;
+    const post = await getBlogPost(id);
 
-  if (!post) {
-    return { title: "Post Not Found" };
+    if (!post) {
+      return { title: "Post Not Found" };
+    }
+
+    // Create a clean summary for SEO
+    const plainText = post.content?.replace(/<[^>]*>?/gm, "") || "";
+    const summary = plainText.substring(0, 160).trim();
+
+    return {
+      title: post.name,
+      description: summary,
+      openGraph: {
+        title: post.name,
+        description: summary,
+        type: "article",
+        publishedTime: post.createdAt,
+        authors: ["Rimu Bhai"],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.name,
+        description: summary,
+      },
+    };
+  } catch (error) {
+    // Fallback if DB fails during metadata generation
+    return { title: "Blog Post | Rimu Bhai" };
   }
-
-  // Create a clean summary for SEO
-  const plainText = post.content?.replace(/<[^>]*>?/gm, "") || "";
-  const summary = plainText.substring(0, 160).trim();
-
-  return {
-    title: post.name,
-    description: summary,
-    openGraph: {
-      title: post.name,
-      description: summary,
-      type: "article",
-      publishedTime: post.createdAt,
-      authors: ["Rimu Bhai"], // Replace with dynamic author if available
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.name,
-      description: summary,
-    },
-  };
 }
 
 // --- MAIN PAGE COMPONENT ---
 export default async function BlogPostPage({ params }) {
   const { id } = await params;
+
+  // This function comes from the updated lib/data.js (Must be updated!)
   const post = await getBlogPost(id);
 
   if (!post) notFound();
 
   // 1. Sanitize Content (Security Best Practice)
-  // This removes <script> tags and other malicious vectors from the HTML
-  const sanitizedContent = DOMPurify.sanitize(post.content);
+  // Added "|| ''" to prevent crash if content is missing
+  const sanitizedContent = DOMPurify.sanitize(post.content || "");
 
   // 2. Calculate Reading Time
-  const wordCount = post.content?.replace(/<[^>]*>?/gm, "").split(/\s+/).length || 0;
+  const wordCount =
+    (post.content || "")?.replace(/<[^>]*>?/gm, "").split(/\s+/).length || 0;
   const readTime = Math.ceil(wordCount / 200);
 
   return (
     <Container>
       <article className="py-16 max-w-3xl mx-auto">
-        
         {/* Navigation */}
         <Button
           variant="ghost"
@@ -102,9 +109,7 @@ export default async function BlogPostPage({ params }) {
 
         {/* Footer / Share (Optional) */}
         <div className="mt-16 pt-8 border-t flex justify-between items-center">
-          <p className="text-sm text-muted-foreground">
-            Thanks for reading!
-          </p>
+          <p className="text-sm text-muted-foreground">Thanks for reading!</p>
           <Button variant="outline" size="sm" className="gap-2">
             <Share2 className="h-4 w-4" /> Share this post
           </Button>

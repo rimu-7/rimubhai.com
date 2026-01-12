@@ -99,7 +99,7 @@ export default function ContactForm() {
               Name
             </label>
             <div className="relative group">
-              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 name="name"
                 placeholder="John Doe"
@@ -118,7 +118,7 @@ export default function ContactForm() {
               Email
             </label>
             <div className="relative group">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 name="email"
                 type="email"
@@ -139,7 +139,7 @@ export default function ContactForm() {
             Subject
           </label>
           <div className="relative group">
-            <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <FileText className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
               name="subject"
               placeholder="Project Inquiry / Collab"

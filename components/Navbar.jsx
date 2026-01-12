@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Container from "./Container";
 
 const pressFont = Press_Start_2P({
   subsets: ["latin"],
@@ -65,7 +66,7 @@ export default function Navbar() {
           : "bg-background/50 backdrop-blur-sm border-transparent"
       )}
     >
-      <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+      <Container className="h-16 flex items-center justify-between">
         {/* --- LEFT: LOGO --- */}
         <Link href="/" className="group flex items-center gap-2">
           <div className="relative flex items-center justify-center">
@@ -82,9 +83,11 @@ export default function Navbar() {
 
         {/* --- RIGHT: NAV & ACTIONS --- */}
         <div className="flex items-center gap-2">
-          
           {/* 1. Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1 mr-2 relative" onMouseLeave={() => setHoveredPath(pathname)}>
+          <div
+            className="hidden md:flex items-center gap-1 mr-2 relative"
+            onMouseLeave={() => setHoveredPath(pathname)}
+          >
             {menuItems.map((item) => {
               const isActive = item.href === pathname;
 
@@ -94,7 +97,9 @@ export default function Navbar() {
                   href={item.href}
                   className={cn(
                     "relative px-4 py-2 text-sm font-medium transition-colors rounded-md z-10",
-                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    isActive
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                   onMouseEnter={() => setHoveredPath(item.href)}
                 >
@@ -133,20 +138,30 @@ export default function Navbar() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </DialogTrigger>
-              
+
               <DialogContent className="w-[90%] max-w-[400px] p-0 gap-0 overflow-hidden rounded-2xl border-border/60 bg-background/95 backdrop-blur-xl">
-                 
-                 {/* ACCESSIBLE TITLE FIX: Using 'sr-only' class instead of VisuallyHidden component */}
-                 <DialogTitle className="sr-only">Mobile Navigation Menu</DialogTitle>
+                {/* ACCESSIBLE TITLE FIX: Using 'sr-only' class instead of VisuallyHidden component */}
+                <DialogTitle className="sr-only">
+                  Mobile Navigation Menu
+                </DialogTitle>
 
                 {/* Header */}
                 <div className="p-4 border-b bg-muted/20 flex items-center justify-between">
-                   <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                         <span className={cn(pressFont.className, "text-[10px] text-primary")}>RB</span>
-                      </div>
-                      <span className="text-sm font-medium text-muted-foreground">Menu</span>
-                   </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                      <span
+                        className={cn(
+                          pressFont.className,
+                          "text-[10px] text-primary"
+                        )}
+                      >
+                        RB
+                      </span>
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Menu
+                    </span>
+                  </div>
                 </div>
 
                 {/* Menu Items */}
@@ -157,7 +172,7 @@ export default function Navbar() {
                       <Link
                         key={item.label}
                         href={item.href}
-                        onClick={() => setMobileMenuOpen(false)} 
+                        onClick={() => setMobileMenuOpen(false)}
                         className={cn(
                           "group flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200",
                           isActive
@@ -168,34 +183,35 @@ export default function Navbar() {
                         <item.icon
                           className={cn(
                             "h-4 w-4 transition-colors",
-                            isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                            isActive
+                              ? "text-primary"
+                              : "text-muted-foreground group-hover:text-foreground"
                           )}
                         />
                         {item.label}
                         {isActive && (
-                            <motion.div 
-                                layoutId="mobile-indicator"
-                                className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" 
-                            />
+                          <motion.div
+                            layoutId="mobile-indicator"
+                            className="ml-auto w-1.5 h-1.5 rounded-full bg-primary"
+                          />
                         )}
                       </Link>
                     );
                   })}
                 </div>
-                
+
                 {/* Footer */}
                 <div className="p-4 bg-muted/30 border-t text-xs text-center text-muted-foreground">
-                    <p className="flex items-center justify-center gap-1 opacity-70">
-                         <Sparkles className="h-3 w-3" /> 
-                         Designed by Rimubhai
-                    </p>
+                  <p className="flex items-center justify-center gap-1 opacity-70">
+                    <Sparkles className="h-3 w-3" />
+                    Designed by Rimubhai
+                  </p>
                 </div>
-
               </DialogContent>
             </Dialog>
           </div>
         </div>
-      </div>
+      </Container>
     </motion.nav>
   );
 }
