@@ -6,7 +6,7 @@ import Link from "next/link";
 import DOMPurify from "isomorphic-dompurify";
 import Container from "@/components/Container";
 
-// --- GENERATE METADATA
+// --- GENERATE METADATA (Robust Version) ---
 export async function generateMetadata({ params }) {
   try {
     const { id } = await params;
@@ -17,6 +17,7 @@ export async function generateMetadata({ params }) {
     }
 
     // Create a clean summary for SEO
+    // Handle empty content safely with || ""
     const plainText = post.content?.replace(/<[^>]*>?/gm, "") || "";
     const summary = plainText.substring(0, 160).trim();
 
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (error) {
-    // Fallback if DB fails during metadata generation
+    // Fallback if DB fails during metadata generation to prevent 500 Error
     return { title: "Blog Post | Rimu Bhai" };
   }
 }
@@ -46,13 +47,13 @@ export async function generateMetadata({ params }) {
 export default async function BlogPostPage({ params }) {
   const { id } = await params;
 
-  // This function comes from the updated lib/data.js (Must be updated!)
+  // Fetch data safely
   const post = await getBlogPost(id);
 
   if (!post) notFound();
 
   // 1. Sanitize Content (Security Best Practice)
-  // Added "|| ''" to prevent crash if content is missing
+  // Added "|| ''" to prevent crash if content is undefined/null
   const sanitizedContent = DOMPurify.sanitize(post.content || "");
 
   // 2. Calculate Reading Time
