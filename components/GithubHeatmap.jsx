@@ -137,7 +137,7 @@ export default function GithubContributions({username}) {
         <CardHeader className="px-0 pt-0 pb-4">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-xl font-bold tracking-tight">
+              <CardTitle className="text-4xl font-bold tracking-tight">
                 Github Contributions
               </CardTitle>
               {!isLoading && (

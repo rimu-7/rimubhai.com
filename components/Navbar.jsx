@@ -101,7 +101,7 @@ export default function Navbar() {
                   {item.href === hoveredPath && (
                     <motion.div
                       layoutId="navbar-hover"
-                      className="absolute inset-0 bg-accent/50 rounded-md -z-10"
+                      className="absolute inset-0 rounded-md -z-10"
                       transition={{
                         type: "spring",
                         bounce: 0.2,

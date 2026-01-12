@@ -76,7 +76,7 @@ const itemVariants = {
 
 export default function Components() {
   return (
-    <section className="py-16 px-6 min-h-screen bg-background/50">
+    <section className="py-16 min-h-screen bg-background/50">
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header Section with intro animation */}
         <motion.div
@@ -105,18 +105,18 @@ export default function Components() {
               <Link href={component.href} passHref>
                 {/* Wrapping Card in motion div for hover effects */}
                 <motion.div initial="initial" whileTap="tap" className="h-full">
-                  <Card className="h-full relative overflow-hidden group border-muted-foreground/10 hover:border-primary/30 transition-colors bg-card/50 backdrop-blur-lg cursor-pointer shadow-sm hover:shadow-md">
-                    {/* Subtle background gradient blob on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out" />
-
+                  <Card className="h-full relative overflow-hidden group transition-colors border-none hover:outline-2 backdrop-blur-lg cursor-pointer shadow-none">
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="space-y-1 relative z-10">
-                          <CardTitle className="flex items-center gap-2 text-xl">
-                            {React.createElement(component.icon, {
-                              className: "w-5 h-5 text-primary",
-                            })}
-                            {component.name}
+                          <CardTitle className="relative w-fit">
+                            <div className="flex items-center gap-2 text-xl">
+                              {React.createElement(component.icon, {
+                                className: "w-5 h-5 text-primary",
+                              })}
+                              {component.name}
+                            </div>
+                            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
                           </CardTitle>
                           <CardDescription className="text-sm leading-relaxed">
                             {component.description}
@@ -125,7 +125,7 @@ export default function Components() {
 
                         {/* Arrow icon that moves on hover */}
                         <motion.div
-                          className="text-muted-foreground group-hover:text-primary"
+                          className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 duration-300"
                           initial={{ x: 0, opacity: 0.5 }}
                           whileHover={{ x: 5, opacity: 1 }}
                         >

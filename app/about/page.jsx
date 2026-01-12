@@ -1,11 +1,10 @@
-import { getCurrentUser } from "@/lib/auth";
 import React from "react";
-import AdminPage from "./admin-about";
+import AboutPage from "./about-page";
 
-export default async function About() {
-  const user = await getCurrentUser();
-  if (user) {
-    return <AdminPage />;
-  }
-  return <div>about</div>;
+export default function About() {
+  return (
+    <div>
+      <AboutPage />
+    </div>
+  );
 }

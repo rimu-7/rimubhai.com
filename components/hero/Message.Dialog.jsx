@@ -82,13 +82,7 @@ export function MessageDialog({ children }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-
-      {/* RESPONSIVE UPDATES:
-         1. w-[95vw]: Takes 95% of viewport width on mobile
-         2. sm:w-full: Resets on larger screens
-         3. max-h-[85vh]: Ensures it fits vertically even with keyboard open 
-      */}
-      <DialogContent className="w-[95vw] sm:w-full sm:max-w-[500px] p-0 overflow-hidden border-none shadow-2xl bg-background/95 backdrop-blur-md max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl">
+      <DialogContent className="w-[95vw] sm:w-full sm:max-w-[500px] p-0 overflow-hidden border-none shadow-2xl bg-background/95 backdrop-blur-md max-h-[90vh] overflow-y-auto rounded">
         {!isSuccess ? (
           <div className="p-5 sm:p-6">
             <DialogHeader className="mb-5 sm:mb-6 text-left">
@@ -109,7 +103,7 @@ export function MessageDialog({ children }) {
                   <Input
                     name="name"
                     placeholder="Your Name"
-                    className="pl-9 text-xs bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
+                    className="pl-9 text-xs rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -123,7 +117,7 @@ export function MessageDialog({ children }) {
                     name="email"
                     type="email"
                     placeholder="Email Address"
-                    className="pl-9 text-xs bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
+                    className="pl-9 text-xs rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -137,7 +131,7 @@ export function MessageDialog({ children }) {
                 <Input
                   name="subject"
                   placeholder="Subject (e.g., Web App Project)"
-                  className="pl-9 text-xs bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
+                  className="pl-9 text-xs rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
                   value={formData.subject}
                   onChange={handleChange}
                   required
@@ -150,7 +144,7 @@ export function MessageDialog({ children }) {
                   name="message"
                   placeholder="Tell me about your project..."
                   rows={4}
-                  className="resize-none bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all p-3 sm:text-sm text-xs"
+                  className="resize-none rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all p-3 sm:text-sm text-xs"
                   value={formData.message}
                   onChange={handleChange}
                   required
@@ -158,7 +152,7 @@ export function MessageDialog({ children }) {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" className="w-full rounded" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -193,7 +187,7 @@ export function MessageDialog({ children }) {
 
             <Button
               variant="outline"
-              className="mt-8 min-w-[120px]"
+              className="mt-8 min-w-[120px] rounded"
               onClick={() => {
                 setIsOpen(false);
                 setIsSuccess(false);

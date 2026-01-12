@@ -242,7 +242,7 @@ export default function Hero() {
                       src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
                       alt="Profile picture"
                       fill
-                      priority
+                      priority={true}
                       sizes="(max-width: 640px) 192px, 224px"
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />

@@ -346,14 +346,14 @@ function AwardGroup({ items, user, handleEdit, handleDelete, defaultOpen }) {
                     {/* Description */}
                     <div
                       className={cn(
-                        "px-2.5 py-0.5 rounded-full w-fit text-xs font-medium border capitalize",
+                        "px-2.5 py-0.5 rounded-xl w-fit text-xs font-medium border capitalize",
                         config.color,
                         config.bg,
                         config.border
                       )}
                     >
                       {item.issuer && (
-                        <span className="text-muted-foreground text-sm text-wrap truncate">
+                        <span className="text-sm text-wrap truncate">
                           @ {item.issuer}
                         </span>
                       )}
