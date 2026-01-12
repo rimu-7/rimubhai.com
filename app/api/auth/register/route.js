@@ -5,7 +5,6 @@ import connectDB from "@/lib/mongodb";
 import { signToken } from "@/lib/jwt";
 import { User } from "@/lib/schema";
 
-
 function jsonError(message, status = 400) {
   return NextResponse.json({ message }, { status });
 }
@@ -13,6 +12,11 @@ function jsonError(message, status = 400) {
 export async function POST(req) {
   try {
     await connectDB();
+
+    const currentCount = await User.countDocuments({});
+    if (currentCount >= 2) {
+      return jsonError("You are not welcome here", 403);
+    }
 
     const body = await req.json().catch(() => null);
     const name = typeof body?.name === "string" ? body.name.trim() : "";
