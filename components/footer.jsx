@@ -8,7 +8,6 @@ import Container from "@/components/Container";
 import { Press_Start_2P } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-// Initialize Pixel Font
 const pressFont = Press_Start_2P({
   subsets: ["latin"],
   weight: ["400"],
@@ -19,7 +18,6 @@ const pressFont = Press_Start_2P({
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  // Social Links Configuration
   const SOCIAL_LINKS = [
     {
       name: "GitHub",
@@ -39,76 +37,69 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-background/95 backdrop-blur-xl mt-auto pt-8 pb-6">
-      <Container className="">
-        <div className="flex flex-col border-t gap-8 pt-6">
-          {/* --- TOP SECTION: Brand (Left) & Socials (Right) --- */}
-          <div className="flex flex-row justify-between items-center gap-6">
+    <footer className="w-full border-t bg-background/95 backdrop-blur-xl mt-auto">
+      <Container>
+        <div className="flex flex-col gap-10 py-10 md:py-12">
+          
+          {/* --- TOP SECTION --- */}
+          <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
             {/* Left: Brand & Tagline */}
-            <div className="flex flex-col gap-2 items-start text-center md:text-left">
+            <div className="flex flex-col gap-3 max-w-sm">
               <Link
                 href="/"
                 className="group flex items-center gap-2 transition-opacity hover:opacity-80"
               >
-                <span
-                  className={cn(
-                    "text-xs md:text-sm tracking-tighter",
-                    pressFont.className
-                  )}
-                >
+                <span className={cn("text-sm tracking-tighter", pressFont.className)}>
                   rimu<span className="text-primary">{"</>"}</span>
                 </span>
               </Link>
-              <p className="text-sm text-muted-foreground text-justify text-wrap">
-                Building digital experiences with clean code and pixel-perfect
-                design.
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Building digital experiences with clean code and pixel-perfect design. 
+                Based in Tanzania, crafting global solutions.
               </p>
             </div>
 
-            {/* Right: Social Icons */}
-            <div className="flex items-center gap-2">
-              {SOCIAL_LINKS.map((social) => (
-                <SocialButton
-                  key={social.name}
-                  href={social.href}
-                  icon={social.icon}
-                  label={social.name}
-                />
-              ))}
+            {/* Right: Socials & Quick Connect */}
+            <div className="flex flex-col gap-4 md:items-end">
+              <span className="text-xs font-semibold uppercase tracking-wider text-foreground/50">
+                Connect
+              </span>
+              <div className="flex items-center gap-3">
+                {SOCIAL_LINKS.map((social) => (
+                  <SocialButton
+                    key={social.name}
+                    href={social.href}
+                    icon={social.icon}
+                    label={social.name}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* --- DIVIDER --- */}
-          <div className="h-px w-full " />
-
-          {/* --- BOTTOM SECTION: Copyright & Utilities --- */}
-          <div className="flex flex-row border-t justify-between items-center gap-4 text-xs text-muted-foreground">
-            {/* Left: Copyright */}
-            <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4">
-              <span>&copy; {currentYear} Rimubhai.</span>
-              <span className="hidden md:inline text-border">|</span>
-              <span className="flex items-center gap-1">
-                Built with{" "}
-                <Heart className="h-3 w-3 text-red-500 fill-red-500 animate-pulse" />{" "}
-                using Next.js
-              </span>
+          {/* --- BOTTOM SECTION --- */}
+          <div className="flex flex-col-reverse items-center justify-between gap-6 border-t pt-8 md:flex-row">
+            {/* Copyright Info */}
+            <div className="flex flex-col items-center gap-2 md:items-start md:gap-1">
+              <p className="text-xs font-medium text-muted-foreground">
+                © {currentYear} <span className="text-foreground">Rimubhai</span>. All rights reserved.
+              </p>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground/60">
+                <span>Built with</span>
+                <Heart className="h-3 w-3 text-red-500 fill-red-500 animate-pulse" />
+                <span>Next.js & Tailwind</span>
+              </div>
             </div>
 
-            {/* Right: Controls */}
-            <div className="flex items-center gap-4">
-              <Link
-                href="/contact"
-                className="hover:text-foreground transition-colors"
-              >
-                contact
+            {/* Utilities & Theme */}
+            <div className="flex items-center gap-6 text-xs font-medium uppercase tracking-tight text-muted-foreground">
+              <Link href="/contact" className="hover:text-primary transition-colors">
+                Contact
               </Link>
-              <Link
-                href="/privacy-policy"
-                className="hover:text-foreground transition-colors"
-              >
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors">
                 Privacy
               </Link>
-              <div className="h-3 w-px bg-border" />
+              <div className="h-4 w-px bg-border" />
               <ModeToggle />
             </div>
           </div>
@@ -118,14 +109,13 @@ export default function Footer() {
   );
 }
 
-// --- Helper Component ---
 function SocialButton({ href, icon, label }) {
   return (
     <Button
       variant="outline"
       size="icon"
       asChild
-      className="h-9 w-9 rounded bg-background border-border/50 text-muted-foreground transition-all duration-300 hover:text-primary hover:border-primary/50 hover:scale-105"
+      className="h-10 w-10 rounded-xl bg-transparent border-border/60 text-muted-foreground transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:border-primary/50"
     >
       <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
         {icon}
