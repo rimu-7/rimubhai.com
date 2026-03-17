@@ -19,6 +19,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import Container from "../Container";
 
 export default function ExperienceManager() {
   const [experiences, setExperiences] = useState([]);
@@ -127,19 +128,19 @@ export default function ExperienceManager() {
   if (loading) return <div className="p-8 flex justify-center"><Loader2 className="animate-spin" /></div>;
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-20 space-y-6">
+    <Container className="space-y-6 py-10">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Briefcase className="w-6 h-6" /> Experience History
         </h1>
-        <Button onClick={() => handleOpen(null)}>
+        <Button onClick={() => handleOpen(null)} className="rounded">
           <Plus className="mr-2 h-4 w-4" /> Add Role
         </Button>
       </div>
 
       <div className="space-y-4">
         {experiences.map((exp) => (
-          <Card key={exp._id} className="group hover:border-foreground/50 transition-all">
+          <Card key={exp._id} className="group rounded hover:border-foreground/50 transition-all">
             <CardContent className="p-5 flex flex-col md:flex-row gap-4 justify-between">
               
               {/* Left: Content */}
@@ -147,13 +148,13 @@ export default function ExperienceManager() {
                 <div className="flex items-center gap-3">
                   <h3 className="font-bold text-lg">{exp.role}</h3>
                   {exp.current && (
-                    <Badge variant="default" className="bg-green-600 hover:bg-green-700">Current</Badge>
+                    <Badge variant="default" className="bg-green-600 rounded hover:bg-green-700">Current</Badge>
                   )}
-                  <Badge variant="outline">{exp.type}</Badge>
+                  <Badge variant="outline" className="rounded">{exp.type}</Badge>
                 </div>
                 
                 <div className="flex items-center text-sm text-muted-foreground gap-4">
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 ">
                     <Building2 className="w-3.5 h-3.5" /> {exp.company}
                   </span>
                   <span className="flex items-center gap-1">
@@ -171,7 +172,7 @@ export default function ExperienceManager() {
                 {exp.skills?.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-1">
                     {exp.skills.map((s, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs font-normal">
+                      <Badge key={i} variant="secondary" className="text-xs font-normal rounded">
                         {s}
                       </Badge>
                     ))}
@@ -295,6 +296,6 @@ export default function ExperienceManager() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </Container>
   );
 }

@@ -34,10 +34,6 @@ export default function Dashboard({ user }) {
           Logout
         </Button>
       </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        component will be show here
-      </div>
     </Container>
   );
 }

@@ -8,6 +8,7 @@ import AboutPage from "../about/about-page";
 import ExperienceManager from "@/components/admin/ExperienceManager";
 import LifeEventManager from "@/components/admin/LifeeventsManager";
 import AwardManager from "@/components/admin/AwardManager";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,6 @@ export default async function Home() {
     return (
       <main className="min-h-screen p-8 max-w-4xl mx-auto">
         <Dashboard user={user} />
-
         <Tabs defaultValue="first" className="w-full">
           <TabsList
             className="
@@ -38,6 +38,9 @@ export default async function Home() {
         "
             aria-label="Main tabs"
           >
+            <TabsTrigger value="analytics" className="whitespace-nowrap">
+              Analytics
+            </TabsTrigger>
             <TabsTrigger value="about" className="whitespace-nowrap">
               About
             </TabsTrigger>
@@ -59,6 +62,9 @@ export default async function Home() {
           </TabsList>
 
           <div className="mt-4 w-full">
+            <TabsContent value="analytics" className="p-4">
+              <AnalyticsDashboard />
+            </TabsContent>
             <TabsContent value="about" className="p-4">
               {/* <AboutForm /> */}
               <AboutPage />
