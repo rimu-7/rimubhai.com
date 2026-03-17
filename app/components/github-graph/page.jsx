@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { ActivityCalendar } from "react-activity-calendar";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -41,6 +42,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Container from "@/components/Container";
 import { Settings } from "lucide-react";
+import { GithubHeatMap } from "@/components/ui/github-heatmap";
+import { Github } from "lucide-react";
 
 // --- LIVE COMPONENT FOR DEMO ---
 function GithubContributionsLive({ username }) {
@@ -60,7 +63,7 @@ function GithubContributionsLive({ username }) {
 
       const response = await fetch(
         `https://github-contributions-api.jogruber.de/v4/${username}?y=last`,
-        { signal: controller.signal }
+        { signal: controller.signal },
       );
 
       if (!response.ok) throw new Error("User not found or API error");
@@ -214,18 +217,27 @@ export default function GithubGraphDemoPage() {
 
   return (
     <Container>
-      <div className="w-full max-w-3xl space-y-8 py-10">
+      <div className="w-full  space-y-8 py-10">
         {/* Page Header */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              GitHub Activity Graph
-            </h1>
-            <Badge variant="outline">v2.1</Badge>
-          </div>
-          <p className="text-muted-foreground text-lg">
-            A privacy-friendly, theme-aware contribution graph.
-          </p>
+        <div className="max-w-5xl mx-auto py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center space-y-6"
+          >
+            <div className="flex items-center justify-center gap-3">
+              <div className="p-3 bg-primary/10 rounded-2xl">
+                <Github className="h-8 w-8 text-primary" />
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+                GitHub Activity Graph
+              </h1>
+            </div>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              A beautiful, interactive component to display GitHub activity with
+              real-time fetching, smart formatting, and zero layout shift.
+            </p>
+          </motion.div>
         </div>
 
         {/* Live Demo & Usage Card */}
@@ -295,13 +307,8 @@ export default function GithubGraphDemoPage() {
               </TabsContent>
             </Tabs>
           </CardHeader>
-
-          <CardContent className="pt-6">
-            <Tabs defaultValue="preview">
-              <GithubContributionsLive username={demoUser} />
-            </Tabs>
-          </CardContent>
         </Card>
+        <GithubHeatMap username={demoUser} />
 
         {/* Documentation Tabs */}
 
@@ -411,7 +418,7 @@ export default function GithubGraphDemoPage() {
             className="h-8 gap-2 shadow-sm rounded border bg-background/80 shadow-none backdrop-blur"
             onClick={() =>
               handleCopyCode(
-                isTs ? COMPONENT_SOURCE_CODE_TS : COMPONENT_SOURCE_CODE_JS
+                isTs ? COMPONENT_SOURCE_CODE_TS : COMPONENT_SOURCE_CODE_JS,
               )
             }
           >

@@ -1,16 +1,19 @@
+import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
 import { Blog } from "@/lib/schema";
-import { NextResponse } from "next/server";
+import { generateUniqueSlug } from "@/lib/blogs";
 
 export async function POST(req) {
   try {
     await connectDB();
 
     const body = await req.json();
-    const { name, content, featured } = body;
+    const name = body?.name?.trim();
+    const content = body?.content?.trim();
+    const featured = Boolean(body?.featured);
 
-    // 2. Validate Input
     if (!name || !content) {
       return NextResponse.json(
         { error: "Name and Content are required" },
@@ -18,7 +21,6 @@ export async function POST(req) {
       );
     }
 
-    // 3. Get User safely
     const user = await getCurrentUser();
 
     if (!user) {
@@ -28,22 +30,29 @@ export async function POST(req) {
     const userId = user._id || user.id;
 
     if (!userId) {
-      console.error("Auth Error: User object exists but has no ID:", user);
       return NextResponse.json(
         { error: "User ID missing from session" },
         { status: 500 }
       );
     }
 
-    // 4. Create Item
+    const slug = await generateUniqueSlug(name);
+
     const newItem = await Blog.create({
       userId,
       name,
+      slug,
       content,
-      featured: featured || false,
+      featured,
     });
 
-    return NextResponse.json({ data: newItem }, { status: 201 });
+    revalidatePath("/blogs");
+    revalidatePath(`/blogs/${slug}`);
+
+    return NextResponse.json(
+      { data: JSON.parse(JSON.stringify(newItem)) },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("❌ API Error:", error);
     return NextResponse.json(
@@ -53,13 +62,26 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
     await connectDB();
 
-    const items = await Blog.find({}).sort({ createdAt: -1 });
+    const { searchParams } = new URL(request.url);
+    const limitParam = Number(searchParams.get("limit") || 100);
+    const limit = Number.isFinite(limitParam)
+      ? Math.min(Math.max(limitParam, 1), 100)
+      : 100;
 
-    return NextResponse.json({ data: items }, { status: 200 });
+    const items = await Blog.find({})
+      .select("name slug content featured image excerpt createdAt updatedAt")
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(limit)
+      .lean();
+
+    return NextResponse.json(
+      { data: JSON.parse(JSON.stringify(items)) },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("❌ GET Error:", error);
     return NextResponse.json(

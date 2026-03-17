@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Check, Copy } from "lucide-react";
-import { createRoot } from "react-dom/client"; // Needed to render React icons inside raw HTML
+import { createRoot } from "react-dom/client";
 
 export default function BlogContent({ content }) {
   const contentRef = useRef(null);
@@ -56,6 +56,7 @@ function CopyButton({ preBlock }) {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
+      toast.success("Copied")
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy!", err);
@@ -79,3 +80,4 @@ function CopyButton({ preBlock }) {
 }
 
 import React from "react";
+import { toast } from "next-toast";

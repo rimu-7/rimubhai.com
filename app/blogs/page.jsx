@@ -1,8 +1,8 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 import Link from "next/link";
 import { format } from "date-fns";
-import { ArrowRight, Calendar, Clock } from "lucide-react"; // Added Clock
+import { ArrowRight, Calendar, Clock, Star } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,27 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-import connectDB from "@/lib/mongodb";
-import { Blog } from "@/lib/schema";
 import Container from "@/components/Container";
-import { Star } from "lucide-react";
+import { HoverUnderline } from "@/components/HoverUnderline";
+import { getBlogs, getBlogPath, getReadTime, stripHtml } from "@/lib/blogs";
 
-// Helper: Strip HTML tags to create a clean text preview
-function stripHtml(html) {
-  if (!html) return "";
-  return html.replace(/<[^>]*>?/gm, "");
-}
-
-async function getBlogs() {
-  try {
-    await connectDB();
-    const blogs = await Blog.find({}).sort({ createdAt: -1 }).lean();
-    return JSON.parse(JSON.stringify(blogs));
-  } catch (error) {
-    console.error("❌ DB Error:", error);
-    return [];
-  }
+function getPreviewText(html = "", maxLength = 150) {
+  const plainText = stripHtml(html);
+  if (!plainText) return "";
+  if (plainText.length <= maxLength) return plainText;
+  return `${plainText.slice(0, maxLength).trim()}...`;
 }
 
 export default async function BlogListingPage() {
@@ -39,8 +27,8 @@ export default async function BlogListingPage() {
 
   return (
     <Container>
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
+      <div className="mb-12">
+        <h1 className="mb-4 text-4xl font-extrabold tracking-tight lg:text-5xl">
           Latest Insights
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -48,63 +36,57 @@ export default async function BlogListingPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {blogs?.map((blog) => {
-          // 1. Get plain text for preview AND reading time
-          const plainText = stripHtml(blog.content);
-
-          // 2. Create Preview
-          const previewText = plainText.substring(0, 150) + "...";
-
-          // 3. Calculate Reading Time
-          const words = plainText.split(/\s+/).length;
-          const readTime = Math.ceil(words / 200);
+          const previewText = getPreviewText(blog.content);
+          const readTime = getReadTime(blog.content);
 
           return (
             <Link
-              href={`/blogs/${blog._id}`}
+              href={getBlogPath(blog)}
               key={blog._id}
               className="group h-full"
             >
-              <Card className="h-full flex flex-col transition-all border duration-300 hover:outline-2 bg-transparent rounded">
+              <Card className="flex h-full flex-col rounded border bg-transparent transition-all duration-300 hover:outline-2">
                 <CardHeader>
-                  <div className="flex justify-between items-start gap-4 mb-2">
-                    <div className="flex items-center text-xs text-muted-foreground gap-2">
-                      <Calendar className="w-3 h-3" />
+                  <div className="mb-2 flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Calendar className="h-3 w-3" />
                       {blog.createdAt
                         ? format(new Date(blog.createdAt), "MMM d, yyyy")
                         : "N/A"}
                     </div>
+
                     {blog.featured && (
                       <Badge
                         variant="secondary"
-                        className="rounded text-foreground fill-background"
+                        className="rounded text-foreground"
                       >
-                        <Star className="fill-foreground" /> Featured
+                        <Star className="mr-1 h-3.5 w-3.5 fill-foreground" />
+                        Featured
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors line-clamp-2">
+
+                  <CardTitle className="line-clamp-2 text-xl leading-tight transition-colors group-hover:text-primary">
                     {blog.name}
                   </CardTitle>
                 </CardHeader>
 
                 <CardContent className="flex-grow">
-                  <p className="text-muted-foreground text-sm line-clamp-3 leading-relaxed">
+                  <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
                     {previewText}
                   </p>
                 </CardContent>
 
-                {/* Updated Footer with Justify Between */}
-                <CardFooter className="pt-4 border-t bg-muted/5 flex items-center justify-between">
-                  <span className="flex gap-2 relative items-center text-sm font-medium text-primary">
-                    Read Article
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    <span className="absolute left-0 bottom-0 h-[1.5px] w-full bg-foreground scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
+                <CardFooter className="flex items-center justify-between border-t bg-muted/5 pt-4">
+                  <span className="relative flex items-center gap-2 text-sm font-medium text-primary">
+                    <HoverUnderline>Read Article</HoverUnderline>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
 
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
                     {readTime} min read
                   </span>
                 </CardFooter>
@@ -114,7 +96,7 @@ export default async function BlogListingPage() {
         })}
 
         {(!blogs || blogs.length === 0) && (
-          <div className="col-span-full text-center py-20 text-muted-foreground bg-muted/10 rounded-lg border border-dashed">
+          <div className="col-span-full rounded-lg border border-dashed bg-muted/10 py-20 text-center text-muted-foreground">
             <p>No blogs found.</p>
           </div>
         )}

@@ -1,6 +1,5 @@
-"use client";
-
-import React from "react";
+"use client";;
+import * as React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -20,16 +19,13 @@ export function TextWritingEffect({
       className={cn(
         "flex items-center justify-center overflow-hidden w-full h-auto",
         className
-      )}
-    >
+      )}>
       <motion.svg
         key={`${text}-${fontClassName}`}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 800 200"
-        // Changed max-w-4xl to w-full so it shrinks to fit the tooltip trigger
         className="w-full h-full overflow-visible"
-        {...props}
-      >
+        {...props}>
         <defs>
           <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={color} stopOpacity="1" />
@@ -37,6 +33,7 @@ export function TextWritingEffect({
           </linearGradient>
         </defs>
 
+        {/* Outline / Stroke Animation */}
         <motion.text
           x="50%"
           y="50%"
@@ -56,11 +53,11 @@ export function TextWritingEffect({
           transition={{
             duration: speed,
             ease: "easeInOut",
-          }}
-        >
+          }}>
           {text}
         </motion.text>
 
+        {/* Fill Animation */}
         <motion.text
           x="50%"
           y="50%"
@@ -73,9 +70,8 @@ export function TextWritingEffect({
           transition={{
             duration: 1,
             ease: "easeOut",
-            delay: speed * 0.6, 
-          }}
-        >
+            delay: speed * 0.6,
+          }}>
           {text}
         </motion.text>
       </motion.svg>
