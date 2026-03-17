@@ -2,11 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Typewriter } from "react-simple-typewriter";
 import Image from "next/image";
-import { toast } from "sonner";
+import { toast } from "next-toast";
 
-import { Button } from "@/components/ui/button";
 import { NameToolTip } from "./NameToolTip";
 import { MessageDialog } from "./Message.Dialog";
 
@@ -24,6 +22,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { HoverUnderline } from "../HoverUnderline";
 
 /** ---------- utils ---------- */
 function safeCopy(text) {
@@ -123,7 +122,7 @@ export default function Hero() {
       phoneRaw: "+8619917247217",
       location: "Changchun, Jilin, China",
     }),
-    []
+    [],
   );
 
   const handleCopy = async (text, label) => {
@@ -172,9 +171,9 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [words.length]);
 
-  const linkedin = process.env.NEXT_PUBLIC_LINKEDIN || ""
-  const twitter = process.env.NEXT_PUBLIC_X || ""
-  const GITHUB = process.env.GITHUB || ""
+  const linkedin = process.env.NEXT_PUBLIC_LINKEDIN || "";
+  const twitter = process.env.NEXT_PUBLIC_X || "";
+  const GITHUB = process.env.GITHUB || "";
 
   return (
     <section className="relative py-10">
@@ -290,11 +289,10 @@ export default function Hero() {
                 <motion.div variants={itemVariants} className="pt-2">
                   <MessageDialog>
                     <button className="group relative inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors duration-300">
-                      <span>Let&apos;s Talk</span>
+                      <HoverUnderline>
+                        <span>Let&apos;s Talk</span>
+                      </HoverUnderline>
                       <ExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-
-                      {/* Underline effect */}
-                      <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-primary transition-all duration-300 group-hover:w-full"></span>
                     </button>
                   </MessageDialog>
                 </motion.div>
@@ -387,9 +385,8 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
         <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </div>
-        <div className=" relative text-sm font-medium w-fit text-foreground truncate underline-offset-4">
-          {value}
-          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
+        <div className="text-sm font-medium text-foreground">
+          <HoverUnderline>{value}</HoverUnderline>
         </div>
       </div>
 
@@ -420,11 +417,12 @@ function SocialLink({ icon: Icon, href: href, label }) {
       aria-label={label}
       title={label}
     >
-      <span className="inline-flex items-center justify-center">
-        <Icon className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
-      </span>
-      <span className="">{label}</span>
-      <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
+      <HoverUnderline>
+        <span className="inline-flex items-center justify-center">
+          <Icon className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
+          <span className="">{label}</span>
+        </span>
+      </HoverUnderline>
     </Link>
   );
 }
