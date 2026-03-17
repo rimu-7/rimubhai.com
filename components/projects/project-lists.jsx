@@ -8,7 +8,6 @@ import {
   Pencil,
   Layers,
   ChevronDown,
-  ArrowRight,
   Lock,
 } from "lucide-react";
 import {
@@ -28,7 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {

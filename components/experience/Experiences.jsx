@@ -1,23 +1,21 @@
 import Container from "@/components/Container";
 import ExperienceList from "./experience-list";
+import TimelinePageShell from "../timeline/timeline-page-shell";
+import TimelineCollection from "../timeline/timeline-collection";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = {
   title: "Projects | Portfolio",
 };
 
 export default async function Experiences() {
+  const user = await getCurrentUser();
   return (
-    <div className="py-10">
-      <div className="flex flex-col gap-2 mb-12">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-          experiences
-        </h1>
-        <p className="text-muted-foreground">
-          A timeline of my professional growth and technical milestones.
-        </p>
-      </div>
-
-      <ExperienceList />
-    </div>
+    <TimelinePageShell
+      title="Experience"
+      description="A timeline of my professional growth and technical milestones."
+    >
+      <TimelineCollection variant="experience" canManage={Boolean(user)} />
+    </TimelinePageShell>
   );
 }

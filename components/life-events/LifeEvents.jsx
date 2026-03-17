@@ -1,24 +1,20 @@
-import Container from "@/components/Container";
-import LifeEventList from "./life-event-list";
+import { getCurrentUser } from "@/lib/auth";
+import TimelinePageShell from "@/components/timeline/timeline-page-shell";
+import TimelineCollection from "@/components/timeline/timeline-collection";
 
 export const metadata = {
   title: "Life Events | Portfolio",
 };
 
 export default async function LifeEvents() {
+  const user = await getCurrentUser();
+
   return (
-    <div className="py-10">
-      <div className="flex  flex-col gap-10">
-        <div className="">
-          <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-            life-events
-          </h1>
-          <p className="text-muted-foreground">
-            events of my life are stored here.
-          </p>
-        </div>
-        <LifeEventList />
-      </div>
-    </div>
+    <TimelinePageShell
+      title="Life Events"
+      description="Meaningful milestones, transitions, and memories across my journey."
+    >
+      <TimelineCollection variant="life-events" canManage={Boolean(user)} />
+    </TimelinePageShell>
   );
 }

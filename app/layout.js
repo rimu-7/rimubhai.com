@@ -2,9 +2,9 @@ import { Domine } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
 import Footer from "@/components/footer";
 import ScrollToTop from "@/components/ScrollTop";
+import { NextToast } from "next-toast";
 
 const domine = Domine({
   subsets: ["latin"],
@@ -157,7 +157,7 @@ export default function RootLayout({ children }) {
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
-          <Toaster richColors closeButton position="top-center" />
+          <NextToast position="top-center" richColors={true}  closeButton={true}/>
           <ScrollToTop/>
         </ThemeProvider>
       </body>
