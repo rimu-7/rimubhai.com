@@ -108,7 +108,7 @@ export function NameToolTip() {
             <div className="flex flex-col gap-4">
               <div className="relative h-60 w-full overflow-hidden rounded bg-neutral-100">
                 <Image
-                  src="https://res.cloudinary.com/di1josexb/image/upload/v1766003422/rimu_u8mr0q.jpg"
+                  src="https://res.cloudinary.com/dykqlkb3k/image/upload/v1773728820/me_ebhwqk.png"
                   alt="Profile"
                   fill
                   className="object-cover"

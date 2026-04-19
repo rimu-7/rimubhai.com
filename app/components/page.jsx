@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight, Code2, Sparkles } from "lucide-react";
 import { Github } from "lucide-react";
+import { GithubIcon } from "lucide-react";
+import Container from "@/components/Container";
 
 // Enhanced data structure for better card visuals
 const componentsData = [
@@ -31,10 +33,10 @@ const componentsData = [
   },
   {
     id: 3,
-    name: "Scroll Animations",
-    description: "Elements that reveal themselves as you scroll down.",
-    href: "#",
-    icon: ArrowRight,
+    name: "Github Stars",
+    description: "Showcase your github stars in a stylish way",
+    href: "components/github-stars",
+    icon: GithubIcon,
   },
   {
     id: 4,
@@ -77,7 +79,7 @@ const itemVariants = {
 export default function Components() {
   return (
     <section className="py-16 min-h-screen bg-background/50">
-      <div className="max-w-3xl mx-auto space-y-10">
+      <Container>
         {/* Header Section with intro animation */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -139,7 +141,7 @@ export default function Components() {
             </motion.div>
           ))}
         </motion.div>
-      </div>
+      </Container>
     </section>
   );
 }

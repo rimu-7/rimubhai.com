@@ -6,6 +6,7 @@ import Footer from "@/components/footer";
 import ScrollToTop from "@/components/ScrollTop";
 import { NextToast } from "next-toast";
 import Gatekeeper from "@/components/Gatekeeper";
+import { ConsentManager } from "@/components/consent-manager/consent-manager";
 
 const domine = Domine({
   subsets: ["latin"],
@@ -153,18 +154,21 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <Gatekeeper>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </Gatekeeper>
-          <NextToast
-            position="top-center"
-            richColors={true}
-            closeButton={true}
-          />
+          <ConsentManager>
+            <Gatekeeper>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </Gatekeeper>
+            <NextToast
+              position="top-center"
+              richColors={true}
+              closeButton={true}
+            />
+          </ConsentManager>
+
           <ScrollToTop />
         </ThemeProvider>
       </body>
