@@ -85,7 +85,7 @@ export default function Components() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-left space-y-3"
+          className="text-left space-y-3 px-2"
         >
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
             UI Components

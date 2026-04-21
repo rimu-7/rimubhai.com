@@ -383,7 +383,7 @@ export function GithubHeatMap({ username }) {
 
   return (
     <TooltipProvider delayDuration={100}>
-      <Card className="overflow-hidden min-h-3xl border-none bg-transparent">
+      <div className="overflow-hidden min-h-3xl border-none bg-transparent">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
@@ -430,7 +430,7 @@ export function GithubHeatMap({ username }) {
         <div className="">
           {isLoading ? (
             <div className="overflow-x-auto pb-4">
-              <div className="w-fit">
+              <div className="">
                 <GraphSkeleton />
               </div>
             </div>
@@ -441,7 +441,7 @@ export function GithubHeatMap({ username }) {
                   data={data}
                   theme={colorTheme}
                   colorScheme={currentTheme === "dark" ? "dark" : "light"}
-                  blockSize={12}
+                  blockSize={16}
                   blockMargin={4}
                   blockRadius={3}
                   hideTotalCount
@@ -451,7 +451,7 @@ export function GithubHeatMap({ username }) {
             </div>
           )}
         </div>
-      </Card>
+      </div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] p-0 gap-0">
           <DialogHeader className="p-6 pb-2">
@@ -475,7 +475,7 @@ export function GithubHeatMap({ username }) {
 
           <Separator />
 
-          <ScrollArea className="max-h-[400px]">
+          <ScrollArea className="max-h-100">
             <div className="p-6 space-y-4">
               {selectedDate?.commits && selectedDate.commits.length > 0 ? (
                 selectedDate.commits.map((commit, idx) => (

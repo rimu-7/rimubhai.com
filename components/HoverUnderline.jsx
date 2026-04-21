@@ -6,10 +6,10 @@ export function HoverUnderline({ children, className, textClassName }) {
       <span
         className={cn(
           "inline-block max-w-full overflow-hidden text-ellipsis whitespace-nowrap align-top",
-          textClassName
+          textClassName,
         )}
       >
-        {children}
+        <div className="flex items-center gap-2">{children}</div>
       </span>
 
       <span
