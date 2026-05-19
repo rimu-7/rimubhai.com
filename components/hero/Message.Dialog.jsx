@@ -82,12 +82,12 @@ export function MessageDialog({ children }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-[95vw] sm:w-full sm:max-w-[500px] p-0 overflow-hidden border-none shadow-2xl bg-background/95 backdrop-blur-md max-h-[90vh] overflow-y-auto rounded">
+      <DialogContent className="w-[95vw] sm:w-full sm:max-w-[480px] p-0 overflow-hidden border shadow-2xl bg-background/95 backdrop-blur-md max-h-[90vh] overflow-y-auto rounded-lg">
         {!isSuccess ? (
           <div className="p-5 sm:p-6">
-            <DialogHeader className="mb-5 sm:mb-6 text-left">
-              <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+            <DialogHeader className="mb-5 text-left">
+              <DialogTitle className="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-blue-500" />
                 Let&apos;s Talk
               </DialogTitle>
               <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
@@ -96,14 +96,14 @@ export function MessageDialog({ children }) {
               </p>
             </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="relative group">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
                   <Input
                     name="name"
                     placeholder="Your Name"
-                    className="pl-9 text-xs rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
+                    className="pl-9 text-sm rounded-md bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -112,12 +112,12 @@ export function MessageDialog({ children }) {
                 </div>
 
                 <div className="relative group">
-                  <Mail className="absolute  left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
                   <Input
                     name="email"
                     type="email"
                     placeholder="Email Address"
-                    className="pl-9 text-xs rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
+                    className="pl-9 text-sm rounded-md bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -131,7 +131,7 @@ export function MessageDialog({ children }) {
                 <Input
                   name="subject"
                   placeholder="Subject (e.g., Web App Project)"
-                  className="pl-9 text-xs rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10 sm:h-11"
+                  className="pl-9 text-sm rounded-md bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all h-10"
                   value={formData.subject}
                   onChange={handleChange}
                   required
@@ -144,7 +144,7 @@ export function MessageDialog({ children }) {
                   name="message"
                   placeholder="Tell me about your project..."
                   rows={4}
-                  className="resize-none rounded bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all p-3 sm:text-sm text-xs"
+                  className="resize-none rounded-md bg-secondary/50 border-transparent focus:border-blue-500 focus:bg-background transition-all p-3 text-sm"
                   value={formData.message}
                   onChange={handleChange}
                   required
@@ -152,7 +152,7 @@ export function MessageDialog({ children }) {
                 />
               </div>
 
-              <Button type="submit" className="w-full rounded" disabled={isSubmitting}>
+              <Button type="submit" className="w-full rounded-md" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -168,16 +168,16 @@ export function MessageDialog({ children }) {
             </form>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 px-6 text-center animate-in fade-in zoom-in duration-300 min-h-[300px]">
-            <div className="relative mb-6">
+          <div className="flex flex-col items-center justify-center py-12 px-6 text-center animate-in fade-in zoom-in duration-300 min-h-[280px]">
+            <div className="relative mb-5">
               <div className="absolute inset-0 bg-green-500/20 rounded-full blur-xl animate-pulse" />
-              <CheckCircle2 className="h-16 w-16 sm:h-20 sm:w-20 text-green-500 relative z-10" />
+              <CheckCircle2 className="h-14 w-14 sm:h-16 sm:w-16 text-green-500 relative z-10" />
             </div>
 
-            <h2 className="text-2xl font-bold text-foreground">
+            <h2 className="text-xl font-bold text-foreground">
               Message Received!
             </h2>
-            <p className="text-muted-foreground mt-2 max-w-xs text-sm sm:text-base">
+            <p className="text-muted-foreground mt-2 max-w-xs text-sm">
               Thanks for reaching out,{" "}
               <span className="text-foreground font-semibold">
                 {formData.name}
@@ -187,7 +187,7 @@ export function MessageDialog({ children }) {
 
             <Button
               variant="outline"
-              className="mt-8 min-w-[120px] rounded"
+              className="mt-6 min-w-[100px] rounded-md"
               onClick={() => {
                 setIsOpen(false);
                 setIsSuccess(false);

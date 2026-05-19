@@ -3,48 +3,38 @@
 import { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Show button when page is scrolled down 300px
-    const toggleVisibility = () => {
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-
+    const toggleVisibility = () => setIsVisible(window.scrollY > 300);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={scrollToTop}
-      className={cn(
-        "fixed bottom-8 right-8 z-50 rounded shadow-lg transition-all duration-300 hover:scale-110",
-        "bg-background/80 backdrop-blur-sm border-muted-foreground/20",
-        isVisible
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-10 pointer-events-none"
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85, y: 8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.85, y: 8 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed bottom-6 right-6 z-50"
+        >
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="h-9 w-9 rounded-lg shadow-md bg-background/80 backdrop-blur-sm border-border/40 hover:bg-background hover:scale-110 transition-transform duration-200"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+        </motion.div>
       )}
-      aria-label="Scroll to top"
-    >
-      <ArrowUp className="h-5 w-5" />
-    </Button>
+    </AnimatePresence>
   );
 }

@@ -75,8 +75,8 @@ const iconMap = {
 const getIcon = (iconName) => iconMap[iconName] || HelpCircle;
 
 const ANIMATION_DURATIONS = {
-    enter: 0.4,
-    stagger: 0.1,
+    enter: 0.35,
+    stagger: 0.06,
 };
 
 const variants = {
@@ -86,16 +86,16 @@ const variants = {
             opacity: 1,
             transition: {
                 staggerChildren: ANIMATION_DURATIONS.stagger,
-                delayChildren: 0.1,
+                delayChildren: 0.05,
             },
         },
     },
     item: {
-        hidden: { opacity: 0, y: 15 },
+        hidden: { opacity: 0, y: 12 },
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: ANIMATION_DURATIONS.enter },
+            transition: { duration: ANIMATION_DURATIONS.enter, ease: [0.22, 1, 0.36, 1] },
         },
     },
 };
@@ -107,10 +107,10 @@ function TechCategory({ title, data }) {
 
     return (
         <div className="w-full">
-            <h3 className="text-lg font-semibold text-muted-foreground mb-6 uppercase tracking-wider">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-[0.15em]">
                 {title}
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {data.map((tech) => (
                     <motion.div
                         key={tech.name}
@@ -121,18 +121,18 @@ function TechCategory({ title, data }) {
                             backgroundColor: "rgba(var(--primary), 0.03)",
                         }}
                         transition={{ duration: 0.2 }}
-                        className="flex flex-col items-center gap-3 p-6 hover:outline border-0.5 grayscale hover:grayscale-0 rounded-md transition-colors"
+                        className="flex flex-col items-center gap-2.5 p-4 rounded-lg border border-transparent hover:border-border/50 hover:bg-muted/30 grayscale hover:grayscale-0 transition-all duration-200"
                     >
-                        <div className="relative w-10 h-10 flex items-center justify-center transition-all duration-300">
+                        <div className="relative w-8 h-8 flex items-center justify-center">
                             <Image
                                 src={tech.url}
                                 alt={`${tech.name} logo`}
-                                width={40}
-                                height={40}
+                                width={32}
+                                height={32}
                                 className="object-contain"
                             />
                         </div>
-                        <span className="text-sm font-medium text-foreground text-center">
+                        <span className="text-xs font-medium text-foreground text-center">
                             {tech.name}
                         </span>
                     </motion.div>
@@ -160,33 +160,33 @@ function HeroSection({ data }) {
             </div>
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="max-w-4xl mx-auto relative z-10 py-24 text-center space-y-10 text-white"
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="max-w-4xl mx-auto relative z-10 py-20 md:py-24 text-center space-y-8 text-white"
             >
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold  leading-tight tracking-tight">
-                    {data.title} <span className="">{data.titleHighlight}</span>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
+                    {data.title} <span>{data.titleHighlight}</span>
                 </h1>
 
-                <div className="space-y-6">
-                    <p className="text-xl md:text-2xl  max-w-2xl mx-auto font-medium">
+                <div className="space-y-4">
+                    <p className="text-lg md:text-xl max-w-2xl mx-auto font-medium">
                         {data.subtitle}
                     </p>
-                    <p className="text-base text-white/70  max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-sm md:text-base text-white/70 max-w-2xl mx-auto leading-relaxed">
                         {data.description}
                     </p>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-3 text-sm ">
+                <div className="flex flex-wrap justify-center gap-2 text-sm">
                     {data.features?.map((feature, idx) => {
                         const FeatureIcon = getIcon(feature.icon);
                         return (
                             <div
                                 key={idx}
-                                className="flex items-center gap-2 bg-muted/50 border border-border px-4 py-2"
+                                className="flex items-center gap-1.5 bg-white/10 border border-white/20 px-3 py-1.5 rounded-full text-sm"
                             >
-                                <FeatureIcon className="h-4 w-4 " />
+                                <FeatureIcon className="h-3.5 w-3.5" />
                                 {feature.text}
                             </div>
                         );
@@ -194,18 +194,18 @@ function HeroSection({ data }) {
                 </div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                    className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
+                    transition={{ delay: 0.2, duration: 0.35 }}
+                    className="flex flex-col sm:flex-row gap-3 justify-center pt-4"
                 >
                     <MessageDialog>
-                        <Button className="rounded-md px-8 py-6 text-lg transition-all duration-300 group">
+                        <Button className="rounded-lg px-7 py-5 text-base transition-all duration-300 group">
                             <HoverUnderline>
-                                <Mail className="mr-2 h-5 w-5 inline-block" />
+                                <Mail className="mr-2 h-4 w-4 inline-block" />
                                 {data.cta?.primary?.text || "Contact Us"}
                             </HoverUnderline>
-                            <ArrowRight className="ml-2 h-5 w-5 inline-block transition-transform group-hover:translate-x-1" />
+                            <ArrowRight className="ml-2 h-4 w-4 inline-block transition-transform group-hover:translate-x-1" />
                         </Button>
                     </MessageDialog>
 
@@ -214,7 +214,7 @@ function HeroSection({ data }) {
                             asChild
                             variant="outline"
                             size="lg"
-                            className="rounded-md text-lg px-8 py-6 bg-transparent hover:bg-muted transition-all duration-300"
+                            className="rounded-lg text-base px-7 py-5 bg-transparent hover:bg-white/10 transition-all duration-300"
                         >
                             <Link href={data.cta.secondary.href}>
                                 {data.cta.secondary.text}
@@ -231,47 +231,47 @@ function ServicesSection({ company, services }) {
     if (!company || !services?.length) return null;
 
     return (
-        <section className="py-24 bg-background border-b border-border">
+        <section className="py-16 md:py-20 bg-background border-b border-border">
             <Container>
                 <motion.div
                     variants={variants.container}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.1 }}
-                    className="flex flex-col gap-20"
+                    className="flex flex-col gap-14"
                 >
                     <motion.div
                         variants={variants.item}
-                        className="text-center max-w-3xl mx-auto space-y-6"
+                        className="text-center max-w-3xl mx-auto space-y-4"
                     >
-                        <p className="text-primary text-sm font-bold tracking-widest uppercase">
+                        <p className="text-primary text-xs font-bold tracking-[0.2em] uppercase">
                             {company.intro}
                         </p>
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
                             {company.heading}
                         </h2>
-                        <p className="text-muted-foreground text-lg leading-relaxed">
+                        <p className="text-muted-foreground text-base leading-relaxed">
                             {company.description}
                         </p>
-                        <div className="w-16 h-1 bg-primary mx-auto" />
+                        <div className="w-12 h-0.5 bg-primary mx-auto" />
                     </motion.div>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-0.5">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border/40 rounded-lg overflow-hidden">
                         {services.map((service) => {
                             const ServiceIcon = getIcon(service.icon);
                             return (
                                 <motion.div
                                     key={service.title}
                                     variants={variants.item}
-                                    className="group relative p-10 rounded-md hover:outline hover:bg-muted/30 transition-colors duration-300"
+                                    className="group relative p-8 bg-background hover:bg-muted/30 transition-colors duration-200"
                                 >
-                                    <div className="mb-8 w-14 h-14 border rounded-xl border-border flex items-center justify-center text-primary bg-background group-hover:border-primary transition-colors">
-                                        <ServiceIcon className="h-6 w-6" />
+                                    <div className="mb-6 w-12 h-12 border rounded-xl border-border flex items-center justify-center text-primary bg-background group-hover:border-primary transition-colors">
+                                        <ServiceIcon className="h-5 w-5" />
                                     </div>
-                                    <h3 className="text-xl font-semibold text-foreground mb-4">
+                                    <h3 className="text-lg font-semibold text-foreground mb-3">
                                         {service.title}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm leading-relaxed">
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
                                         {service.description}
                                     </p>
                                 </motion.div>
@@ -288,38 +288,38 @@ function WhyChooseUsSection({ data }) {
     if (!data) return null;
 
     return (
-        <section className="py-24 bg-background border-b border-border">
+        <section className="py-16 md:py-20 bg-background border-b border-border">
             <Container>
                 <motion.div
                     variants={variants.container}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
                 >
-                    <motion.div variants={variants.item} className="space-y-10">
-                        <div className="space-y-6">
-                            <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                    <motion.div variants={variants.item} className="space-y-8">
+                        <div className="space-y-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
                                 {data.title}
                             </h2>
-                            <p className="text-muted-foreground text-lg leading-relaxed">
+                            <p className="text-muted-foreground text-base leading-relaxed">
                                 {data.description}
                             </p>
                         </div>
 
-                        <ul className="space-y-5">
+                        <ul className="space-y-4">
                             {data.features?.map((feature, index) => (
                                 <motion.li
                                     key={index}
                                     variants={variants.item}
-                                    className="flex items-start gap-4 group"
+                                    className="flex items-start gap-3 group"
                                 >
-                                    <div className="shrink-0 mt-1">
-                                        <div className="w-6 h-6 flex items-center justify-center text-primary">
-                                            <CheckCircle2 className="h-5 w-5 bg-green-400 group-hover:bg-green-600 duration-300  rounded-full text-white" />
+                                    <div className="shrink-0 mt-0.5">
+                                        <div className="w-5 h-5 flex items-center justify-center text-primary">
+                                            <CheckCircle2 className="h-4 w-4 bg-green-500 group-hover:bg-green-600 duration-200 rounded-full text-white" />
                                         </div>
                                     </div>
-                                    <span className="text-foreground leading-relaxed">
+                                    <span className="text-sm text-foreground leading-relaxed">
                                         {feature}
                                     </span>
                                 </motion.li>
@@ -328,7 +328,7 @@ function WhyChooseUsSection({ data }) {
 
                         <motion.div
                             variants={variants.item}
-                            className="grid grid-cols-2 sm:grid-cols-3 gap-8 pt-10 border-t border-border"
+                            className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-border"
                         >
                             {data.stats?.map((stat, index) => {
                                 const StatIcon = getIcon(stat.icon);
@@ -337,11 +337,11 @@ function WhyChooseUsSection({ data }) {
                                         key={index}
                                         className="text-left flex flex-col"
                                     >
-                                        <StatIcon className="h-5 w-5 mb-3 text-primary" />
-                                        <p className="text-3xl font-bold text-foreground tracking-tight">
+                                        <StatIcon className="h-4 w-4 mb-2 text-primary" />
+                                        <p className="text-2xl font-bold text-foreground tracking-tight">
                                             {stat.value}
                                         </p>
-                                        <p className="text-xs text-muted-foreground mt-2 uppercase tracking-wider font-semibold">
+                                        <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-[0.15em] font-semibold">
                                             {stat.label}
                                         </p>
                                     </div>
@@ -352,14 +352,14 @@ function WhyChooseUsSection({ data }) {
 
                     <motion.div
                         variants={variants.item}
-                        className="w-full h-150 rounded-md relative border border-border p-4 bg-muted/10"
+                        className="w-full aspect-[4/3] rounded-lg relative border border-border p-3 bg-muted/10"
                     >
                         <div className="relative w-full h-full">
                             <Image
                                 src={data.image}
                                 alt="Why choose us"
                                 fill
-                                className="object-cover grayscale rounded-sm hover:grayscale-0 transition-all duration-700"
+                                className="object-cover grayscale rounded hover:grayscale-0 transition-all duration-700"
                                 loading="lazy"
                                 quality={90}
                             />
@@ -375,19 +375,19 @@ function ProcessSection({ data }) {
     if (!data) return null;
 
     return (
-        <section className="py-24 bg-muted/10 border-b border-border overflow-hidden">
+        <section className="py-16 md:py-20 bg-muted/5 border-b border-border overflow-hidden">
             <Container>
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: ANIMATION_DURATIONS.enter }}
-                    className="text-center max-w-2xl mx-auto mb-20"
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-center max-w-2xl mx-auto mb-14"
                 >
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
                         {data.header?.title}
                     </h2>
-                    <p className="text-lg text-muted-foreground">
+                    <p className="text-base text-muted-foreground">
                         {data.header?.subtitle}
                     </p>
                 </motion.div>
@@ -397,7 +397,7 @@ function ProcessSection({ data }) {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
-                    className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 mb-24"
+                    className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 mb-16"
                 >
                     {data.steps?.map((step, index) => {
                         const StepIcon = getIcon(step.icon);
@@ -405,24 +405,24 @@ function ProcessSection({ data }) {
                             <motion.div
                                 key={step.number}
                                 variants={variants.item}
-                                className={`relative flex flex-col items-center group text-center group p-8 lg:border-r border-border ${
+                                className={`relative flex flex-col items-center group text-center p-6 lg:border-r border-border ${
                                     index === data.steps.length - 1
                                         ? "lg:border-r-0"
                                         : ""
                                 }`}
                             >
-                                <div className="relative z-10 mb-8">
-                                    <div className="relative w-20 h-20 rounded-2xl border border-border bg-background flex items-center justify-center group-hover:border-primary group-hover:bg-primary/5 transition-all duration-300">
-                                        <StepIcon className="h-8 w-8 text-foreground group-hover:text-primary transition-colors duration-300" />
+                                <div className="relative z-10 mb-6">
+                                    <div className="relative w-16 h-16 rounded-2xl border border-border bg-background flex items-center justify-center group-hover:border-primary group-hover:bg-primary/5 transition-all duration-200">
+                                        <StepIcon className="h-7 w-7 text-foreground group-hover:text-primary transition-colors duration-200" />
                                     </div>
-                                    <div className="absolute rounded-full -top-3 -right-3 w-8 h-8 group-hover:bg-primary duration-300 bg-primary/50 text-primary-foreground text-sm font-bold flex items-center justify-center shadow-sm">
+                                    <div className="absolute rounded-full -top-2 -right-2 w-7 h-7 group-hover:bg-primary duration-200 bg-primary/50 text-primary-foreground text-xs font-bold flex items-center justify-center shadow-sm">
                                         {step.number}
                                     </div>
                                 </div>
-                                <h3 className="text-xl font-bold text-foreground mb-4">
+                                <h3 className="text-lg font-bold text-foreground mb-2">
                                     {step.title}
                                 </h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     {step.description}
                                 </p>
                             </motion.div>
@@ -431,27 +431,28 @@ function ProcessSection({ data }) {
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{
-                        duration: ANIMATION_DURATIONS.enter,
-                        delay: 0.2,
+                        duration: 0.4,
+                        delay: 0.15,
+                        ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="relative bg-card border border-border rounded-md p-10 text-center"
+                    className="relative bg-card border border-border rounded-lg p-8 text-center"
                 >
-                    <div className="flex flex-col md:flex-row items-center justify-between max-w-4xl mx-auto gap-8">
-                        <h3 className="text-2xl font-bold text-foreground text-left">
+                    <div className="flex flex-col md:flex-row items-center justify-between max-w-4xl mx-auto gap-6">
+                        <h3 className="text-xl font-bold text-foreground text-left">
                             {data.cta?.title}
                         </h3>
                         <MessageDialog>
-                            <Button className="rounded-md px-8 py-6 text-base group whitespace-nowrap">
+                            <Button className="rounded-lg px-6 py-4 text-sm group whitespace-nowrap">
                                 <HoverUnderline>
                                     <span>
                                         {data.cta?.buttonText || "Get Started"}
                                     </span>
                                 </HoverUnderline>
-                                <ExternalLink className="h-4 w-4 ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                <ExternalLink className="h-3.5 w-3.5 ml-2 inline-block transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </Button>
                         </MessageDialog>
                     </div>
@@ -478,26 +479,26 @@ export default function ServicePageTemplate({ data }) {
 
             <ServicesSection company={data.company} services={data.services} />
 
-            <section className="py-24 bg-muted/5 border-b border-border">
+            <section className="py-16 md:py-20 bg-muted/5 border-b border-border">
                 <Container>
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 16 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: ANIMATION_DURATIONS.enter }}
-                        className="text-center mb-16"
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className="text-center mb-12"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3">
                             Technology Stack
                         </h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
+                        <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
                             We leverage modern architectures and
                             high-performance frameworks to build robust,
                             scalable applications.
                         </p>
                     </motion.div>
 
-                    <div className="space-y-16">
+                    <div className="space-y-10">
                         <TechCategory
                             title="Frontend"
                             data={data.techStack?.frontend}
@@ -523,20 +524,20 @@ export default function ServicePageTemplate({ data }) {
             <ProcessSection data={data.processData} />
 
             {data.faqData?.questions?.length > 0 && (
-                <section className="py-24 bg-background border-b border-border">
+                <section className="py-16 md:py-20 bg-background border-b border-border">
                     <Container>
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: ANIMATION_DURATIONS.enter }}
+                            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                             className="mx-auto"
                         >
-                            <div className="text-center mb-16">
-                                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                            <div className="text-center mb-10">
+                                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3">
                                     {data.faqData.header?.title}
                                 </h2>
-                                <p className="text-lg text-muted-foreground">
+                                <p className="text-base text-muted-foreground">
                                     {data.faqData.header?.subtitle}
                                 </p>
                             </div>
@@ -544,18 +545,18 @@ export default function ServicePageTemplate({ data }) {
                             <Accordion
                                 type="single"
                                 collapsible
-                                className="w-full space-y-4"
+                                className="w-full space-y-2"
                             >
                                 {data.faqData.questions.map((item, index) => (
                                     <AccordionItem
                                         key={index}
                                         value={`item-${index}`}
-                                        className="border border-border bg-card px-6 rounded-md data-[state=open]:border-primary transition-colors"
+                                        className="border border-border/60 bg-card px-5 rounded-lg data-[state=open]:border-primary transition-colors"
                                     >
-                                        <AccordionTrigger className="text-left text-base md:text-lg font-semibold text-foreground hover:text-primary hover:no-underline py-5">
+                                        <AccordionTrigger className="text-left text-sm md:text-base font-semibold text-foreground hover:text-primary hover:no-underline py-4">
                                             {item.question}
                                         </AccordionTrigger>
-                                        <AccordionContent className="text-muted-foreground pb-6 text-base leading-relaxed">
+                                        <AccordionContent className="text-muted-foreground pb-5 text-sm leading-relaxed">
                                             {item.answer}
                                         </AccordionContent>
                                     </AccordionItem>
@@ -567,31 +568,31 @@ export default function ServicePageTemplate({ data }) {
             )}
 
             {/* FINAL CTA */}
-            <section className="relative w-full py-24 bg-foreground text-background border-t border-border">
+            <section className="relative w-full py-16 md:py-20 bg-foreground text-background border-t border-border">
                 <Container className="relative z-10">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 16 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: ANIMATION_DURATIONS.enter }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                         className="max-w-3xl mx-auto text-center"
                     >
-                        <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-6">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-4">
                             Ready to Transform Your Architecture?
                         </h2>
-                        <p className="text-lg md:text-xl text-background/70 mb-10 leading-relaxed font-medium">
+                        <p className="text-base text-background/60 mb-8 leading-relaxed font-medium">
                             Let's discuss how our scalable solutions can help
                             you achieve your technical objectives.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <MessageDialog>
-                                <Button className="rounded-md px-8 py-6 text-lg border border-transparent bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 group">
+                                <Button className="rounded-lg px-7 py-4 text-base border border-transparent bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 group">
                                     <HoverUnderline>
-                                        <Sparkles className="mr-2 h-5 w-5 inline-block" />
+                                        <Sparkles className="mr-2 h-4 w-4 inline-block" />
                                         Get Free Consultation
                                     </HoverUnderline>
-                                    <ArrowRight className="ml-2 h-5 w-5 inline-block transition-transform group-hover:translate-x-1" />
+                                    <ArrowRight className="ml-2 h-4 w-4 inline-block transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </MessageDialog>
 
@@ -600,7 +601,7 @@ export default function ServicePageTemplate({ data }) {
                                     asChild
                                     variant="outline"
                                     size="lg"
-                                    className="rounded-md text-lg px-8 py-6 bg-transparent text-background border-background/30 hover:bg-background/10 hover:text-background transition-all duration-300"
+                                    className="rounded-lg text-base px-7 py-4 bg-transparent text-background border-background/30 hover:bg-background/10 hover:text-background transition-all duration-200"
                                 >
                                     <Link href={data.hero.cta.secondary.href}>
                                         {data.hero.cta.secondary.text}

@@ -3,12 +3,9 @@ import { Blog } from "@/lib/schema";
 import { BlogCard } from "./BlogCard";
 import Container from "../../components/Container";
 
-// Server Component Fetching (Better for SEO)
 async function getBlogs() {
   await connectDB();
-  // Fetch all, sorted by newest
   const blogs = await Blog.find({}).sort({ createdAt: -1 }).lean();
-  // Convert _id and dates to strings for Next.js hydration
   return JSON.parse(JSON.stringify(blogs));
 }
 
@@ -17,22 +14,22 @@ export default async function AllBlogsPage() {
 
   return (
     <Container>
-      <div className="container mx-auto px-4 py-16 space-y-12">
-        <div className=" mx-auto space-y-4">
-          <h1 className="text-4xl justify-start font-extrabold tracking-tight lg:text-5xl">
+      <section className="py-16 md:py-20">
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
             my blogs
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">
             Thoughts, tutorials, and insights about development and design.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {blogs.map((post) => (
             <BlogCard key={post._id} post={post} />
           ))}
         </div>
-      </div>
+      </section>
     </Container>
   );
 }

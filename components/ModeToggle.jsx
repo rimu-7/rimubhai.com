@@ -4,54 +4,39 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  // 1. Handle Hydration Mismatch
-  // We only render the UI after the client has mounted to prevent
-  // the icons from flickering or showing the wrong state initially.
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  React.useEffect(() => { setMounted(true); }, []);
 
-  // 2. Prevent Hydration Warning
-  // Render a placeholder of exact same size while loading
   if (!mounted) {
-    return (
-      <Button variant="ghost" size="icon" disabled className="h-9 w-9 opacity-50">
-        <Sun className="h-[1.2rem] w-[1.2rem]" />
-      </Button>
-    );
+    return <Button variant="ghost" size="icon" disabled className="h-8 w-8 opacity-50"><Sun className="h-4 w-4" /></Button>;
   }
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
+  const isDark = theme === "dark";
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={toggleTheme}
-      className="group relative h-9 w-9 rounded bg-background/50 hover:bg-accent hover:text-accent-foreground"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="relative h-8 w-8 rounded-md hover:bg-accent hover:text-accent-foreground"
       aria-label="Toggle theme"
     >
-      {/* Sun Icon: Visible in Light Mode, Rotates out in Dark */}
-      <Sun 
-        className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all duration-500 ease-in-out 
-        text-amber-500 
-        dark:-rotate-90 dark:scale-0" 
-      />
-
-      {/* Moon Icon: Hidden in Light Mode, Rotates in for Dark */}
-      <Moon 
-        className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all duration-500 ease-in-out 
-        text-blue-500 dark:text-blue-400
-        dark:rotate-0 dark:scale-100" 
-      />
-      
+      <AnimatePresence mode="wait" initial={false}>
+        {isDark ? (
+          <motion.div key="moon" initial={{ y: -8, opacity: 0, rotate: -90 }} animate={{ y: 0, opacity: 1, rotate: 0 }} exit={{ y: 8, opacity: 0, rotate: 90 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+            <Moon className="h-4 w-4 text-blue-400" />
+          </motion.div>
+        ) : (
+          <motion.div key="sun" initial={{ y: 8, opacity: 0, rotate: 90 }} animate={{ y: 0, opacity: 1, rotate: 0 }} exit={{ y: -8, opacity: 0, rotate: -90 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+            <Sun className="h-4 w-4 text-amber-500" />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <span className="sr-only">Toggle theme</span>
     </Button>
   );

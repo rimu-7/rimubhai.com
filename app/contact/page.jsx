@@ -17,7 +17,6 @@ export const metadata = {
     "Get in touch with Rimu Bhai for freelance projects, collaborations, or just to say hi.",
 };
 
-// --- CONFIG ---
 const contactInfo = [
   {
     icon: Mail,
@@ -50,37 +49,34 @@ const socialLinks = [
 export default function ContactPage() {
   return (
     <Container>
-      <div className="py-10 md:py-16 max-w-6xl mx-auto space-y-12">
-        {/* Header */}
-        <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight capitalize">
+      <div className="py-16 md:py-24 space-y-10">
+        <div className="space-y-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
             get in touch
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            Have a project in mind, or just want to chat? I'm always open to
+          <p className="text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
+            Have a project in mind, or just want to chat? I&apos;m always open to
             discussing new ideas, opportunities, and technologies.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-12 lg:gap-20 items-start">
-          {/* LEFT COLUMN: Info */}
-          <div className="space-y-10">
-            {/* Contact Details */}
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-10 lg:gap-16 items-start">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-[0.15em]">
                 Contact Details
               </h3>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 {contactInfo.map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-center gap-4 p-4 rounded bg-muted/30 border border-transparent hover:border-border transition-colors"
+                    className="flex items-center gap-3.5 p-3.5 rounded-lg bg-muted/30 border border-transparent hover:border-border transition-colors"
                   >
-                    <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                      <item.icon className="h-5 w-5 text-primary" />
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <item.icon className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                         {item.label}
                       </p>
                       {item.href ? (
@@ -99,50 +95,48 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Socials */}
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold">Connect with me</h3>
-              <div className="flex flex-wrap gap-3">
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-[0.15em]">
+                Connect
+              </h3>
+              <div className="flex flex-wrap gap-2">
                 {socialLinks.map((social) => (
                   <Link
                     key={social.name}
                     href={social.href}
                     target="_blank"
-                    className="flex items-center gap-2 px-5 py-3 rounded border bg-background hover:bg-muted hover:border-foreground/20 transition-all group"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg border bg-background hover:bg-muted hover:border-foreground/20 transition-all group"
                   >
-                    <social.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <social.icon className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                     <span className="text-sm font-medium">{social.name}</span>
-                    <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLink className="h-3 w-3 opacity-40 group-hover:opacity-80 transition-opacity" />
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Status Badge */}
-            <div className="p-6 rounded bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/10">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="relative flex h-3 w-3">
+            <div className="p-5 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/10">
+              <div className="flex items-center gap-2.5 mb-2">
+                <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                 </span>
                 <Badge
                   variant="outline"
-                  className="bg-background/50 rounded border-green-500/30 text-green-700 dark:text-green-400"
+                  className="bg-background/50 rounded border-green-500/30 text-green-700 dark:text-green-400 text-xs"
                 >
                   Open for Work
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 I am currently available for freelance projects and remote
                 full-time roles.
               </p>
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Form */}
           <div className="relative">
-            {/* Optional decorative blur behind the form */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 blur-xl opacity-50 -z-10" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 blur-xl opacity-40 -z-10" />
             <ContactForm />
           </div>
         </div>

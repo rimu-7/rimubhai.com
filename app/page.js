@@ -7,8 +7,6 @@ import LifeEvents from "@/components/life-events/LifeEvents";
 import Awards from "@/components/awards/Awards";
 import Projects from "@/components/projects/Projects";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Import the new wrapper component
 import GithubHeatMapWrapper from "@/components/GithubHeatMapWrapper";
 
 function SectionSkeleton() {
@@ -37,7 +35,6 @@ export default function Home() {
         <Projects />
       </Suspense>
 
-      {/* Use the wrapper component here */}
       <GithubHeatMapWrapper username="rimu-7" />
 
       <Suspense fallback={<SectionSkeleton />}>

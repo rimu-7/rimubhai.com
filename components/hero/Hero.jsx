@@ -1,30 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
-import { toast } from "next-toast";
-
-import { NameToolTip } from "./NameToolTip";
-import { MessageDialog } from "./Message.Dialog";
-
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import {
-  Twitter,
+  Check,
+  Clock,
+  Copy,
+  ExternalLink,
   Github,
   Linkedin,
   Mail,
-  Phone,
   MapPin,
-  Check,
-  Copy,
-  Clock,
-  ExternalLink,
+  Phone,
+  Twitter,
 } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { toast } from "next-toast";
+import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HoverUnderline } from "../HoverUnderline";
+import { MessageDialog } from "./Message.Dialog";
+import { NameToolTip } from "./NameToolTip";
 
-/** ---------- utils ---------- */
 function safeCopy(text) {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     return navigator.clipboard.writeText(text);
@@ -54,66 +50,57 @@ function getOffsetDiffHours(fromTz, toTz) {
   return Math.round((to - from) / (1000 * 60 * 60));
 }
 
-/** ---------- Time Display ---------- */
 function TimeStatus() {
-  const [timeInfo, setTimeInfo] = useState({
-    beijingTime: "--:--",
-    diffLabel: "calculating...",
-  });
+  const [timeInfo, setTimeInfo] = useState({ beijingTime: "--:--", diffLabel: "" });
 
   useEffect(() => {
     const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     const beijingTz = "Asia/Shanghai";
-
     const updateTime = () => {
       const now = new Date();
-
       const beijingString = new Intl.DateTimeFormat("en-US", {
         timeZone: beijingTz,
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
       }).format(now);
-
       const diff = getOffsetDiffHours(userTz, beijingTz);
       let label = "";
-      if (diff === 0) label = "Same time zone";
-      else if (diff > 0) label = `Beijing is ${diff}h ahead`;
-      else label = `Beijing is ${Math.abs(diff)}h behind`;
-
+      if (diff === 0) label = "same time zone";
+      else if (diff > 0) label = `${diff}h ahead`;
+      else label = `${Math.abs(diff)}h behind`;
       setTimeInfo({ beijingTime: beijingString, diffLabel: label });
     };
-
     updateTime();
-    const timer = setInterval(updateTime, 1000 * 30);
+    const timer = setInterval(updateTime, 30000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-      <div className="inline-flex items-center gap-2">
-        <Clock className="h-4 w-4 text-primary" />
-        <span className="font-semibold text-foreground">
-          {timeInfo.beijingTime}
-        </span>
-        <span className="text-[10px] uppercase tracking-wider opacity-70">
-          CN
-        </span>
-        <span className="hidden sm:inline opacity-70">
-          • {timeInfo.diffLabel}
-        </span>
-      </div>
-      <span className="sm:hidden text-[11px] opacity-70">
-        {timeInfo.diffLabel}
-      </span>
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <Clock className="h-3.5 w-3.5 text-primary" />
+      <span className="font-medium text-foreground tabular-nums">{timeInfo.beijingTime}</span>
+      <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">CN</span>
+      <span className="text-muted-foreground/40">&middot;</span>
+      <span className="text-muted-foreground/60">{timeInfo.diffLabel}</span>
     </div>
   );
 }
 
-/** ---------- main ---------- */
+const WORDS = [
+  "fast web apps.",
+  "clean dashboards.",
+  "secure admin panels.",
+  "beautiful UI systems.",
+];
+const ease = [0.22, 1, 0.36, 1];
+
 export default function Hero() {
   const prefersReducedMotion = useReducedMotion();
   const [copiedText, setCopiedText] = useState(null);
+  const [wordIndex, setWordIndex] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
 
   const CONTACT = useMemo(
     () => ({
@@ -122,255 +109,169 @@ export default function Hero() {
       phoneRaw: "+8619917247217",
       location: "Changchun, Jilin, China",
     }),
-    [],
+    []
   );
 
-  const handleCopy = async (text, label) => {
+  const handleCopy = useCallback(async (text, label) => {
     try {
       await safeCopy(text);
       setCopiedText(label);
       toast.success(`${label} copied`, { description: text });
       setTimeout(() => setCopiedText(null), 1500);
     } catch {
-      toast.error("Copy failed", {
-        description: "Your browser blocked clipboard access.",
-      });
+      toast.error("Copy failed");
     }
-  };
+  }, []);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08, delayChildren: 0.08 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 14, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.55, ease: "easeOut" },
-    },
-  };
-  const words = [
-    "fast web apps.",
-    "clean dashboards.",
-    "secure admin panels.",
-    "beautiful UI systems.",
-  ];
-
-  const [index, setIndex] = useState(0);
-
-  // Cycle through words every 3 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % words.length);
-    }, 3000);
+    const interval = setInterval(() => setWordIndex((p) => (p + 1) % WORDS.length), 3000);
     return () => clearInterval(interval);
-  }, [words.length]);
+  }, []);
 
   const linkedin = process.env.NEXT_PUBLIC_LINKEDIN || "";
   const twitter = process.env.NEXT_PUBLIC_X || "";
   const GITHUB = process.env.GITHUB || "";
 
+  const stagger = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+  };
+  const fade = {
+    hidden: { y: 16, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.55, ease } },
+  };
+
   return (
-    <section className="relative py-10">
-      <div className="mx-auto w-full max-w-6xl">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col gap-8 sm:gap-10"
-        >
-          {/* Name / Tooltip */}
-          <motion.div variants={itemVariants} className="min-h-16 sm:min-h-20">
-            <NameToolTip />
-          </motion.div>
+    <motion.section
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={stagger}
+    >
+      <motion.div variants={fade}>
+        <NameToolTip />
+      </motion.div>
 
-          {/* Hero Row */}
-          <motion.div
-            variants={itemVariants}
-            className="w-full max-w-5xl mx-auto px-4 py-8 md:py-12"
-          >
-            <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between gap-10 md:gap-16">
-              {/* LEFT: Avatar Section */}
-              {/* On mobile, this stays on top. On desktop, it stays left. 
-            If you want text left/avatar right, swap the order of these two main divs. */}
-              <div className="relative flex-shrink-0 group">
-                {/* Ring 1 (Outer) */}
-                <motion.div
-                  aria-hidden
-                  className="absolute inset-0 -m-8 rounded-full border-2 border-dashed border-foreground/20 z-0"
-                  animate={prefersReducedMotion ? {} : { rotate: 360 }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 45,
-                    ease: "linear",
-                  }}
-                />
+      <motion.div variants={fade} className="">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-14">
+          <div className="relative shrink-0 group">
+            <motion.div
+              aria-hidden
+              className="absolute inset-0 -m-5 rounded-full border border-dashed border-foreground/10"
+              animate={prefersReducedMotion ? {} : { rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 50, ease: "linear" }}
+            />
+            <motion.div
+              aria-hidden
+              className="absolute inset-0 -m-2.5 rounded-full border border-dashed border-destructive/30"
+              animate={prefersReducedMotion ? {} : { rotate: -360 }}
+              transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
+            />
+            <motion.div
+              initial={prefersReducedMotion ? undefined : { scale: 0.92, opacity: 0 }}
+              animate={prefersReducedMotion ? undefined : { scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, ease }}
+              className="relative h-36 w-36 sm:h-44 sm:w-44 md:h-52 md:w-52 rounded-full overflow-hidden z-10"
+            >
+              <Image
+                src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
+                alt="Profile picture"
+                fill
+                priority
+                sizes="(max-width: 640px) 144px, (max-width: 768px) 176px, 208px"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </motion.div>
+          </div>
 
-                {/* Ring 2 (Inner) */}
-                <motion.div
-                  aria-hidden
-                  className="absolute inset-0 -m-6 rounded-full border-2 border-dashed border-destructive/50 z-0"
-                  animate={prefersReducedMotion ? {} : { rotate: -360 }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 30,
-                    ease: "linear",
-                  }}
-                />
-
-                {/* Avatar Image */}
-                <motion.div
-                  initial={
-                    prefersReducedMotion
-                      ? undefined
-                      : { scale: 0.9, opacity: 0 }
-                  }
-                  animate={
-                    prefersReducedMotion ? undefined : { scale: 1, opacity: 1 }
-                  }
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="relative h-48 w-48 sm:h-60 sm:w-56 flex justify-center items-center rounded-full overflow-hidden z-10"
-                >
-                  <div className="relative h-56 w-56 rounded-full overflow-hidden">
-                    <Image
-                      src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
-                      alt="Profile picture"
-                      fill
-                      priority={true}
-                      sizes="(max-width: 640px) 192px, 224px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                </motion.div>
+          <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left gap-4 md:pt-4">
+            <h2 className="flex flex-col sm:flex-row items-center md:items-start gap-1.5 sm:gap-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+              <span className="text-primary whitespace-nowrap">I build</span>
+              <div className="relative flex w-full justify-center md:justify-start overflow-hidden h-[1.3em]">
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={wordIndex}
+                    initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
+                    animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+                    exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
+                    transition={{ type: "spring", stiffness: 120, damping: 20, mass: 0.8 }}
+                    className="block whitespace-nowrap text-foreground"
+                  >
+                    {WORDS[wordIndex]}
+                  </motion.span>
+                </AnimatePresence>
               </div>
+            </h2>
 
-              {/* RIGHT: Content Section */}
-              <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left gap-5 pt-2 md:pt-8">
-                {/* Animated Heading */}
-                <motion.h1
-                  variants={itemVariants}
-                  className="flex flex-col sm:flex-row items-center md:items-start gap-2 text-3xl font-bold tracking-tight text-foreground"
-                >
-                  <span className="text-primary whitespace-nowrap">
-                    I build
-                  </span>
+            <TimeStatus />
 
-                  <div className="relative flex w-full justify-center md:justify-start overflow-hidden h-[1.2em]">
-                    <AnimatePresence mode="popLayout">
-                      <motion.span
-                        key={index}
-                        initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
-                        animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
-                        exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 120,
-                          damping: 20,
-                        }}
-                        className="block whitespace-nowrap text-foreground"
-                      >
-                        {words[index]}
-                      </motion.span>
-                    </AnimatePresence>
-                  </div>
-                </motion.h1>
-
-                {/* Time Status */}
-                <motion.div variants={itemVariants} className="opacity-90">
-                  <TimeStatus />
-                </motion.div>
-
-                {/* CTA Button */}
-                <motion.div variants={itemVariants} className="pt-2">
-                  <MessageDialog>
-                    <button className="group relative inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors duration-300">
-                      <HoverUnderline>
-                        <span>Let&apos;s Talk</span>
-                      </HoverUnderline>
-                      <ExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-                    </button>
-                  </MessageDialog>
-                </motion.div>
-              </div>
+            <div className="pt-1">
+              <MessageDialog>
+                <button className="group relative inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors duration-300">
+                  <HoverUnderline>
+                    <span>Let&apos;s Talk</span>
+                  </HoverUnderline>
+                  <ExternalLink className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </button>
+              </MessageDialog>
             </div>
-          </motion.div>
+          </div>
+        </div>
+      </motion.div>
 
-          {/* Bottom: Contact + Socials */}
-          <motion.div
-            variants={itemVariants}
-            className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-2"
-          >
-            {/* Contact */}
-            <div className="md:col-span-7 px-2">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-primary">
-                  Contact
-                </h4>
-                <span className="text-[11px] font-mono text-muted-foreground">
-                  click to copy
-                </span>
-              </div>
-
-              <div className="mt-4 flex flex-col gap-3">
-                <ContactRow
-                  icon={Mail}
-                  label="Email"
-                  value={CONTACT.email}
-                  onClick={() => handleCopy(CONTACT.email, "Email")}
-                  isCopied={copiedText === "Email"}
-                />
-
-                <ContactRow
-                  icon={Phone}
-                  label="Phone"
-                  value={CONTACT.phone}
-                  onClick={() => handleCopy(CONTACT.phoneRaw, "Phone")}
-                  isCopied={copiedText === "Phone"}
-                />
-
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-4 w-4 mt-0.5 text-primary" />
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium text-foreground">
-                      Location
-                    </div>
-                    <div className="text-sm text-muted-foreground truncate">
-                      {CONTACT.location}
-                    </div>
-                  </div>
+      <motion.div variants={fade} className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 md:mt-12">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              Contact
+            </h4>
+            <span className="text-[10px] font-mono text-muted-foreground/40">click to copy</span>
+          </div>
+          <div className="flex flex-col gap-3">
+            <ContactRow
+              icon={Mail}
+              label="Email"
+              value={CONTACT.email}
+              onClick={() => handleCopy(CONTACT.email, "Email")}
+              isCopied={copiedText === "Email"}
+            />
+            <ContactRow
+              icon={Phone}
+              label="Phone"
+              value={CONTACT.phone}
+              onClick={() => handleCopy(CONTACT.phoneRaw, "Phone")}
+              isCopied={copiedText === "Phone"}
+            />
+            <div className="flex items-start gap-3">
+              <MapPin className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Location
                 </div>
+                <div className="text-sm text-foreground mt-0.5">{CONTACT.location}</div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Socials */}
-            <div className="md:col-span-5">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-primary">
-                Socials
-              </h4>
-
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <SocialLink icon={Twitter} label="X / Twitter" href={twitter} />
-                <SocialLink icon={Github} label="GitHub" href={GITHUB} />
-                <SocialLink icon={Linkedin} label="LinkedIn" href={linkedin} />
-              </div>
-
-              <p className="mt-5 text-xs text-muted-foreground leading-relaxed">
-                Want something built fast and clean? Ping me.
-              </p>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
+        <div>
+          <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary mb-4">
+            Socials
+          </h4>
+          <div className="flex flex-col gap-3">
+            <SocialLink icon={Twitter} label="X / Twitter" href={twitter} />
+            <SocialLink icon={Github} label="GitHub" href={GITHUB} />
+            <SocialLink icon={Linkedin} label="LinkedIn" href={linkedin} />
+          </div>
+          <p className="mt-5 text-xs text-muted-foreground/50 leading-relaxed">
+            Want something built fast and clean? Ping me.
+          </p>
+        </div>
+      </motion.div>
+    </motion.section>
   );
 }
 
-/** ---------- Helper Components ---------- */
 function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
   return (
     <button
@@ -378,27 +279,25 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
       onClick={onClick}
       className="group flex w-full items-center gap-3 text-left"
       aria-label={`Copy ${label}`}
-      title={`Copy ${label}`}
     >
-      <Icon className="h-4 w-4 text-primary shrink-0" />
+      <Icon className="h-3.5 w-3.5 text-primary shrink-0" />
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </div>
-        <div className="text-sm font-medium text-foreground">
+        <div className="text-sm font-medium text-foreground mt-0.5">
           <HoverUnderline>{value}</HoverUnderline>
         </div>
       </div>
-
-      <div className="flex items-center pt-4">
+      <div className="flex items-center">
         {isCopied ? (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600">
-            <Check className="h-4 w-4" />
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+            <Check className="h-3.5 w-3.5" />
             Copied
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-xs opacity-70 group-hover:opacity-100  transition-opacity">
-            <Copy className="h-4 w-4" />
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <Copy className="h-3.5 w-3.5" />
             Copy
           </span>
         )}
@@ -407,20 +306,19 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
   );
 }
 
-function SocialLink({ icon: Icon, href: href, label }) {
+function SocialLink({ icon: Icon, href, label }) {
   return (
     <Link
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative cursor-pointer w-fit group inline-flex items-center gap-3 text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+      className="group inline-flex items-center gap-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
       aria-label={label}
-      title={label}
     >
       <HoverUnderline>
         <span className="inline-flex items-center justify-center">
-          <Icon className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
-          <span className="">{label}</span>
+          <Icon className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+          <span className="ml-2">{label}</span>
         </span>
       </HoverUnderline>
     </Link>

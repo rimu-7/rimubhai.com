@@ -1,45 +1,30 @@
 "use client";
 
-import Link from "next/link";
-import React, { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { ModeToggle } from "./ModeToggle";
-import { Press_Start_2P } from "next/font/google";
-import {
-  Menu,
-  Component,
-  FileText,
-  Home,
-  Code,
-  Sparkles,
-  ChevronDown,
-} from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
-// Added Dropdown Menu Imports
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import Container from "./Container";
-import { Settings2 } from "lucide-react";
-import { BiMobile } from "react-icons/bi";
+import { motion } from "framer-motion";
+import {
+  ChevronDown,
+  Code,
+  Component,
+  FileText,
+  Home,
+  Menu,
+  Settings2,
+  Sparkles,
+} from "lucide-react";
+import { Press_Start_2P } from "next/font/google";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ModeToggle } from "./ModeToggle";
 
 const pressFont = Press_Start_2P({
   subsets: ["latin"],
@@ -59,14 +44,11 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredPath, setHoveredPath] = useState(pathname);
-  // State to control Services Dropdown on Hover
   const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -74,60 +56,48 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ className: "spring", stiffness: 300, damping: 30 }}
+      transition={{ type: "spring", stiffness: 260, damping: 26 }}
       className={cn(
-        "sticky top-0 z-50 w-full border-b transition-all duration-300",
+        "sticky top-0 z-50 w-full transition-all duration-300",
         isScrolled
-          ? "bg-background/80 backdrop-blur-md border-border/50 shadow-sm"
-          : "bg-background/50 backdrop-blur-sm border-transparent",
+          ? "bg-background/80 backdrop-blur-xl shadow"
+          : "bg-background/50 backdrop-blur-sm"
       )}
     >
-      <Container className="h-16 flex items-center justify-between">
-        {/* --- LEFT: LOGO --- */}
-        <Link href="/" className="group flex items-center gap-2">
-          <div className="relative flex items-center justify-center">
-            <p
-              className={cn(
-                pressFont.className,
-                "text-xs md:text-sm transition-opacity group-hover:opacity-80",
-              )}
-            >
-              rimu <span className="text-primary">{"</>"}</span>
-            </p>
-          </div>
+      <div className="flex mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8  h-14 items-center justify-between">
+        <Link href="/" className="group flex items-center">
+          <p
+            className={cn(
+              pressFont.className,
+              "text-[10px] sm:text-xs transition-opacity group-hover:opacity-80"
+            )}
+          >
+            rimu <span className="text-primary">{"</>"}</span>
+          </p>
         </Link>
 
-        {/* --- RIGHT: NAV & ACTIONS --- */}
         <div className="flex items-center gap-2">
-          {/* 1. Desktop Navigation */}
           <div
-            className="hidden md:flex items-center gap-1 mr-2 relative"
+            className="hidden md:flex items-center gap-0.5 relative"
             onMouseLeave={() => setHoveredPath(pathname)}
           >
             {menuItems.map((item) => {
               const isActive = item.href === pathname;
-
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "relative px-4 py-2 text-sm font-medium transition-colors rounded-md z-10",
-                    isActive
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground",
+                    "relative px-3 py-1.5 text-sm font-medium transition-colors rounded-md z-10",
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   )}
                   onMouseEnter={() => setHoveredPath(item.href)}
                 >
                   {item.href === hoveredPath && (
                     <motion.div
                       layoutId="navbar-hover"
-                      className="absolute inset-0 rounded-md -z-10"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
+                      className="absolute inset-0 rounded-md bg-muted/60 -z-10"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                     />
                   )}
                   {item.label}
@@ -135,191 +105,141 @@ export default function Navbar() {
               );
             })}
 
-            {/* --- SERVICES DROPDOWN (Desktop) --- */}
-            <DropdownMenu
-              open={isServicesOpen}
-              onOpenChange={setIsServicesOpen}
-            >
+            <DropdownMenu open={isServicesOpen} onOpenChange={setIsServicesOpen}>
               <DropdownMenuTrigger
                 asChild
                 onMouseEnter={() => {
                   setHoveredPath("services");
                   setIsServicesOpen(true);
                 }}
-                onMouseLeave={() => {
-                  // Small delay or check to keep open when moving to content
-                  // Usually handled by the DropdownMenuContent onMouseEnter
-                }}
                 className="focus:outline-none"
               >
                 <button
                   className={cn(
-                    "relative px-4 py-2 text-sm font-medium transition-colors rounded-md z-10 flex items-center gap-1",
-                    "text-muted-foreground hover:text-foreground",
+                    "relative px-3 py-1.5 text-sm font-medium transition-colors rounded-md z-10 flex items-center gap-1",
+                    "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {"services" === hoveredPath && (
                     <motion.div
                       layoutId="navbar-hover"
-                      className="absolute inset-0 rounded-md -z-10"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
+                      className="absolute inset-0 rounded-md bg-muted/60 -z-10"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                     />
                   )}
                   Services
                   <ChevronDown
                     className={cn(
-                      "h-4 w-4 transition-transform duration-200",
-                      isServicesOpen && "rotate-180",
+                      "h-3.5 w-3.5 transition-transform duration-200",
+                      isServicesOpen && "rotate-180"
                     )}
                   />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="min-w-[200px]"
-                sideOffset={10}
+                sideOffset={8}
                 onMouseEnter={() => setIsServicesOpen(true)}
                 onMouseLeave={() => {
                   setIsServicesOpen(false);
                   setHoveredPath(pathname);
                 }}
               >
-                {/* Additional Items for Demo */}
                 <DropdownMenuItem>
-                  <Link
-                    href="/services/web-development"
-                    className="flex gap-2 justify-center items-center"
-                  >
+                  <Link href="/services/web-development" className="flex gap-2 items-center">
                     <Code className="w-4 h-4" />
                     <span>Web Development</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link
-                    href="/services/software-development"
-                    className="flex gap-2 justify-center items-center"
-                  >
+                  <Link href="/services/software-development" className="flex gap-2 items-center">
                     <Settings2 className="w-4 h-4" />
-                    <span>Sofware Development</span>
+                    <span>Software Development</span>
                   </Link>
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>
-                  <Link href="/services/mobile-development" className="flex gap-2 justify-center items-center">
-                    <BiMobile className="w-4 h-4" />
-                    <span>Mobile Development</span>
-                  </Link>
-                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          {/* 2. Divider */}
-          <div className="h-6 w-px bg-border/50 mx-1 hidden sm:block" />
+          <div className="h-5 w-px bg-border/40 mx-0.5 hidden sm:block" />
 
-          {/* 3. Theme Toggle & Mobile Menu */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <ModeToggle />
-
-            {/* Mobile Menu Dialog */}
             <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground"
+                  className="md:hidden h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-4.5 w-4.5" />
                 </Button>
               </DialogTrigger>
-
-              <DialogContent className="w-[90%] max-w-[400px] p-0 gap-0 overflow-hidden rounded-2xl border-border/60 bg-background/95 backdrop-blur-xl">
-                {/* ACCESSIBLE TITLE FIX: Using 'sr-only' class instead of VisuallyHidden component */}
-                <DialogTitle className="sr-only">
-                  Mobile Navigation Menu
-                </DialogTitle>
-
-                {/* Header */}
-                <div className="p-4 border-b bg-muted/20 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                      <span
-                        className={cn(
-                          pressFont.className,
-                          "text-[10px] text-primary",
-                        )}
-                      >
-                        RB
-                      </span>
-                    </div>
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Menu
-                    </span>
+              <DialogContent className="w-[90%] max-w-[380px] p-0 gap-0 overflow-hidden rounded-2xl border-border/60 bg-background/95 backdrop-blur-xl">
+                <DialogTitle className="sr-only">Mobile Navigation Menu</DialogTitle>
+                <div className="p-4 border-b bg-muted/20 flex items-center gap-2.5">
+                  <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                    <span className={cn(pressFont.className, "text-[8px] text-primary")}>RB</span>
                   </div>
+                  <span className="text-xs font-medium text-muted-foreground">Menu</span>
                 </div>
-
-                {/* Menu Items */}
-                <div className="p-2 flex flex-col gap-1">
-                  {menuItems.map((item) => {
+                <div className="p-2 flex flex-col gap-0.5">
+                  {menuItems.map((item, i) => {
                     const isActive = pathname === item.href;
                     return (
-                      <Link
+                      <motion.div
                         key={item.label}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={cn(
-                          "group flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200",
-                          isActive
-                            ? "bg-primary/10 text-primary font-semibold"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                        )}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05, duration: 0.2 }}
                       >
-                        <item.icon
+                        <Link
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
                           className={cn(
-                            "h-4 w-4 transition-colors",
+                            "group flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200",
                             isActive
-                              ? "text-primary"
-                              : "text-muted-foreground group-hover:text-foreground",
+                              ? "bg-primary/10 text-primary font-semibold"
+                              : "text-muted-foreground hover:bg-muted hover:text-foreground"
                           )}
-                        />
-                        {item.label}
-                        {isActive && (
-                          <motion.div
-                            layoutId="mobile-indicator"
-                            className="ml-auto w-1.5 h-1.5 rounded-full bg-primary"
+                        >
+                          <item.icon
+                            className={cn(
+                              "h-4 w-4",
+                              isActive
+                                ? "text-primary"
+                                : "text-muted-foreground group-hover:text-foreground"
+                            )}
                           />
-                        )}
-                      </Link>
+                          {item.label}
+                          {isActive && (
+                            <motion.div
+                              layoutId="mobile-indicator"
+                              className="ml-auto w-1.5 h-1.5 rounded-full bg-primary"
+                            />
+                          )}
+                        </Link>
+                      </motion.div>
                     );
                   })}
-
-                  {/* --- SERVICES DROPDOWN (Mobile) --- */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button
-                        className={cn(
-                          "group flex items-center justify-between w-full gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200",
-                          "text-muted-foreground hover:bg-muted hover:text-foreground",
-                        )}
+                      <motion.button
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.18, duration: 0.2 }}
+                        className="group flex items-center justify-between w-full gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
                         <div className="flex items-center gap-3">
                           <Sparkles className="h-4 w-4" />
                           Services
                         </div>
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      </motion.button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-[calc(100%-2rem)] ml-4 mr-4" // Responsive width for mobile
-                      sideOffset={5}
-                    >
+                    <DropdownMenuContent className="w-[calc(100%-2rem)] ml-4 mr-4" sideOffset={4}>
                       <DropdownMenuItem>
-                        <Link
-                          href="/services/web-development"
-                          className="flex gap-2 justify-center items-center"
-                        >
+                        <Link href="/services/web-development" className="flex gap-2 items-center">
                           <Code className="w-4 h-4" />
                           <span>Web Development</span>
                         </Link>
@@ -327,19 +247,17 @@ export default function Navbar() {
                       <DropdownMenuItem>
                         <Link
                           href="/services/software-development"
-                          className="flex gap-2 justify-center items-center"
+                          className="flex gap-2 items-center"
                         >
                           <Settings2 className="w-4 h-4" />
-                          <span>Sofware Development</span>
+                          <span>Software Development</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-
-                {/* Footer */}
-                <div className="p-4 bg-muted/30 border-t text-xs text-center text-muted-foreground">
-                  <p className="flex items-center justify-center gap-1 opacity-70">
+                <div className="p-3 bg-muted/30 border-t text-[11px] text-center text-muted-foreground/50">
+                  <p className="flex items-center justify-center gap-1">
                     <Sparkles className="h-3 w-3" />
                     Designed by Rimubhai
                   </p>
@@ -348,7 +266,7 @@ export default function Navbar() {
             </Dialog>
           </div>
         </div>
-      </Container>
+      </div>
     </motion.nav>
   );
 }
