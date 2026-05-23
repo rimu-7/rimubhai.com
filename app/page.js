@@ -8,6 +8,7 @@ import Awards from "@/components/awards/Awards";
 import Projects from "@/components/projects/Projects";
 import { Skeleton } from "@/components/ui/skeleton";
 import GithubHeatMapWrapper from "@/components/GithubHeatMapWrapper";
+import JsonLd from "@/components/JsonLd";
 
 function SectionSkeleton() {
   return (
@@ -22,32 +23,66 @@ function SectionSkeleton() {
   );
 }
 
+export const metadata = {
+  title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
+  description: "Portfolio of Mutasim Fuad Rimu, a Full Stack Developer specializing in Next.js, React, Node.js, and building exceptional digital experiences.",
+};
+
 export default function Home() {
+  const webSiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Mutasim Fuad Rimu (Rimu Bhai)",
+    "url": "https://rimubhai.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://rimubhai.com/?s={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
-    <Container>
-      <Hero />
+    <main>
+      <JsonLd schema={webSiteSchema} />
+      <Container>
+        <section aria-label="Hero">
+          <Hero />
+        </section>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <AboutPage />
-      </Suspense>
+        <section aria-label="About Me">
+          <Suspense fallback={<SectionSkeleton />}>
+            <AboutPage />
+          </Suspense>
+        </section>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <Projects />
-      </Suspense>
+        <section aria-label="Projects">
+          <Suspense fallback={<SectionSkeleton />}>
+            <Projects />
+          </Suspense>
+        </section>
 
-      <GithubHeatMapWrapper username="rimu-7" />
+        <section aria-label="Github Activity">
+          <GithubHeatMapWrapper username="rimu-7" />
+        </section>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <Experiences />
-      </Suspense>
+        <section aria-label="Experience">
+          <Suspense fallback={<SectionSkeleton />}>
+            <Experiences />
+          </Suspense>
+        </section>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <LifeEvents />
-      </Suspense>
+        <section aria-label="Life Events">
+          <Suspense fallback={<SectionSkeleton />}>
+            <LifeEvents />
+          </Suspense>
+        </section>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <Awards />
-      </Suspense>
-    </Container>
+        <section aria-label="Awards">
+          <Suspense fallback={<SectionSkeleton />}>
+            <Awards />
+          </Suspense>
+        </section>
+      </Container>
+    </main>
   );
 }

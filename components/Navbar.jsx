@@ -65,7 +65,7 @@ export default function Navbar() {
       )}
     >
       <div className="flex mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8  h-14 items-center justify-between">
-        <Link href="/" className="group flex items-center">
+        <Link href="/" className="group flex items-center" aria-label="Mutasim Fuad Rimu Portfolio Home">
           <p
             className={cn(
               pressFont.className,

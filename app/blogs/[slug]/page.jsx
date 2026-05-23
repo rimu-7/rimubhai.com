@@ -12,6 +12,7 @@ import slugify from "slugify";
 import BlogTOC from "./BlogTOC";
 import BlogContent from "./BlogContent";
 import Container from "@/components/Container";
+import JsonLd from "@/components/JsonLd";
 import {
   getBlogBySlug,
   getBlogPath,
@@ -52,9 +53,62 @@ function processContent(htmlContent = "") {
     });
   });
 
+  // Optimize Images for Reader Mode
+  $("img").each((_, element) => {
+    const $img = $(element);
+    const altText = $img.attr("alt") || "Blog Image";
+    $img.wrap("<figure></figure>");
+    $img.parent().append(`<figcaption class="text-sm text-center text-muted-foreground mt-2">${altText}</figcaption>`);
+  });
+
   return {
     html: $("body").html() || "",
     toc,
+  };
+}
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
+
+  if (!blog) return { title: "Blog Not Found" };
+
+  const description = getDescription(blog);
+  const canonicalUrl = `${SITE_URL}${getBlogPath(blog)}`;
+  const imageUrl =
+    blog.image && typeof blog.image === "string"
+      ? blog.image.startsWith("http")
+        ? blog.image
+        : `${SITE_URL}${blog.image.startsWith("/") ? blog.image : `/${blog.image}`}`
+      : `${SITE_URL}/rimu.png`;
+
+  return {
+    title: blog.name,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: blog.name,
+      description,
+      url: canonicalUrl,
+      type: "article",
+      publishedTime: blog.createdAt ? new Date(blog.createdAt).toISOString() : undefined,
+      modifiedTime: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : undefined,
+      authors: [AUTHOR_NAME],
+      images: [
+        {
+          url: imageUrl,
+          alt: blog.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: blog.name,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -108,10 +162,7 @@ export default async function BlogDetailsPage({ params }) {
 
   return (
     <Container>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd schema={jsonLd} />
 
       <div className="mb-8">
         <Button
@@ -131,7 +182,7 @@ export default async function BlogDetailsPage({ params }) {
           <BlogTOC toc={toc} />
         </aside>
 
-        <div className="min-w-0 lg:col-span-8">
+        <article className="min-w-0 lg:col-span-8">
           <header className="mb-8 space-y-5">
             <div className="flex flex-wrap items-center gap-3">
               {blog.featured && (
@@ -146,14 +197,14 @@ export default async function BlogDetailsPage({ params }) {
               </span>
 
               {publishedAt && (
-                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                <time dateTime={publishedAt.toISOString()} className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Calendar className="h-3.5 w-3.5" />
                   {publishedAt.toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   })}
-                </span>
+                </time>
               )}
 
               <span className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -177,10 +228,10 @@ export default async function BlogDetailsPage({ params }) {
 
           <Separator className="my-8" />
 
-          <article className="min-w-0">
+          <div className="min-w-0">
             <BlogContent content={processedContent} />
-          </article>
-        </div>
+          </div>
+        </article>
       </div>
     </Container>
   );

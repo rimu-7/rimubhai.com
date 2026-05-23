@@ -3,7 +3,11 @@ export default function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/'],
+      disallow: [
+        '/api/',
+        '/dashboard/',
+        '/*?*', // Prevent indexing of search/filter params
+      ],
     },
     sitemap: 'https://rimubhai.com/sitemap.xml',
   }

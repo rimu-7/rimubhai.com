@@ -23,7 +23,7 @@ export default function BlogContent({ content }) {
       // 3. Create the container for the button
       const buttonContainer = document.createElement("div");
       buttonContainer.className = "copy-code-btn absolute top-3 right-3";
-      
+
       // 4. Append container to the <pre> block
       pre.appendChild(buttonContainer);
 
@@ -51,12 +51,13 @@ function CopyButton({ preBlock }) {
 
   const handleCopy = async () => {
     // Get text, but exclude the button text itself if it somehow gets included
-    const code = preBlock.querySelector("code")?.innerText || preBlock.innerText;
-    
+    const code =
+      preBlock.querySelector("code")?.innerText || preBlock.innerText;
+
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      toast.success("Copied")
+      toast.success("Copied");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy!", err);
@@ -68,9 +69,11 @@ function CopyButton({ preBlock }) {
       onClick={handleCopy}
       className={`
         p-2 rounded-md transition-all duration-200
-        ${copied 
-          ? "bg-green-500/10 text-green-500" 
-          : "bg-white/10 hover:bg-white/20 text-zinc-400 hover:text-white"}
+        ${
+          copied
+            ? "bg-green-500/10 text-green-500"
+            : "bg-white/10 hover:bg-white/20 text-zinc-400 hover:text-white"
+        }
       `}
       aria-label="Copy code"
     >

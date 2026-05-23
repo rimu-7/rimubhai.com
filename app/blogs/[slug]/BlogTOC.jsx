@@ -62,7 +62,7 @@ export default function BlogTOC({ toc = [] }) {
     if (window.location.hash) {
       const hashId = window.location.hash.replace("#", "");
       if (items.some((item) => item.id === hashId)) {
-        setActiveId(hashId);
+        setTimeout(() => setActiveId(hashId), 0);
       }
     }
 
@@ -97,31 +97,6 @@ export default function BlogTOC({ toc = [] }) {
 
   if (!items.length) return null;
 
-  const TOCList = () => (
-    <nav aria-label="Table of contents" className="space-y-1.5">
-      {items.map((item) => {
-        const isActive = activeId === item.id;
-
-        return (
-          <a
-            key={item.id}
-            href={`#${item.id}`}
-            onClick={(e) => handleClick(e, item.id)}
-            aria-current={isActive ? "true" : undefined}
-            className={cn(
-              "group relative block border-l-2 py-2 pr-3 text-sm transition-all duration-200",
-              item.level === "h3" ? "ml-4 pl-4 text-[13px]" : "pl-3 font-medium",
-              isActive
-                ? "border-primary bg-primary/8 text-primary"
-                : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground"
-            )}
-          >
-            <span className="line-clamp-2">{item.text}</span>
-          </a>
-        );
-      })}
-    </nav>
-  );
 
   return (
     <>
@@ -166,7 +141,28 @@ export default function BlogTOC({ toc = [] }) {
 
           <CollapsibleContent className="border-t">
             <div className="max-h-[50vh] overflow-y-auto px-4 pb-4 pt-4">
-              <TOCList />
+              <nav aria-label="Table of contents (Mobile)" className="space-y-1.5">
+                {items.map((item) => {
+                  const isActive = activeId === item.id;
+                  return (
+                    <a
+                      key={`mobile-${item.id}`}
+                      href={`#${item.id}`}
+                      onClick={(e) => handleClick(e, item.id)}
+                      aria-current={isActive ? "true" : undefined}
+                      className={cn(
+                        "group relative block border-l-2 py-2 pr-3 text-sm transition-all duration-200",
+                        item.level === "h3" ? "ml-4 pl-4 text-[13px]" : "pl-3 font-medium",
+                        isActive
+                          ? "border-primary bg-primary/8 text-primary"
+                          : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground"
+                      )}
+                    >
+                      <span className="line-clamp-2">{item.text}</span>
+                    </a>
+                  );
+                })}
+              </nav>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -189,7 +185,28 @@ export default function BlogTOC({ toc = [] }) {
           </CardHeader>
 
           <CardContent className="max-h-[70vh] overflow-y-auto pt-0">
-            <TOCList />
+            <nav aria-label="Table of contents (Desktop)" className="space-y-1.5">
+              {items.map((item) => {
+                const isActive = activeId === item.id;
+                return (
+                  <a
+                    key={`desktop-${item.id}`}
+                    href={`#${item.id}`}
+                    onClick={(e) => handleClick(e, item.id)}
+                    aria-current={isActive ? "true" : undefined}
+                    className={cn(
+                      "group relative block border-l-2 py-2 pr-3 text-sm transition-all duration-200",
+                      item.level === "h3" ? "ml-4 pl-4 text-[13px]" : "pl-3 font-medium",
+                      isActive
+                        ? "border-primary bg-primary/8 text-primary"
+                        : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground"
+                    )}
+                  >
+                    <span className="line-clamp-2">{item.text}</span>
+                  </a>
+                );
+              })}
+            </nav>
           </CardContent>
         </Card>
       </div>

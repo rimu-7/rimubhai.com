@@ -20,6 +20,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HoverUnderline } from "../HoverUnderline";
 import { MessageDialog } from "./Message.Dialog";
 import { NameToolTip } from "./NameToolTip";
+import { runIdle } from "@/lib/utils/runIdle";
 
 function safeCopy(text) {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
@@ -124,7 +125,10 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => setWordIndex((p) => (p + 1) % WORDS.length), 3000);
+    let interval;
+    runIdle(() => {
+      interval = setInterval(() => setWordIndex((p) => (p + 1) % WORDS.length), 3000);
+    });
     return () => clearInterval(interval);
   }, []);
 
@@ -148,6 +152,7 @@ export default function Hero() {
       animate={inView ? "visible" : "hidden"}
       variants={stagger}
     >
+      <h1 className="sr-only">Mutasim Fuad Rimu (Rimu Bhai) - Full Stack Developer</h1>
       <motion.div variants={fade}>
         <NameToolTip />
       </motion.div>
@@ -175,9 +180,12 @@ export default function Hero() {
             >
               <Image
                 src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
-                alt="Profile picture"
+                alt="Mutasim Fuad Rimu (Rimu Bhai) Profile"
                 fill
                 priority
+                fetchPriority="high"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                 sizes="(max-width: 640px) 144px, (max-width: 768px) 176px, 208px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />

@@ -7,6 +7,8 @@ import ScrollToTop from "@/components/ScrollTop";
 import { NextToast } from "next-toast";
 import Gatekeeper from "@/components/Gatekeeper";
 import { ConsentManager } from "@/components/consent-manager/consent-manager";
+import JsonLd from "@/components/JsonLd";
+import UmamiAnalytics from "@/components/UmamiAnalytics";
 
 const domine = Domine({
   subsets: ["latin"],
@@ -21,21 +23,24 @@ export const metadata = {
 
   // 2. Title & Description
   title: {
-    default: "Rimu Bhai | Full Stack Developer",
-    template: "%s | Rimu Bhai",
+    default: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
+    template: "%s | Mutasim Fuad Rimu",
   },
   description:
     "Portfolio of Rimu Bhai, a Full Stack Developer specializing in Next.js, React, Node.js, and building exceptional digital experiences.",
 
   // 3. Keywords for Discovery (DuckDuckGo & Brave love these)
   keywords: [
+    "Mutasim Fuad Rimu",
     "Rimu Bhai",
+    "Rimu",
+    "Mutasim Fuad",
     "Full Stack Developer",
-    "Web Developer India",
+    "Software Engineer Portfolio",
     "Next.js Developer",
     "React Expert",
     "Node.js Backend",
-    "Software Engineer Portfolio",
+    "Web Developer India",
     "JavaScript",
     "TypeScript",
     "Creative Developer",
@@ -51,7 +56,7 @@ export const metadata = {
     type: "website",
     locale: "en_US",
     url: "https://rimubhai.com",
-    title: "Rimu Bhai | Full Stack Developer",
+    title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
     description:
       "Building exceptional digital experiences with modern web technologies.",
     siteName: "Rimu Bhai Portfolio",
@@ -68,7 +73,7 @@ export const metadata = {
   // 6. Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: "Rimu Bhai | Full Stack Developer",
+    title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
     description:
       "Building exceptional digital experiences with modern web technologies.",
     images: ["/rimu.png"],
@@ -82,9 +87,13 @@ export const metadata = {
     apple: "/apple-touch-icon.png",
   },
 
-  // 8. Canonical URL
+  // 8. Canonical URL & Hreflang
   alternates: {
-    canonical: "./",
+    canonical: "/",
+    languages: {
+      "en-US": "/en-US",
+      "zh-CN": "/zh-CN",
+    },
   },
 
   // 9. Search Engine Verification (CRITICAL)
@@ -113,7 +122,8 @@ export const metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Rimu Bhai",
+  name: "Mutasim Fuad Rimu",
+  alternateName: ["Rimu Bhai", "Rimu"],
   url: "https://rimubhai.com",
   image: "https://rimubhai.com/rimu.png",
   sameAs: [
@@ -143,10 +153,7 @@ export default function RootLayout({ children }) {
         className={`${domine.className} lowercase antialiased selection:bg-primary/20 selection:text-primary`}
       >
         {/* Inject JSON-LD Script */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd schema={jsonLd} />
 
         <ThemeProvider
           attribute="class"
@@ -170,6 +177,7 @@ export default function RootLayout({ children }) {
           </ConsentManager>
 
           <ScrollToTop />
+          <UmamiAnalytics />
         </ThemeProvider>
       </body>
     </html>
