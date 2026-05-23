@@ -13,6 +13,7 @@ import BlogTOC from "./BlogTOC";
 import BlogContent from "./BlogContent";
 import Container from "@/components/Container";
 import JsonLd from "@/components/JsonLd";
+import PostDate from "@/components/PostDate";
 import {
   getBlogBySlug,
   getBlogPath,
@@ -197,14 +198,10 @@ export default async function BlogDetailsPage({ params }) {
               </span>
 
               {publishedAt && (
-                <time dateTime={publishedAt.toISOString()} className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {publishedAt.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
+                <PostDate 
+                  dateString={publishedAt.toISOString()} 
+                  className="flex items-center gap-1 text-sm text-muted-foreground" 
+                />
               )}
 
               <span className="flex items-center gap-1 text-sm text-muted-foreground">

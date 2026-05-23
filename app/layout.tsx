@@ -150,7 +150,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${domine.className} lowercase antialiased selection:bg-primary/20 selection:text-primary`}
+        className={`${domine.variable} font-sans lowercase antialiased selection:bg-primary/20 selection:text-primary`}
       >
         {/* Inject JSON-LD Script */}
         <JsonLd schema={jsonLd} />
