@@ -2,7 +2,16 @@ export default function robots() {
   return {
     rules: {
       userAgent: '*',
-      allow: '/',
+      allow: [
+        '/',
+        '/_next/image*',
+        '/api/about',
+        '/api/awards',
+        '/api/experience',
+        '/api/life-events',
+        '/api/projects',
+        '/api/blogs',
+      ],
       disallow: [
         '/api/',
         '/dashboard/',

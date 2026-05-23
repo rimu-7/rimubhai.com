@@ -45,6 +45,7 @@ import {
 const CONTRIBUTIONS_QUERY = `
   query($username: String!, $from: DateTime!, $to: DateTime!) {
     user(login: $username) {
+      avatarUrl
       contributionsCollection(from: $from, to: $to) {
         contributionCalendar {
           weeks {
@@ -106,6 +107,173 @@ const CONTRIBUTIONS_QUERY = `
   }
 `;
 
+const fetchGitHubData = async (user) => {
+  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+
+  if (!token) {
+    throw new Error("GitHub token not configured");
+  }
+
+  const to = new Date().toISOString();
+  const from = subDays(new Date(), 365).toISOString();
+
+  const response = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    headers: {
+      Authorization: `bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: CONTRIBUTIONS_QUERY,
+      variables: { username: user, from, to },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+
+  return result.data.user;
+};
+
+const getLevel = (level) => {
+  switch (level) {
+    case "NONE":
+      return 0;
+    case "FIRST_QUARTILE":
+      return 1;
+    case "SECOND_QUARTILE":
+      return 2;
+    case "THIRD_QUARTILE":
+      return 3;
+    case "FOURTH_QUARTILE":
+      return 4;
+    default:
+      return 0;
+  }
+};
+
+const processContributions = (collection, username) => {
+  // Group by date and repo
+  const commitsByDate = new Map();
+
+  // Process commits - group by date and repo
+  collection.commitContributionsByRepository?.forEach((repoContrib) => {
+    const repoName = repoContrib.repository.name;
+    const repoOwner = repoContrib.repository.owner.login;
+
+    repoContrib.contributions?.nodes?.forEach((contrib) => {
+      const date = contrib.occurredAt.split("T")[0];
+
+      if (!commitsByDate.has(date)) {
+        commitsByDate.set(date, new Map());
+      }
+
+      const dateRepos = commitsByDate.get(date);
+      const key = `${repoOwner}/${repoName}`;
+
+      if (dateRepos.has(key)) {
+        // Increment count for existing repo
+        const existing = dateRepos.get(key);
+        existing.count += 1;
+      } else {
+        // Add new repo entry
+        dateRepos.set(key, {
+          hash: contrib.url?.split("/").pop() || "",
+          repo: repoName,
+          repoOwner: repoOwner,
+          timestamp: contrib.occurredAt,
+          type: "commit",
+          count: 1,
+        });
+      }
+    });
+  });
+
+  // Process PRs
+  collection.pullRequestContributions?.nodes?.forEach((contrib) => {
+    const date = contrib.occurredAt.split("T")[0];
+
+    if (!commitsByDate.has(date)) {
+      commitsByDate.set(date, new Map());
+    }
+
+    const dateRepos = commitsByDate.get(date);
+    const key = `pr-${contrib.pullRequest.number}`;
+
+    dateRepos.set(key, {
+      hash: String(contrib.pullRequest.number),
+      repo: contrib.pullRequest.repository.name,
+      repoOwner: contrib.pullRequest.repository.owner.login,
+      timestamp: contrib.occurredAt,
+      type: "pr",
+      count: 1,
+    });
+  });
+
+  // Process Issues
+  collection.issueContributions?.nodes?.forEach((contrib) => {
+    const date = contrib.occurredAt.split("T")[0];
+
+    if (!commitsByDate.has(date)) {
+      commitsByDate.set(date, new Map());
+    }
+
+    const dateRepos = commitsByDate.get(date);
+    const key = `issue-${contrib.issue.number}`;
+
+    dateRepos.set(key, {
+      hash: String(contrib.issue.number),
+      repo: contrib.issue.repository.name,
+      repoOwner: contrib.issue.repository.owner.login,
+      timestamp: contrib.occurredAt,
+      type: "issue",
+      count: 1,
+    });
+  });
+
+  // Build day data from calendar
+  const dayData = [];
+  let totalCount = 0;
+
+  collection.contributionCalendar.weeks.forEach((week) => {
+    week.contributionDays.forEach((day) => {
+      const dateCommits = Array.from(
+        commitsByDate.get(day.date)?.values() || [],
+      );
+
+      // If we have a count but no detailed commits, show generic activity
+      if (day.contributionCount > 0 && dateCommits.length === 0) {
+        dateCommits.push({
+          hash: "activity",
+          repo: "Other activity",
+          repoOwner: username,
+          timestamp: `${day.date}T12:00:00Z`,
+          type: "commit",
+          count: day.contributionCount,
+        });
+      }
+
+      dayData.push({
+        date: day.date,
+        count: day.contributionCount,
+        level: getLevel(day.contributionLevel),
+        commits: dateCommits,
+      });
+
+      totalCount += day.contributionCount;
+    });
+  });
+
+  return { dayData, totalCount };
+};
+
 export function GithubHeatMap({ username }) {
   const { theme, systemTheme } = useTheme();
   const [data, setData] = useState([]);
@@ -114,179 +282,13 @@ export function GithubHeatMap({ username }) {
   const [total, setTotal] = useState(0);
   const [selectedDate, setSelectedDate] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
 
   const currentTheme = theme === "system" ? systemTheme : theme;
 
   const colorTheme = {
     light: ["#ebedf0", "#d1fae5", "#6ee7b7", "#10b981", "#047857"],
     dark: ["#1f2937", "#064e3b", "#047857", "#10b981", "#34d399"],
-  };
-
-  const fetchGitHubData = async (user) => {
-    const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-
-    if (!token) {
-      throw new Error("GitHub token not configured");
-    }
-
-    const to = new Date().toISOString();
-    const from = subDays(new Date(), 365).toISOString();
-
-    const response = await fetch("https://api.github.com/graphql", {
-      method: "POST",
-      headers: {
-        Authorization: `bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: CONTRIBUTIONS_QUERY,
-        variables: { username: user, from, to },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
-    }
-
-    return result.data.user.contributionsCollection;
-  };
-
-  const processContributions = (collection) => {
-    // Group by date and repo
-    const commitsByDate = new Map();
-
-    // Process commits - group by date and repo
-    collection.commitContributionsByRepository?.forEach((repoContrib) => {
-      const repoName = repoContrib.repository.name;
-      const repoOwner = repoContrib.repository.owner.login;
-
-      repoContrib.contributions?.nodes?.forEach((contrib) => {
-        const date = contrib.occurredAt.split("T")[0];
-
-        if (!commitsByDate.has(date)) {
-          commitsByDate.set(date, new Map());
-        }
-
-        const dateRepos = commitsByDate.get(date);
-        const key = `${repoOwner}/${repoName}`;
-
-        if (dateRepos.has(key)) {
-          // Increment count for existing repo
-          const existing = dateRepos.get(key);
-          existing.count += 1;
-        } else {
-          // Add new repo entry
-          dateRepos.set(key, {
-            hash: contrib.url?.split("/").pop() || "",
-            repo: repoName,
-            repoOwner: repoOwner,
-            timestamp: contrib.occurredAt,
-            type: "commit",
-            count: 1,
-          });
-        }
-      });
-    });
-
-    // Process PRs
-    collection.pullRequestContributions?.nodes?.forEach((contrib) => {
-      const date = contrib.occurredAt.split("T")[0];
-
-      if (!commitsByDate.has(date)) {
-        commitsByDate.set(date, new Map());
-      }
-
-      const dateRepos = commitsByDate.get(date);
-      const key = `pr-${contrib.pullRequest.number}`;
-
-      dateRepos.set(key, {
-        hash: String(contrib.pullRequest.number),
-        repo: contrib.pullRequest.repository.name,
-        repoOwner: contrib.pullRequest.repository.owner.login,
-        timestamp: contrib.occurredAt,
-        type: "pr",
-        count: 1,
-      });
-    });
-
-    // Process Issues
-    collection.issueContributions?.nodes?.forEach((contrib) => {
-      const date = contrib.occurredAt.split("T")[0];
-
-      if (!commitsByDate.has(date)) {
-        commitsByDate.set(date, new Map());
-      }
-
-      const dateRepos = commitsByDate.get(date);
-      const key = `issue-${contrib.issue.number}`;
-
-      dateRepos.set(key, {
-        hash: String(contrib.issue.number),
-        repo: contrib.issue.repository.name,
-        repoOwner: contrib.issue.repository.owner.login,
-        timestamp: contrib.occurredAt,
-        type: "issue",
-        count: 1,
-      });
-    });
-
-    // Build day data from calendar
-    const dayData = [];
-    let totalCount = 0;
-
-    collection.contributionCalendar.weeks.forEach((week) => {
-      week.contributionDays.forEach((day) => {
-        const dateCommits = Array.from(
-          commitsByDate.get(day.date)?.values() || [],
-        );
-
-        // If we have a count but no detailed commits, show generic activity
-        if (day.contributionCount > 0 && dateCommits.length === 0) {
-          dateCommits.push({
-            hash: "activity",
-            repo: "Other activity",
-            repoOwner: username,
-            timestamp: `${day.date}T12:00:00Z`,
-            type: "commit",
-            count: day.contributionCount,
-          });
-        }
-
-        dayData.push({
-          date: day.date,
-          count: day.contributionCount,
-          level: getLevel(day.contributionLevel),
-          commits: dateCommits,
-        });
-
-        totalCount += day.contributionCount;
-      });
-    });
-
-    return { dayData, totalCount };
-  };
-
-  const getLevel = (level) => {
-    switch (level) {
-      case "NONE":
-        return 0;
-      case "FIRST_QUARTILE":
-        return 1;
-      case "SECOND_QUARTILE":
-        return 2;
-      case "THIRD_QUARTILE":
-        return 3;
-      case "FOURTH_QUARTILE":
-        return 4;
-      default:
-        return 0;
-    }
   };
 
   const fetchData = useCallback(async () => {
@@ -296,8 +298,11 @@ export function GithubHeatMap({ username }) {
       setIsLoading(true);
       setError(null);
 
-      const collection = await fetchGitHubData(username);
-      const { dayData, totalCount } = processContributions(collection);
+      const user = await fetchGitHubData(username);
+      if (user?.avatarUrl) {
+        setAvatarUrl(user.avatarUrl);
+      }
+      const { dayData, totalCount } = processContributions(user?.contributionsCollection, username);
 
       setData(dayData);
       setTotal(totalCount);
@@ -388,7 +393,7 @@ export function GithubHeatMap({ username }) {
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={`https://github.com/${username}.png`}
+                src={avatarUrl || `https://github.com/${username}.png`}
                 alt={username}
               />
               <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">

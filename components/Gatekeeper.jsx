@@ -193,6 +193,19 @@ export default function Gatekeeper({ children }) {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (status !== "idle") return;
+
+    // Fail-safe fallback timeout: if Turnstile is blocked by adblockers, fails to load,
+    // or is in an indexing/headless environment that takes too long, fail open after 3.5s.
+    const fallbackTimer = setTimeout(() => {
+      console.warn("Turnstile verification took too long, failing open...");
+      setStatus("success");
+    }, 3500);
+
+    return () => clearTimeout(fallbackTimer);
+  }, [status]);
+
   const handleVerify = async (token) => {
     try {
       const res = await fetch("/api/fetch-data", {
