@@ -176,10 +176,18 @@ export default function Gatekeeper({ children }) {
   });
 
   useEffect(() => {
-    const isVerified = sessionStorage.getItem("turnstile_verified") === "true";
-    const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(
-      navigator.userAgent,
-    );
+    let isVerified = false;
+    try {
+      isVerified = sessionStorage.getItem("turnstile_verified") === "true";
+    } catch (e) {
+      console.warn("Storage access is blocked:", e);
+    }
+    
+    // Comprehensive bot, crawler, and testing environment detection
+    const userAgent = typeof navigator !== "undefined" ? navigator.userAgent || "" : "";
+    const isBot = 
+      /bot|google|crawler|spider|robot|crawling|lighthouse|pagespeed|headless|archiver|transcoder|pingdom|gtmetrix/i.test(userAgent) ||
+      (typeof navigator !== "undefined" && !!navigator.webdriver);
 
     // Wrap in a 0ms timeout to move the state update out of the synchronous effect body
     const timer = setTimeout(() => {
@@ -214,7 +222,11 @@ export default function Gatekeeper({ children }) {
         body: JSON.stringify({ token }),
       });
       if (res.ok) {
-        sessionStorage.setItem("turnstile_verified", "true");
+        try {
+          sessionStorage.setItem("turnstile_verified", "true");
+        } catch (e) {
+          console.warn("Storage access is blocked:", e);
+        }
         setStatus("success");
       } else {
         console.warn("Turnstile server validation failed, failing open...");
@@ -284,7 +296,11 @@ export default function Gatekeeper({ children }) {
                 onSuccess={handleVerify}
                 onError={() => {
                   console.warn("Turnstile blocked or failed, failing open...");
-                  sessionStorage.setItem("turnstile_verified", "true");
+                  try {
+                    sessionStorage.setItem("turnstile_verified", "true");
+                  } catch (e) {
+                    console.warn("Storage access is blocked:", e);
+                  }
                   setStatus("success");
                 }}
               />

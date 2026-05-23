@@ -392,10 +392,12 @@ export function GithubHeatMap({ username }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={avatarUrl || `https://github.com/${username}.png`}
-                alt={username}
-              />
+              {avatarUrl && (
+                <AvatarImage
+                  src={avatarUrl}
+                  alt={username}
+                />
+              )}
               <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
                 {username.slice(0, 2).toUpperCase()}
               </AvatarFallback>
