@@ -152,7 +152,6 @@ export default function RootLayout({ children }) {
       <body
         className={`${domine.variable} font-sans lowercase antialiased selection:bg-primary/20 selection:text-primary`}
       >
-        {/* Inject JSON-LD Script */}
         <JsonLd schema={jsonLd} />
 
         <ThemeProvider

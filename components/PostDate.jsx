@@ -3,16 +3,12 @@
 import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
 
-interface PostDateProps {
-  dateString: string | null;
-  className?: string;
-}
-
-export default function PostDate({ dateString, className = "" }: PostDateProps) {
-  const [mounted, setMounted] = useState<boolean>(false);
+export default function PostDate({ dateString, className = "" }) {
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!dateString) return null;
