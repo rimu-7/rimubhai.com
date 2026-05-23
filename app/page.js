@@ -25,14 +25,15 @@ function SectionSkeleton() {
 
 export const metadata = {
   title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
-  description: "Portfolio of Mutasim Fuad Rimu, a Full Stack Developer specializing in Next.js, React, Node.js, and building exceptional digital experiences.",
+  description: "Official website of Mutasim Fuad Rimu, also known as Rimu Bhai or Fuad Bhai. A Full Stack Developer specializing in Next.js, React, and Node.js.",
 };
 
 export default function Home() {
   const webSiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Mutasim Fuad Rimu (Rimu Bhai)",
+    "name": "Mutasim Fuad Rimu",
+    "alternateName": ["rimubhai", "Rimu Bhai", "Fuad Bhai"],
     "url": "https://rimubhai.com",
     "potentialAction": {
       "@type": "SearchAction",

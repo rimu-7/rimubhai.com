@@ -24,17 +24,19 @@ export const metadata = {
   // 2. Title & Description
   title: {
     default: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
-    template: "%s | Mutasim Fuad Rimu",
+    template: "%s | Mutasim Fuad Rimu (Rimu Bhai)",
   },
   description:
-    "Portfolio of Rimu Bhai, a Full Stack Developer specializing in Next.js, React, Node.js, and building exceptional digital experiences.",
+    "Official Portfolio of Mutasim Fuad Rimu (aka Rimu Bhai / Fuad Bhai). Full Stack Developer specializing in Next.js, React, Node.js, and beautiful web apps.",
 
   // 3. Keywords for Discovery (DuckDuckGo & Brave love these)
   keywords: [
     "Mutasim Fuad Rimu",
-    "Rimu Bhai",
-    "Rimu",
+    "rimubhai",
+    "rimu bhai",
+    "fuad bhai",
     "Mutasim Fuad",
+    "Rimu",
     "Full Stack Developer",
     "Software Engineer Portfolio",
     "Next.js Developer",
@@ -123,7 +125,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Mutasim Fuad Rimu",
-  alternateName: ["Rimu Bhai", "Rimu"],
+  alternateName: ["Rimu Bhai", "rimubhai", "Fuad Bhai", "Rimu"],
   url: "https://rimubhai.com",
   image: "https://rimubhai.com/rimu.png",
   sameAs: [
@@ -161,13 +163,13 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <ConsentManager>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <Gatekeeper>
+            <Gatekeeper>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
                 <main className="flex-1">{children}</main>
-              </Gatekeeper>
-              <Footer />
-            </div>
+                <Footer />
+              </div>
+            </Gatekeeper>
             <NextToast
               position="top-center"
               richColors={true}

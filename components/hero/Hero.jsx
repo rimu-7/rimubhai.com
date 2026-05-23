@@ -152,7 +152,8 @@ export default function Hero() {
       animate={inView ? "visible" : "hidden"}
       variants={stagger}
     >
-      <h1 className="sr-only">Mutasim Fuad Rimu (Rimu Bhai) - Full Stack Developer</h1>
+      <h1 className="sr-only">Mutasim Fuad Rimu | Rimu Bhai | Fuad Bhai | rimubhai</h1>
+      <p className="sr-only">Official portfolio of Mutasim Fuad Rimu, also known as Rimu Bhai or Fuad Bhai (rimubhai). Expert Full Stack Web Developer.</p>
       <motion.div variants={fade}>
         <NameToolTip />
       </motion.div>
