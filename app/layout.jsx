@@ -161,13 +161,13 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <ConsentManager>
-            <Gatekeeper>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
+            <div className="flex min-h-screen flex-col">
+              <Navbar />
+              <Gatekeeper>
                 <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </Gatekeeper>
+              </Gatekeeper>
+              <Footer />
+            </div>
             <NextToast
               position="top-center"
               richColors={true}
