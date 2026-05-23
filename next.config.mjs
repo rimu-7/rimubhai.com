@@ -27,6 +27,18 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/stats/track.js",
+        destination: "https://cloud.umami.is/script.js",
+      },
+      {
+        source: "/stats/api/send",
+        destination: "https://api-gateway.umami.dev/api/send",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
