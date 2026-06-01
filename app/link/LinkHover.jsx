@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // --- IndexedDB Cache System (Persistent Browser Storage) ---
 const DB_NAME = "LinkHoverCacheDB";
@@ -74,7 +74,7 @@ const processQueue = async () => {
       const response = await fetch(apiUrl);
       if (response.ok) {
         const blob = await response.blob();
-        await saveToCache(url, blob); 
+        await saveToCache(url, blob);
         const objectUrl = URL.createObjectURL(blob);
         memoryCache.set(url, objectUrl);
         resolve(objectUrl);
@@ -86,7 +86,7 @@ const processQueue = async () => {
       resolve(null);
     }
 
-    await new Promise((r) => setTimeout(r, 200)); 
+    await new Promise((r) => setTimeout(r, 200));
   }
   isPreloading = false;
 };
@@ -99,49 +99,60 @@ const queuePreload = (url, apiUrl) => {
 };
 
 // --- Advanced Animation Configs ---
-const macOS_ease_out = [0.23, 1, 0.32, 1]; // Premium, snappy ease-out
-
 const containerVariants = {
-  initial: ( { vertical, isInstant } ) => ({
-    opacity: isInstant ? 1 : 0,
-    scale: isInstant ? 1 : 0.96,
-    // Shift slightly from the anchor point (e.g., up if positioned top)
-    y: isInstant ? 0 : (vertical === "top" ? 8 : -8), 
-    filter: isInstant ? "blur(0px)" : "blur(4px)",
-  }),
+  initial: ({ vertical, horizontal, isInstant }) => {
+    // Dynamically set origin based on position so it "grows" from the link
+    let originX = 0.5;
+    let originY = vertical === "top" ? 1 : 0;
+
+    if (horizontal === "left") originX = 0.1;
+    if (horizontal === "right") originX = 0.9;
+
+    return {
+      opacity: 0,
+      scale: isInstant ? 0.95 : 0.85,
+      y: vertical === "top" ? 12 : -12,
+      rotateX: vertical === "top" ? -8 : 8, // Subtle 3D hinge effect
+      filter: isInstant ? "blur(2px)" : "blur(8px)",
+      transformOrigin: `${originX * 100}% ${originY * 100}%`,
+    };
+  },
   animate: {
     opacity: 1,
     scale: 1,
     y: 0,
+    rotateX: 0,
     filter: "blur(0px)",
     transition: {
       type: "spring",
-      stiffness: 350, // High stiffness for snap
-      damping: 28,   // Slightly cushioned arrival
+      stiffness: 400,
+      damping: 28,
       mass: 0.8,
-      // For elements not instant, smooth out the filter/scale
-      opacity: { duration: 0.25, ease: macOS_ease_out },
-      scale: { duration: 0.35, ease: macOS_ease_out },
-      filter: { duration: 0.3, ease: macOS_ease_out },
+      opacity: { duration: 0.2 },
+      filter: { duration: 0.25 },
     },
   },
   exit: ({ vertical }) => ({
     opacity: 0,
-    scale: 0.97,
-    y: vertical === "top" ? 6 : -6,
-    filter: "blur(2px)",
+    scale: 0.96,
+    y: vertical === "top" ? 8 : -8,
+    filter: "blur(4px)",
     transition: {
-      duration: 0.18,
-      ease: [0.4, 0, 1, 1], // Standard ease-in for faster exit
+      duration: 0.15,
+      ease: [0.4, 0, 1, 1],
     },
   }),
 };
 
 // --- Main Component ---
-const LinkHover = ({ link, children }) => {
+const LinkHover = ({ link, url, imageSrc, isStatic, className, children }) => {
+  // Support both 'url' and 'link' props for backwards compatibility
+  const href = url || link;
+
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cachedUrl, setCachedUrl] = useState(null);
+  const [isImageFullyLoaded, setIsImageFullyLoaded] = useState(false); // Tracks persistent load state
   const [tooltipPosition, setTooltipPosition] = useState({
     vertical: "top",
     horizontal: "center",
@@ -151,17 +162,19 @@ const LinkHover = ({ link, children }) => {
   const linkRef = useRef(null);
   const hasQueued = useRef(false);
 
-  const apiUrl = `/api/linkhover?url=${encodeURIComponent(link)}`;
+  const apiUrl = `/api/linkhover?url=${encodeURIComponent(href)}`;
 
+  // 1. Intersection Observer for API Preloading (Skipped if isStatic)
   useEffect(() => {
-    if (hasQueued.current) return;
+    if (isStatic || hasQueued.current) return;
+
     const currentLinkRef = linkRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           hasQueued.current = true;
           const doPreload = async () => {
-            const objectUrl = await queuePreload(link, apiUrl);
+            const objectUrl = await queuePreload(href, apiUrl);
             if (objectUrl) {
               setCachedUrl(objectUrl);
               setIsLoading(false);
@@ -172,18 +185,22 @@ const LinkHover = ({ link, children }) => {
           observer.disconnect();
         }
       },
-      { rootMargin: "600px" } 
+      { rootMargin: "600px" }
     );
-    if (currentLinkRef) observer.observe(currentLinkRef);
-    return () => { if (currentLinkRef) observer.disconnect(); };
-  }, [link, apiUrl]);
 
+    if (currentLinkRef) observer.observe(currentLinkRef);
+    return () => {
+      if (currentLinkRef) observer.disconnect();
+    };
+  }, [href, apiUrl, isStatic]);
+
+  // 2. Position Calculation
   const calculatePosition = useCallback(() => {
     if (!linkRef.current) return;
     const rect = linkRef.current.getBoundingClientRect();
     const tooltipWidth = 400;
     const tooltipHeight = 350;
-    const gap = 16; // Increased gap for premium visual padding
+    const gap = 16;
 
     const spaceTop = rect.top;
     const spaceBottom = window.innerHeight - rect.bottom;
@@ -204,32 +221,34 @@ const LinkHover = ({ link, children }) => {
     setTooltipPosition({ vertical, horizontal });
   }, []);
 
+  // 3. Hover Handlers
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    calculatePosition(); // Critical: Recalculate immediately
-    
-    // Attempt instant render from memory cache
-    if (memoryCache.has(link)) {
-      setCachedUrl(memoryCache.get(link));
+    calculatePosition();
+
+    if (isStatic) {
+      // If static and already loaded in a previous hover, remove loader instantly
+      if (isImageFullyLoaded) setIsLoading(false);
+    } else if (memoryCache.has(href)) {
+      setCachedUrl(memoryCache.get(href));
       setIsLoading(false);
     }
-    
+
     setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    // Shorter exit delay for perceived snappiness
-    timeoutRef.current = setTimeout(() => setIsHovered(false), 120); 
+    timeoutRef.current = setTimeout(() => setIsHovered(false), 120);
   };
 
+  // 4. Class Formatting
   const getPositionClasses = () => {
     const { vertical, horizontal } = tooltipPosition;
-    // Enhanced styles: sophisticated shadow, slight gradient border for "perfect" look
-    let classes = "absolute z-50 w-[400px] h-[350px] bg-popover/95 text-popover-foreground rounded-2xl flex flex-col overflow-hidden backdrop-blur-[10px] overscroll-contain ";
-    // Multi-layered 'premium' shadow
-    classes += "shadow-[0_20px_50px_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.1)] ";
-    // Subtle border glow effect
-    classes += "border border-border/60 before:absolute before:inset-0 before:rounded-2xl before:border before:border-white/5 ";
+    let classes =
+      "absolute z-50 w-[400px] h-[350px] bg-popover/95 text-popover-foreground rounded-2xl flex flex-col overflow-hidden backdrop-blur-[12px] overscroll-contain ";
+    classes += "shadow-[0_24px_54px_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.1)] ";
+    classes +=
+      "border border-border/60 before:absolute before:inset-0 before:rounded-2xl before:border before:border-white/10 before:pointer-events-none ";
 
     if (vertical === "top") classes += "bottom-full mb-4 ";
     else if (vertical === "bottom") classes += "top-full mt-4 ";
@@ -246,7 +265,8 @@ const LinkHover = ({ link, children }) => {
     return classes;
   };
 
-  const isInstant = cachedUrl !== null;
+  const finalImageSource = isStatic && imageSrc ? imageSrc : cachedUrl || apiUrl;
+  const isInstant = (isStatic && isImageFullyLoaded) || (!isStatic && cachedUrl !== null);
 
   return (
     <div
@@ -255,17 +275,17 @@ const LinkHover = ({ link, children }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Animated Link Text */}
       <motion.div
         className="inline-block"
-        whileHover={{ scale: 1.015, color: "var(--blue-800, #1e40af)" }} // Subtle text response
-        transition={{ duration: 0.2, ease: macOS_ease_out }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
       >
         <Link
-          href={link}
+          href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 underline underline-offset-4 transition-colors"
+          className={`text-blue-600 underline underline-offset-4 transition-colors hover:text-blue-800 ${className || ""}`}
         >
           {children}
         </Link>
@@ -274,57 +294,65 @@ const LinkHover = ({ link, children }) => {
       <AnimatePresence mode="wait">
         {isHovered && (
           <motion.div
-            layout // Smoothly handles layout shifts if position changes dynamically
-            custom={{ vertical: tooltipPosition.vertical, isInstant }}
+            layout
+            custom={{
+              vertical: tooltipPosition.vertical,
+              horizontal: tooltipPosition.horizontal,
+              isInstant,
+            }}
             variants={containerVariants}
             initial="initial"
             animate="animate"
             exit="exit"
             className={getPositionClasses()}
-            // Origin logic is key for perfect "pop" effect from the anchor
-            style={{ originX: 0.5, originY: tooltipPosition.vertical === "top" ? 1 : 0 }}
+            style={{ perspective: 1000 }} // Required for the 3D fold effect
           >
-            <div className="bg-muted/80 backdrop-blur-sm px-4 py-2.5 text-xs text-muted-foreground border-b border-border/50 flex items-center gap-3 z-20 relative">
+            {/* Top Bar matching macOS style */}
+            <div className="bg-muted/90 backdrop-blur-md px-4 py-3 text-xs text-muted-foreground border-b border-border/50 flex items-center gap-3 z-20 relative shadow-sm">
               <div className="flex gap-1.5">
-                {/* Visual refinement: subtle dots */}
-                <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/90 border border-[#E0443E]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/90 border border-[#DEA123]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/90 border border-[#1AAB29]" />
+                <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E] shadow-inner" />
+                <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-inner" />
+                <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29] shadow-inner" />
               </div>
-              <span className="truncate font-medium tracking-tight text-foreground/70">{link}</span>
+              <span className="truncate font-medium tracking-tight text-foreground/80">{href}</span>
             </div>
 
-            <div className="relative flex-1 bg-background/50 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar scroll-smooth">
+            <div className="relative flex-1 bg-black/5 overflow-hidden">
               <AnimatePresence>
                 {isLoading && (
                   <motion.div
                     key="loader"
                     initial={{ opacity: isInstant ? 0 : 1 }}
-                    exit={{ opacity: 0 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center bg-background/90 z-10"
+                    className="absolute inset-0 flex flex-col items-center justify-center bg-background/95 backdrop-blur-md z-10"
                   >
-                    <Loader2 className="w-5 h-5 animate-spin text-blue-500/80 mb-2" />
-                    <span className="text-xs text-muted-foreground font-medium mt-2">Generating preview...</span>
+                    <Loader2 className="w-6 h-6 animate-spin text-blue-500/80 mb-3" />
+                    <span className="text-xs text-muted-foreground font-medium animate-pulse">
+                      Loading preview...
+                    </span>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {(cachedUrl || !isLoading) && (
+              {(finalImageSource || !isLoading) && (
                 <motion.div
                   key="image"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4, ease: macOS_ease_out }} // Smooth inner image load
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                  className="w-full h-full"
                 >
                   <Image
-                    src={cachedUrl || apiUrl}
-                    alt={`Preview of ${link}`}
-                    width={900} // Target viewport width is 1280, 900 is good optimized width
-                    height={600}
-                    unoptimized={false} // Next/Image optimization is superior to unoptimized if configured
-                    onLoad={() => setIsLoading(false)}
-                    className="w-full h-auto object-cover object-top block"
+                    src={finalImageSource}
+                    alt={`Preview of ${href}`}
+                    fill // Automatically fills the container beautifully
+                    unoptimized={!isStatic} // Only optimize if it's static
+                    onLoad={() => {
+                      setIsLoading(false);
+                      if (isStatic) setIsImageFullyLoaded(true);
+                    }}
+                    className="object-cover object-top block"
                   />
                 </motion.div>
               )}

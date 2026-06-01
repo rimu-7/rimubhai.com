@@ -1,3 +1,5 @@
+export const revalidate = 300; // Cache and revalidate page data every 5 minutes
+
 import { Suspense } from "react";
 import Hero from "@/components/hero/Hero";
 import AboutPage from "./about/about-page";
@@ -9,6 +11,8 @@ import Projects from "@/components/projects/Projects";
 import { Skeleton } from "@/components/ui/skeleton";
 import GithubHeatMapWrapper from "@/components/GithubHeatMapWrapper";
 import JsonLd from "@/components/JsonLd";
+import AboutMe from "./link/page";
+import About from "./about/page";
 
 function SectionSkeleton() {
   return (
@@ -52,7 +56,8 @@ export default function Home() {
 
         <section aria-label="About Me">
           <Suspense fallback={<SectionSkeleton />}>
-            <AboutPage />
+            {/* <AboutPage /> */}
+            <About/>
           </Suspense>
         </section>
 

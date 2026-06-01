@@ -1,3 +1,5 @@
+export const revalidate = 300; // Cache and revalidate post data every 5 minutes
+
 import connectDB from "@/lib/mongodb";
 import { Blog, User } from "@/lib/schema"; // Import User to populate author if needed
 import { notFound } from "next/navigation";

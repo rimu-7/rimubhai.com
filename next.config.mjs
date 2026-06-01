@@ -7,6 +7,10 @@ const nextConfig = {
     },
   },
   images: {
+    domains: [
+      "api.microlink.io",
+    ],
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

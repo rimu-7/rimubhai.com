@@ -1,9 +1,8 @@
 "use client";
 
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import {
   Check,
-  Clock,
   Copy,
   ExternalLink,
   Github,
@@ -14,104 +13,34 @@ import {
   Twitter,
 } from "lucide-react";
 import { toast } from "next-toast";
-import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+
+import { siteConfig } from "@/config/site";
+import { safeCopy } from "@/lib/utils/clipboard";
 import { HoverUnderline } from "../HoverUnderline";
-import { MessageDialog } from "./Message.Dialog";
+
 import { NameToolTip } from "./NameToolTip";
-import { runIdle } from "@/lib/utils/runIdle";
 
-function safeCopy(text) {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text);
-  }
-  return new Promise((resolve, reject) => {
-    try {
-      const el = document.createElement("textarea");
-      el.value = text;
-      el.setAttribute("readonly", "");
-      el.style.position = "absolute";
-      el.style.left = "-9999px";
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-      resolve();
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
+import { AnimatedText } from "./animated-text";
+import { MessageDialog } from "./Message.Dialog";
+import { ProfileImage } from "./profile-image";
+import { TimeStatus } from "./time-status";
 
-function getOffsetDiffHours(fromTz, toTz) {
-  const now = new Date();
-  const from = new Date(now.toLocaleString("en-US", { timeZone: fromTz }));
-  const to = new Date(now.toLocaleString("en-US", { timeZone: toTz }));
-  return Math.round((to - from) / (1000 * 60 * 60));
-}
-
-function TimeStatus() {
-  const [timeInfo, setTimeInfo] = useState({ beijingTime: "--:--", diffLabel: "" });
-
-  useEffect(() => {
-    const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    const beijingTz = "Asia/Shanghai";
-    const updateTime = () => {
-      const now = new Date();
-      const beijingString = new Intl.DateTimeFormat("en-US", {
-        timeZone: beijingTz,
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }).format(now);
-      const diff = getOffsetDiffHours(userTz, beijingTz);
-      let label = "";
-      if (diff === 0) label = "same time zone";
-      else if (diff > 0) label = `${diff}h ahead`;
-      else label = `${Math.abs(diff)}h behind`;
-      setTimeInfo({ beijingTime: beijingString, diffLabel: label });
-    };
-    updateTime();
-    const timer = setInterval(updateTime, 30000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Clock className="h-3.5 w-3.5 text-primary" />
-      <span className="font-medium text-foreground tabular-nums">{timeInfo.beijingTime}</span>
-      <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">CN</span>
-      <span className="text-muted-foreground/40">&middot;</span>
-      <span className="text-muted-foreground/60">{timeInfo.diffLabel}</span>
-    </div>
-  );
-}
-
-const WORDS = [
-  "fast web apps.",
-  "clean dashboards.",
-  "secure admin panels.",
-  "beautiful UI systems.",
-];
 const ease = [0.22, 1, 0.36, 1];
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+const fade = {
+  hidden: { y: 16, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.55, ease } },
+};
 
 export default function Hero() {
-  const prefersReducedMotion = useReducedMotion();
   const [copiedText, setCopiedText] = useState(null);
-  const [wordIndex, setWordIndex] = useState(0);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
-
-  const CONTACT = useMemo(
-    () => ({
-      email: "rimu_mutasim@yahoo.com",
-      phone: "+86 199 1724 7217",
-      phoneRaw: "+8619917247217",
-      location: "Changchun, Jilin, China",
-    }),
-    []
-  );
 
   const handleCopy = useCallback(async (text, label) => {
     try {
@@ -124,27 +53,6 @@ export default function Hero() {
     }
   }, []);
 
-  useEffect(() => {
-    let interval;
-    runIdle(() => {
-      interval = setInterval(() => setWordIndex((p) => (p + 1) % WORDS.length), 3000);
-    });
-    return () => clearInterval(interval);
-  }, []);
-
-  const linkedin = process.env.NEXT_PUBLIC_LINKEDIN || "";
-  const twitter = process.env.NEXT_PUBLIC_X || "";
-  const GITHUB = process.env.GITHUB || "";
-
-  const stagger = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
-  };
-  const fade = {
-    hidden: { y: 16, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.55, ease } },
-  };
-
   return (
     <motion.section
       ref={ref}
@@ -153,63 +61,22 @@ export default function Hero() {
       variants={stagger}
     >
       <h1 className="sr-only">Mutasim Fuad Rimu | Rimu Bhai | Fuad Bhai | rimubhai</h1>
-      <p className="sr-only">Official portfolio of Mutasim Fuad Rimu, also known as Rimu Bhai or Fuad Bhai (rimubhai). Expert Full Stack Web Developer.</p>
+      <p className="sr-only">
+        Official portfolio of Mutasim Fuad Rimu. Expert Full Stack Web Developer.
+      </p>
+
       <motion.div variants={fade}>
         <NameToolTip />
       </motion.div>
 
-      <motion.div variants={fade} className="">
+      <motion.div variants={fade}>
         <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-14">
-          <div className="relative shrink-0 group">
-            <motion.div
-              aria-hidden
-              className="absolute inset-0 -m-5 rounded-full border border-dashed border-foreground/10"
-              animate={prefersReducedMotion ? {} : { rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 50, ease: "linear" }}
-            />
-            <motion.div
-              aria-hidden
-              className="absolute inset-0 -m-2.5 rounded-full border border-dashed border-destructive/30"
-              animate={prefersReducedMotion ? {} : { rotate: -360 }}
-              transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
-            />
-            <motion.div
-              initial={prefersReducedMotion ? undefined : { scale: 0.92, opacity: 0 }}
-              animate={prefersReducedMotion ? undefined : { scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, ease }}
-              className="relative h-36 w-36 sm:h-44 sm:w-44 md:h-52 md:w-52 rounded-full overflow-hidden z-10"
-            >
-              <Image
-                src="https://res.cloudinary.com/di1josexb/image/upload/v1766912946/1766912597417_2_svqcrf.jpg"
-                alt="Mutasim Fuad Rimu (Rimu Bhai) Profile"
-                fill
-                priority
-                fetchPriority="high"
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
-                sizes="(max-width: 640px) 144px, (max-width: 768px) 176px, 208px"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </motion.div>
-          </div>
+          <ProfileImage />
 
           <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left gap-4 md:pt-4">
             <h2 className="flex flex-col sm:flex-row items-center md:items-start gap-1.5 sm:gap-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
               <span className="text-primary whitespace-nowrap">I build</span>
-              <div className="relative flex w-full justify-center md:justify-start overflow-hidden h-[1.3em]">
-                <AnimatePresence mode="popLayout">
-                  <motion.span
-                    key={wordIndex}
-                    initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
-                    animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
-                    exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
-                    transition={{ type: "spring", stiffness: 120, damping: 20, mass: 0.8 }}
-                    className="block whitespace-nowrap text-foreground"
-                  >
-                    {WORDS[wordIndex]}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
+              <AnimatedText />
             </h2>
 
             <TimeStatus />
@@ -228,84 +95,110 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      <motion.div variants={fade} className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 md:mt-12">
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-              Contact
+      <motion.div variants={fade} className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-12 md:mt-16">
+        {/* Contact Column */}
+        <div className="flex flex-col">
+          <div className="mb-4 flex items-center justify-between px-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+              Direct Contact
             </h4>
-            <span className="text-[10px] font-mono text-muted-foreground/40">click to copy</span>
+            <span className="text-[10px] font-mono tracking-wider text-muted-foreground/40">
+              click to copy
+            </span>
           </div>
-          <div className="flex flex-col gap-3">
+
+          <div className="flex flex-col gap-1 -mx-3">
             <ContactRow
               icon={Mail}
               label="Email"
-              value={CONTACT.email}
-              onClick={() => handleCopy(CONTACT.email, "Email")}
+              value={siteConfig.contact.email}
+              onClick={() => handleCopy(siteConfig.contact.email, "Email")}
               isCopied={copiedText === "Email"}
             />
             <ContactRow
               icon={Phone}
               label="Phone"
-              value={CONTACT.phone}
-              onClick={() => handleCopy(CONTACT.phoneRaw, "Phone")}
+              value={siteConfig.contact.phone}
+              onClick={() => handleCopy(siteConfig.contact.phoneRaw, "Phone")}
               isCopied={copiedText === "Phone"}
             />
-            <div className="flex items-start gap-3">
-              <MapPin className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  Location
-                </div>
-                <div className="text-sm text-foreground mt-0.5">{CONTACT.location}</div>
-              </div>
-            </div>
+            <LinkRow
+              icon={MapPin}
+              label="Location"
+              value={siteConfig.contact.location}
+              href="https://maps.app.goo.gl/6DNp3GjQQp3DCFr56"
+            />
           </div>
         </div>
 
-        <div>
-          <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-            Socials
-          </h4>
-          <div className="flex flex-col gap-3">
-            <SocialLink icon={Twitter} label="X / Twitter" href={twitter} />
-            <SocialLink icon={Github} label="GitHub" href={GITHUB} />
-            <SocialLink icon={Linkedin} label="LinkedIn" href={linkedin} />
+        {/* Socials Column */}
+        <div className="flex flex-col">
+          <div className="mb-4 px-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+              Digital Presence
+            </h4>
           </div>
-          <p className="mt-5 text-xs text-muted-foreground/50 leading-relaxed">
-            Want something built fast and clean? Ping me.
-          </p>
+
+          <div className="flex flex-col gap-1 -mx-3">
+            <LinkRow
+              icon={Twitter}
+              label="X / Twitter"
+              value="@rimubhai" // You can map this dynamically if added to siteConfig
+              href={siteConfig.socials.twitter}
+            />
+            <LinkRow
+              icon={Github}
+              label="GitHub"
+              value="View Profile"
+              href={siteConfig.socials.github}
+            />
+            <LinkRow
+              icon={Linkedin}
+              label="LinkedIn"
+              value="Connect"
+              href={siteConfig.socials.linkedin}
+            />
+          </div>
         </div>
       </motion.div>
     </motion.section>
   );
 }
 
+// --- Stateless Sub-components ---
+
+// 1. The Interactive Copy Row (For Email & Phone)
 function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-3 text-left"
+      className="group relative flex w-full items-center gap-4 rounded-md border border-transparent p-3 outline-none transition-all duration-300 hover:border-border/60 hover:bg-muted/30 focus-visible:ring-2 focus-visible:ring-primary/50"
       aria-label={`Copy ${label}`}
     >
-      <Icon className="h-3.5 w-3.5 text-primary shrink-0" />
-      <div className="min-w-0 flex-1">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+      {/* Elevated Icon Box */}
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
+        <Icon className="h-4 w-4" />
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col items-start justify-center">
+        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 transition-colors group-hover:text-muted-foreground">
           {label}
         </div>
-        <div className="text-sm font-medium text-foreground mt-0.5">
-          <HoverUnderline>{value}</HoverUnderline>
+        <div className="mt-0.5 truncate text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
+          {value}
         </div>
       </div>
-      <div className="flex items-center">
+
+      {/* Slide-in Action Text */}
+      <div className="flex shrink-0 items-center overflow-hidden pr-1">
         {isCopied ? (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500 animate-in fade-in slide-in-from-right-4 duration-300">
             <Check className="h-3.5 w-3.5" />
             Copied
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground/40 opacity-0 translate-x-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
             <Copy className="h-3.5 w-3.5" />
             Copy
           </span>
@@ -315,7 +208,39 @@ function ContactRow({ icon: Icon, label, value, onClick, isCopied }) {
   );
 }
 
+// 2. The Interactive Link Row (For Location & Socials)
+function LinkRow({ icon: Icon, label, value, href }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative flex w-full items-center gap-4 rounded-md border border-transparent p-3 outline-none transition-all duration-300 hover:border-border/60 hover:bg-muted/30 focus-visible:ring-2 focus-visible:ring-primary/50"
+    >
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
+        <Icon className="h-4 w-4" />
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col items-start justify-center">
+        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 transition-colors group-hover:text-muted-foreground">
+          {label}
+        </div>
+        <div className="mt-0.5 truncate text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
+          {value}
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center overflow-hidden pr-2">
+        <span className="flex items-center text-muted-foreground/40 opacity-0 -translate-x-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-primary">
+          <ExternalLink className="h-4 w-4" />
+        </span>
+      </div>
+    </a>
+  );
+}
+
 function SocialLink({ icon: Icon, href, label }) {
+  if (!href) return null; // Graceful fallback if env variables are missing
   return (
     <Link
       href={href}

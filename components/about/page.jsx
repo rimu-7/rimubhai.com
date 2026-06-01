@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CheckCircle, Pencil, Trash2, X } from "lucide-react";
+import { CheckCircle, Pencil, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function AboutManager() {
   const [items, setItems] = useState([]);
@@ -100,9 +100,7 @@ export default function AboutManager() {
 
       {/* --- FORM SECTION --- */}
       <div className="bg-gray-100 p-6 rounded-lg mb-8 shadow-sm border border-gray-200">
-        <h2 className="text-lg font-semibold mb-4">
-          {editingId ? "Edit Entry" : "Add New Entry"}
-        </h2>
+        <h2 className="text-lg font-semibold mb-4">{editingId ? "Edit Entry" : "Add New Entry"}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -170,9 +168,7 @@ export default function AboutManager() {
                   {item.name}
 
                   {/* THE GREEN ICON (Only shows if onGoing is true) */}
-                  {item.onGoing && (
-                    <CheckCircle className="text-green-500 w-5 h-5" />
-                  )}
+                  {item.onGoing && <CheckCircle className="text-green-500 w-5 h-5" />}
                 </h3>
               </div>
 

@@ -32,6 +32,10 @@ export const metadata = {
   // 3. Keywords for Discovery (DuckDuckGo & Brave love these)
   keywords: [
     "Mutasim Fuad Rimu",
+    "mutasim fuad rimu",
+    "mutasim",
+    "fuad",
+    "rimu",
     "rimubhai",
     "rimu bhai",
     "fuad bhai",
@@ -46,6 +50,20 @@ export const metadata = {
     "JavaScript",
     "TypeScript",
     "Creative Developer",
+    "Rimu Bhai Blogs",
+    "rimubhai articles",
+    "Next.js tutorials",
+    "React developer blog",
+    "programming tutorials",
+    "web dev tips",
+    "frontend guides",
+    "coding articles",
+    "full stack engineering blog",
+    "Node.js backend tutorials",
+    "JavaScript coding guidelines",
+    "modern web development techniques",
+    "software architecture insights",
+    "UI component library examples",
   ],
 
   // 4. Author Info
