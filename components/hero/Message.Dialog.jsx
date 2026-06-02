@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useSyncExternalStore, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +27,7 @@ export function MessageDialog({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,10 +36,10 @@ export function MessageDialog({ children }) {
     message: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,6 +79,10 @@ export function MessageDialog({ children }) {
       setIsSubmitting(false);
     }
   };
+
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

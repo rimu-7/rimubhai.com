@@ -1,17 +1,15 @@
 export const revalidate = 300; // Cache and revalidate page data every 5 minutes
 
-import { Suspense } from "react";
-import Hero from "@/components/hero/Hero";
-import AboutPage from "./about/about-page";
-import Experiences from "@/components/experience/Experiences";
-import Container from "@/components/Container";
-import LifeEvents from "@/components/life-events/LifeEvents";
 import Awards from "@/components/awards/Awards";
+import Container from "@/components/Container";
+import Experiences from "@/components/experience/Experiences";
+import GithubHeatMapWrapper from "@/components/GithubHeatMapWrapper";
+import Hero from "@/components/hero/Hero";
+import JsonLd from "@/components/JsonLd";
+import LifeEvents from "@/components/life-events/LifeEvents";
 import Projects from "@/components/projects/Projects";
 import { Skeleton } from "@/components/ui/skeleton";
-import GithubHeatMapWrapper from "@/components/GithubHeatMapWrapper";
-import JsonLd from "@/components/JsonLd";
-import AboutMe from "./link/page";
+import { Suspense } from "react";
 import About from "./about/page";
 
 function SectionSkeleton() {
@@ -29,21 +27,22 @@ function SectionSkeleton() {
 
 export const metadata = {
   title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
-  description: "Official website of Mutasim Fuad Rimu, also known as Rimu Bhai or Fuad Bhai. A Full Stack Developer specializing in Next.js, React, and Node.js.",
+  description:
+    "Official website of Mutasim Fuad Rimu, also known as Rimu Bhai or Fuad Bhai. A Full Stack Developer specializing in Next.js, React, and Node.js.",
 };
 
 export default function Home() {
   const webSiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Mutasim Fuad Rimu",
-    "alternateName": ["rimubhai", "Rimu Bhai", "Fuad Bhai"],
-    "url": "https://rimubhai.com",
-    "potentialAction": {
+    name: "Mutasim Fuad Rimu",
+    alternateName: ["rimubhai", "Rimu Bhai", "Fuad Bhai"],
+    url: "https://rimubhai.com",
+    potentialAction: {
       "@type": "SearchAction",
-      "target": "https://rimubhai.com/?s={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
+      target: "https://rimubhai.com/?s={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
   };
 
   return (
@@ -55,10 +54,10 @@ export default function Home() {
         </section>
 
         <section aria-label="About Me">
-          <Suspense fallback={<SectionSkeleton />}>
-            {/* <AboutPage /> */}
-            <About/>
-          </Suspense>
+          {/* <Suspense fallback={<SectionSkeleton />}> */}
+          {/* <AboutPage /> */}
+          <About />
+          {/* </Suspense> */}
         </section>
 
         <section aria-label="Projects">

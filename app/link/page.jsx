@@ -47,7 +47,7 @@ export default function AboutMe() {
       {/* Biography Section */}
       <section>
         <div className="text-base leading-relaxed text-foreground/80 text-justify">
-          <p>
+          <div>
             I recently received my Master’s degree from{" "}
             <LinkPreview
               url="https://www.cust.edu.cn/"
@@ -151,7 +151,7 @@ export default function AboutMe() {
             Feel free to drop me an email if you want to collaborate or have a discussion!
             <br />
             <br />
-          </p>
+          </div>
         </div>
       </section>
 

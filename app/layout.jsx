@@ -1,14 +1,14 @@
+import { ConsentManager } from "@/components/consent-manager/consent-manager";
+import Footer from "@/components/footer";
+import Gatekeeper from "@/components/Gatekeeper";
+import JsonLd from "@/components/JsonLd";
+import Navbar from "@/components/Navbar";
+import ScrollToTop from "@/components/ScrollTop";
+import { ThemeProvider } from "@/components/theme-provider";
+import UmamiAnalytics from "@/components/UmamiAnalytics";
+import { NextToast } from "next-toast";
 import { Domine } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import { ThemeProvider } from "@/components/theme-provider";
-import Footer from "@/components/footer";
-import ScrollToTop from "@/components/ScrollTop";
-import { NextToast } from "next-toast";
-import Gatekeeper from "@/components/Gatekeeper";
-import { ConsentManager } from "@/components/consent-manager/consent-manager";
-import JsonLd from "@/components/JsonLd";
-import UmamiAnalytics from "@/components/UmamiAnalytics";
 
 const domine = Domine({
   subsets: ["latin"],
@@ -77,8 +77,7 @@ export const metadata = {
     locale: "en_US",
     url: "https://rimubhai.com",
     title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
-    description:
-      "Building exceptional digital experiences with modern web technologies.",
+    description: "Building exceptional digital experiences with modern web technologies.",
     siteName: "Rimu Bhai Portfolio",
     images: [
       {
@@ -94,8 +93,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Mutasim Fuad Rimu (Rimu Bhai) | Full Stack Developer",
-    description:
-      "Building exceptional digital experiences with modern web technologies.",
+    description: "Building exceptional digital experiences with modern web technologies.",
     images: ["/rimu.png"],
     creator: "@__rimu7_",
   },
@@ -156,14 +154,7 @@ const jsonLd = {
     "@type": "Organization",
     name: "Freelance",
   },
-  knowsAbout: [
-    "Next.js",
-    "React",
-    "JavaScript",
-    "Node.js",
-    "MongoDB",
-    "Web Development",
-  ],
+  knowsAbout: ["Next.js", "React", "JavaScript", "Node.js", "MongoDB", "Web Development"],
 };
 
 export default function RootLayout({ children }) {
@@ -188,11 +179,7 @@ export default function RootLayout({ children }) {
                 <Footer />
               </div>
             </Gatekeeper>
-            <NextToast
-              position="top-center"
-              richColors={true}
-              closeButton={true}
-            />
+            <NextToast position="top-center" richColors={true} closeButton={true} />
           </ConsentManager>
 
           <ScrollToTop />
