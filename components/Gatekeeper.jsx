@@ -2,8 +2,10 @@
 
 import { Turnstile } from "@marsidev/react-turnstile";
 import { AnimatePresence, motion } from "framer-motion";
-import { Film, Quote, RefreshCw, ShieldCheck, Tv } from "lucide-react";
+import { ShieldCheck, RefreshCw, Quote, Tv, Film } from "lucide-react";
 import { useEffect, useState } from "react";
+
+const ease = [0.22, 1, 0.36, 1];
 
 const dialogues = [
   {
@@ -19,8 +21,7 @@ const dialogues = [
     type: "Movie",
   },
   {
-    quote:
-      "Darth Vader: No, I am your father.\nLuke Skywalker: No... that's not true! That's impossible!",
+    quote: "Darth Vader: No, I am your father.\nLuke Skywalker: No... that's not true! That's impossible!",
     source: "Star Wars: Episode V",
     year: 1980,
     type: "Movie",
@@ -32,8 +33,7 @@ const dialogues = [
     type: "Movie",
   },
   {
-    quote:
-      "Forrest Gump: My mama always said, 'Life is like a box of chocolates. You never know what you're gonna get.'",
+    quote: "Forrest Gump: My mama always said, 'Life is like a box of chocolates. You never know what you're gonna get.'",
     source: "Forrest Gump",
     year: 1994,
     type: "Movie",
@@ -57,8 +57,7 @@ const dialogues = [
     type: "TV Series",
   },
   {
-    quote:
-      "Morpheus: You take the red pill – you stay in Wonderland, and I show you how deep the rabbit hole goes.",
+    quote: "Morpheus: You take the red pill – you stay in Wonderland, and I show you how deep the rabbit hole goes.",
     source: "The Matrix",
     year: 1999,
     type: "Movie",
@@ -161,20 +160,74 @@ const dialogues = [
   },
 ];
 
-const ease = [0.22, 1, 0.36, 1];
+function DialogueQuote({ dialogue }) {
+  if (!dialogue) return null;
 
-export default function Gatekeeper({ children }) {
-  const [status, setStatus] = useState("loading");
-  const [dismissed, setDismissed] = useState(false);
+  const lines = dialogue.quote.split("\n");
+
+  return (
+    <div className="w-full text-left space-y-2.5">
+      <div className="flex items-center gap-1 text-muted-foreground/40 mb-1">
+        <Quote className="h-3 w-3 shrink-0" />
+        <span className="text-[9px] uppercase tracking-wider font-semibold">dialogue snippet</span>
+      </div>
+
+      <div className="space-y-1.5 pl-1.5 border-l-2 border-primary/20">
+        {lines.map((line, idx) => {
+          const colonIdx = line.indexOf(":");
+          if (colonIdx !== -1) {
+            const speaker = line.substring(0, colonIdx).trim();
+            const speech = line.substring(colonIdx + 1).trim();
+            return (
+              <div key={idx} className="text-xs sm:text-sm leading-relaxed">
+                <span className="font-semibold text-primary/70 uppercase tracking-wide text-[9px] sm:text-[10px] mr-1.5">
+                  {speaker}:
+                </span>
+                <span className="text-muted-foreground italic font-sans">&ldquo;{speech}&rdquo;</span>
+              </div>
+            );
+          }
+          return (
+            <p key={idx} className="text-xs sm:text-sm text-muted-foreground italic leading-relaxed font-sans">
+              &ldquo;{line}&rdquo;
+            </p>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-border/40">
+        {dialogue.type === "TV Series" ? (
+          <Tv className="h-3 w-3 text-muted-foreground/40 shrink-0" />
+        ) : (
+          <Film className="h-3 w-3 text-muted-foreground/40 shrink-0" />
+        )}
+        <span className="text-[10px] font-medium text-muted-foreground/50 tracking-wide">
+          {dialogue.source}
+        </span>
+        <span className="text-[10px] text-muted-foreground/30 font-mono">({dialogue.year})</span>
+      </div>
+    </div>
+  );
+}
+
+export default function Gatekeeper({ children, initialVerified = false }) {
+  const [mounted, setMounted] = useState(false);
+  const [verified, setVerified] = useState(initialVerified);
+  const [isExiting, setIsExiting] = useState(false);
 
   const [dialogue] = useState(() => {
     return dialogues[Math.floor(Math.random() * dialogues.length)];
   });
 
   useEffect(() => {
+    setMounted(true);
+    if (initialVerified) return;
+
     let isVerified = false;
     try {
-      isVerified = sessionStorage.getItem("turnstile_verified") === "true";
+      isVerified =
+        sessionStorage.getItem("turnstile_verified") === "true" ||
+        localStorage.getItem("turnstile_verified") === "true";
     } catch (e) {
       console.warn("Storage access is blocked:", e);
     }
@@ -186,181 +239,115 @@ export default function Gatekeeper({ children }) {
       ) ||
       (typeof navigator !== "undefined" && !!navigator.webdriver);
 
-    const timer = setTimeout(() => {
-      if (isVerified || isBot) {
-        setStatus("success");
-      } else {
-        setStatus("idle");
-      }
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (status !== "idle") return;
-
-    const fallbackTimer = setTimeout(() => {
-      console.warn("Turnstile verification took too long, failing open...");
-      setStatus("success");
-    }, 3500);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [status]);
-
-  useEffect(() => {
-    if (status === "success") {
-      const timer = setTimeout(() => setDismissed(true), 600);
-      return () => clearTimeout(timer);
+    if (isVerified || isBot) {
+      setVerified(true);
     }
-  }, [status]);
+  }, [initialVerified]);
 
-  useEffect(() => {
-    if (dismissed) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [dismissed]);
-
-  const handleVerify = async (token) => {
+  const handleVerify = () => {
     try {
-      const res = await fetch("/api/fetch-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      if (res.ok) {
-        try {
-          sessionStorage.setItem("turnstile_verified", "true");
-        } catch (e) {
-          console.warn("Storage access is blocked:", e);
-        }
-        setStatus("success");
-      } else {
-        console.warn("Turnstile server validation failed, failing open...");
-        setStatus("success");
-      }
-    } catch {
-      console.warn("Turnstile network error, failing open...");
-      setStatus("success");
+      localStorage.setItem("turnstile_verified", "true");
+      sessionStorage.setItem("turnstile_verified", "true");
+      document.cookie = "turnstile_verified=true; path=/; max-age=31536000; SameSite=Lax";
+    } catch (e) {
+      console.warn("Storage/cookie access is blocked:", e);
     }
+    setIsExiting(true);
+    setTimeout(() => {
+      setVerified(true);
+    }, 600);
   };
 
-  if (dismissed) {
+  useEffect(() => {
+    if (mounted && !verified) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [mounted, verified]);
+
+  // During SSR and first client-side mount, render only children
+  // to prevent any hydration mismatch.
+  if (!mounted) {
     return <>{children}</>;
   }
 
-  const isExiting = status === "success";
+  // Already verified and dismissed
+  if (verified && !isExiting) {
+    return <>{children}</>;
+  }
 
   return (
     <>
       {children}
       <div
         className={
-          "fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-500 ease-out " +
+          "fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-md transition-opacity duration-500 ease-out " +
           (isExiting ? "opacity-0 pointer-events-none" : "opacity-100")
         }
       >
-        {status === "idle" && (
-          <div className="w-full max-w-md mx-5">
+        <div className="w-full max-w-sm mx-5">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease }}
+            className="flex flex-col items-center text-center p-8 rounded-2xl border border-border bg-card shadow-lg"
+          >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease }}
-              className="flex flex-col items-center text-center"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.4, ease }}
+              className="bg-primary/5 p-3 rounded-full mb-4"
             >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, duration: 0.4, ease }}
-              >
-                <ShieldCheck className="h-10 w-10 text-primary mb-6" />
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.4, ease }}
-                className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2"
-              >
-                welcome
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35, duration: 0.4 }}
-                className="text-sm text-muted-foreground mb-8"
-              >
-                verifying you&apos;re human
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, duration: 0.4, ease }}
-                className="mb-8"
-              >
-                <Turnstile
-                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                  onSuccess={handleVerify}
-                  onError={() => {
-                    console.warn("Turnstile blocked or failed, failing open...");
-                    try {
-                      sessionStorage.setItem("turnstile_verified", "true");
-                    } catch (e) {
-                      console.warn("Storage access is blocked:", e);
-                    }
-                    setStatus("success");
-                  }}
-                />
-              </motion.div>
-
-              <AnimatePresence mode="wait">
-                {status === "error" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="flex items-center gap-2 text-sm text-destructive mb-6"
-                  >
-                    <RefreshCw className="h-3.5 w-3.5" />
-                    verification failed — please refresh
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-                className="w-full border-t border-border/40 pt-6"
-              >
-                <div className="flex items-start gap-3 text-left">
-                  <Quote className="h-4 w-4 text-muted-foreground/40 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs sm:text-sm text-muted-foreground/70 leading-relaxed whitespace-pre-line italic">
-                      &ldquo;{dialogue.quote}&rdquo;
-                    </p>
-                    <div className="flex items-center gap-2 mt-3">
-                      {dialogue.type === "TV Series" ? (
-                        <Tv className="h-3 w-3 text-muted-foreground/40" />
-                      ) : (
-                        <Film className="h-3 w-3 text-muted-foreground/40" />
-                      )}
-                      <span className="text-[11px] font-medium text-muted-foreground/50">
-                        {dialogue.source}
-                      </span>
-                      <span className="text-[11px] text-muted-foreground/30">{dialogue.year}</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <ShieldCheck className="h-7 w-7 text-primary" />
             </motion.div>
-          </div>
-        )}
+
+            <motion.h1
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.4, ease }}
+              className="text-lg font-bold tracking-tight mb-1"
+            >
+              security check
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="text-xs text-muted-foreground mb-6 max-w-[240px]"
+            >
+              please verify to proceed to the site
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.4, ease }}
+              className="w-full flex justify-center mb-6 min-h-[65px]"
+            >
+              <Turnstile
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                onSuccess={handleVerify}
+                onError={() => {
+                  console.warn("Turnstile blocked or failed, failing open...");
+                  handleVerify();
+                }}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.45, duration: 0.5 }}
+              className="w-full border-t border-border/40 pt-4"
+            >
+              <DialogueQuote dialogue={dialogue} />
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </>
   );

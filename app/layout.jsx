@@ -5,9 +5,9 @@ import JsonLd from "@/components/JsonLd";
 import Navbar from "@/components/Navbar";
 import ScrollToTop from "@/components/ScrollTop";
 import { ThemeProvider } from "@/components/theme-provider";
-import UmamiAnalytics from "@/components/UmamiAnalytics";
 import { NextToast } from "next-toast";
 import { Domine } from "next/font/google";
+import { cookies, headers } from "next/headers";
 import "./globals.css";
 
 const domine = Domine({
@@ -157,7 +157,19 @@ const jsonLd = {
   knowsAbout: ["Next.js", "React", "JavaScript", "Node.js", "MongoDB", "Web Development"],
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const cookieStore = await cookies();
+  const isVerified = cookieStore.get("turnstile_verified")?.value === "true";
+
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  const isBot =
+    /bot|google|crawler|spider|robot|crawling|lighthouse|pagespeed|headless|archiver|transcoder|pingdom|gtmetrix/i.test(
+      userAgent
+    );
+
+  const initialVerified = isVerified || isBot;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -172,7 +184,7 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <ConsentManager>
-            <Gatekeeper>
+            <Gatekeeper initialVerified={initialVerified}>
               <div className="flex min-h-screen flex-col">
                 <Navbar />
                 <main className="flex-1">{children}</main>
@@ -183,7 +195,6 @@ export default function RootLayout({ children }) {
           </ConsentManager>
 
           <ScrollToTop />
-          <UmamiAnalytics />
         </ThemeProvider>
       </body>
     </html>
