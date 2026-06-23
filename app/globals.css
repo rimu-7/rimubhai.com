@@ -174,7 +174,9 @@
   html {
     scroll-behavior: auto;
   }
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -186,14 +188,30 @@
   line-height: 1.65;
 }
 
-.tiptap h1 { @apply text-3xl font-bold mt-4 mb-2; }
-.tiptap h2 { @apply text-2xl font-semibold mt-4 mb-2; }
-.tiptap h3 { @apply text-xl font-semibold mt-3 mb-1; }
-.tiptap p { @apply my-2; }
-.tiptap a { @apply text-blue-600 underline underline-offset-2 dark:text-blue-400; }
-.tiptap ul { @apply list-disc ml-6 my-2; }
-.tiptap ol { @apply list-decimal ml-6 my-2; }
-.tiptap li { @apply my-1; }
+.tiptap h1 {
+  @apply text-3xl font-bold mt-4 mb-2;
+}
+.tiptap h2 {
+  @apply text-2xl font-semibold mt-4 mb-2;
+}
+.tiptap h3 {
+  @apply text-xl font-semibold mt-3 mb-1;
+}
+.tiptap p {
+  @apply my-2;
+}
+.tiptap a {
+  @apply text-blue-600 underline underline-offset-2 dark:text-blue-400;
+}
+.tiptap ul {
+  @apply list-disc ml-6 my-2;
+}
+.tiptap ol {
+  @apply list-decimal ml-6 my-2;
+}
+.tiptap li {
+  @apply my-1;
+}
 .tiptap code {
   @apply rounded px-1 py-0.5 text-[0.95em];
   @apply bg-slate-100 text-slate-900;
@@ -222,11 +240,21 @@
 }
 
 @keyframes border {
-  0% { clip-path: polygon(0% 0%, 0% 0%, 0% 0%, 0% 0%); }
-  25% { clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%); }
-  50% { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
-  75% { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
-  100% { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+  0% {
+    clip-path: polygon(0% 0%, 0% 0%, 0% 0%, 0% 0%);
+  }
+  25% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%);
+  }
+  50% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  75% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  100% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
 }
 
 .animate-border {
@@ -265,21 +293,126 @@
 }
 
 @keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
 
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 @keyframes accordion-fade-in {
-  from { opacity: 0; transform: translateY(-8px) scale(0.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes accordion-fade-out {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to { opacity: 0; transform: translateY(-4px) scale(0.99); }
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.99);
+  }
+}
+
+/* Consent Manager Animations */
+@keyframes slide-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-bottom-half {
+  from {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-from-bottom-4 {
+  animation: slide-in-from-bottom 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-slide-in-from-bottom-2 {
+  animation: slide-in-from-bottom-half 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-zoom-in-95 {
+  animation: zoom-in 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Ensure smooth transitions for consent UI elements */
+.consent-banner,
+.consent-dialog {
+  position: relative;
+  z-index: 50;
+}
+
+/* Optimize touch targets on mobile */
+@media (max-width: 640px) {
+  .consent-banner button,
+  .consent-dialog button {
+    min-height: 2.75rem; /* 44px - minimum recommended touch target */
+  }
+}
+
+/* Smooth appearance of banner and dialog */
+@media (prefers-reduced-motion: no-preference) {
+  .consent-banner {
+    animation: slide-in-from-bottom 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .consent-dialog {
+    animation: zoom-in 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
 }

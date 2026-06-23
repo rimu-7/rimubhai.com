@@ -183,16 +183,16 @@ export default async function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <ConsentManager>
-            <Gatekeeper initialVerified={initialVerified}>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </Gatekeeper>
-            <NextToast position="top-center" richColors={true} closeButton={true} />
-          </ConsentManager>
+          <Gatekeeper initialVerified={initialVerified}>
+            <div className="flex min-h-screen flex-col">
+              <Navbar />
+              <main className="flex-1">
+                <ConsentManager>{children}</ConsentManager>
+              </main>
+              <Footer />
+            </div>
+          </Gatekeeper>
+          <NextToast position="top-center" richColors={true} closeButton={true} />
 
           <ScrollToTop />
         </ThemeProvider>
